@@ -5,3 +5,5 @@ export * from './recentlyViewedStore';
 export * from './authStore';
 export * from './welcomeStore';
 export * from './searchStore';
+export * from './addressStore';
+export * from './checkoutStore';

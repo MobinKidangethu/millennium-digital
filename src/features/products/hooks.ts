@@ -87,6 +87,17 @@ export function useCategory(slug: string | undefined) {
   });
 }
 
+export function useProductsByIds(ids: number[]) {
+  const key = [...ids].sort((a, b) => a - b).join(',');
+  return useQuery({
+    queryKey: ['products', 'by-ids', key],
+    queryFn: async () => {
+      const results = await Promise.all(ids.map((id) => service.getProductById(id)));
+      return results.filter((p): p is NonNullable<typeof p> => p != null);
+    },
+  });
+}
+
 export function useProductTypes() {
   return useQuery({ queryKey: productKeys.productTypes, queryFn: service.getProductTypes });
 }
