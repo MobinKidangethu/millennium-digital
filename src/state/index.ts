@@ -7,3 +7,4 @@ export * from './welcomeStore';
 export * from './searchStore';
 export * from './addressStore';
 export * from './checkoutStore';
+export * from './notificationPrefsStore';

@@ -42,6 +42,13 @@ export function useResetPassword() {
   });
 }
 
+export function useChangePassword() {
+  return useMutation({
+    mutationFn: ({ email, currentPassword, newPassword }: { email: string; currentPassword: string; newPassword: string }) =>
+      service.changePassword(email, currentPassword, newPassword),
+  });
+}
+
 export function useLogout() {
   const logout = useAuthStore((s) => s.logout);
   return logout;

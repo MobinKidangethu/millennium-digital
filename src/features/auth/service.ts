@@ -126,5 +126,17 @@ export async function resetPassword(email: string, newPassword: string): Promise
   await saveUsers(updated);
 }
 
+export async function changePassword(email: string, currentPassword: string, newPassword: string): Promise<void> {
+  await delay(500);
+  const users = await loadUsers();
+  const idx = users.findIndex((u) => u.email.toLowerCase() === email.trim().toLowerCase());
+  if (idx < 0 || users[idx].password !== currentPassword) {
+    throw new Error('Current password is incorrect.');
+  }
+  const updated = [...users];
+  updated[idx] = { ...updated[idx], password: newPassword };
+  await saveUsers(updated);
+}
+
 export const DEMO_BUYER_CREDENTIALS = { email: DEMO_USERS[0].email, password: DEMO_USERS[0].password };
 export const DEMO_ADMIN_CREDENTIALS = { email: DEMO_USERS[1].email, password: DEMO_USERS[1].password };

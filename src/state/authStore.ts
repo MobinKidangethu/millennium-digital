@@ -2,13 +2,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import { STORAGE_KEYS } from '@/constants/storageKeys';
-import type { Session } from '@/types';
+import type { Session, User } from '@/types';
 
 interface AuthState {
   session: Session | null;
   /** true once the persisted session has been read from storage */
   hasHydrated: boolean;
   setSession: (session: Session) => void;
+  updateUser: (patch: Partial<User>) => void;
   logout: () => void;
   setHasHydrated: (value: boolean) => void;
 }
@@ -19,6 +20,10 @@ export const useAuthStore = create<AuthState>()(
       session: null,
       hasHydrated: false,
       setSession: (session) => set({ session }),
+      updateUser: (patch) =>
+        set((state) =>
+          state.session ? { session: { ...state.session, user: { ...state.session.user, ...patch } } } : state,
+        ),
       logout: () => set({ session: null }),
       setHasHydrated: (value) => set({ hasHydrated: value }),
     }),

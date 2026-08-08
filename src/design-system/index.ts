@@ -6,6 +6,7 @@ export * from './MDCard';
 export * from './MDBadge';
 export * from './MDInput';
 export * from './MDSearchBar';
+export * from './MDSwitch';
 export * from './webStyles';
 export * from './MDSkeleton';
 export * from './MDEmptyState';
