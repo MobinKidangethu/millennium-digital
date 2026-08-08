@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { Pressable, type StyleProp, type ViewStyle } from 'react-native';
+import { Pressable, type GestureResponderEvent, type StyleProp, type ViewStyle } from 'react-native';
 import { colors, radius } from './tokens';
 
 interface MDIconButtonProps {
@@ -25,7 +25,13 @@ export function MDIconButton({
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel}
-      onPress={onPress}
+      onPress={(e: GestureResponderEvent) => {
+        // Icon buttons are frequently nested inside a pressable card
+        // (e.g. wishlist/compare on a product card) — stop the press
+        // from also triggering the card's own onPress.
+        e.stopPropagation?.();
+        onPress?.();
+      }}
       disabled={disabled}
       style={({ pressed }) => [
         {

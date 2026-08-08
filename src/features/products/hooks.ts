@@ -19,10 +19,11 @@ export const productKeys = {
   productTypes: ['product-types'] as const,
 };
 
-export function useProducts(filters: ProductFilters = {}) {
+export function useProducts(filters: ProductFilters = {}, options: { enabled?: boolean } = {}) {
   return useQuery({
     queryKey: productKeys.list(filters),
     queryFn: () => service.getProducts(filters),
+    enabled: options.enabled,
   });
 }
 

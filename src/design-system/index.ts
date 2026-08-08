@@ -12,3 +12,5 @@ export * from './MDEmptyState';
 export * from './MDErrorState';
 export * from './MDIconButton';
 export * from './MDToast';
+export * from './MDModal';
+export * from './MDBottomSheet';

@@ -3,6 +3,7 @@ import {
   ActivityIndicator,
   Pressable,
   StyleSheet,
+  type GestureResponderEvent,
   type StyleProp,
   type ViewStyle,
 } from 'react-native';
@@ -25,6 +26,8 @@ interface MDButtonProps {
   style?: StyleProp<ViewStyle>;
   testID?: string;
   accessibilityLabel?: string;
+  /** Override the label color — used for e.g. a ghost button on a colored banner. */
+  textColor?: string;
 }
 
 const SIZE_STYLES: Record<Size, { paddingV: number; paddingH: number; fontSize: number }> = {
@@ -46,11 +49,13 @@ export function MDButton({
   style,
   testID,
   accessibilityLabel,
+  textColor,
 }: MDButtonProps) {
   const [pressed, setPressed] = useState(false);
   const isDisabled = disabled || loading;
   const sizeStyle = SIZE_STYLES[size];
   const palette = variantPalette(variant, isDisabled, pressed);
+  const fg = textColor ?? palette.fg;
 
   return (
     <Pressable
@@ -59,7 +64,13 @@ export function MDButton({
       accessibilityLabel={accessibilityLabel ?? label}
       accessibilityState={{ disabled: isDisabled, busy: loading }}
       disabled={isDisabled}
-      onPress={onPress}
+      onPress={(e: GestureResponderEvent) => {
+        // Buttons are frequently nested inside a pressable card (e.g. "Add
+        // to Cart" on a product card) — stop the press from also
+        // triggering the card's own onPress/navigation.
+        e.stopPropagation?.();
+        onPress?.();
+      }}
       onPressIn={() => setPressed(true)}
       onPressOut={() => setPressed(false)}
       style={[
@@ -77,13 +88,13 @@ export function MDButton({
       ]}
     >
       {loading ? (
-        <ActivityIndicator size="small" color={palette.fg} />
+        <ActivityIndicator size="small" color={fg} />
       ) : (
         <>
           {iconLeft}
           <MDText
             weight={typography.bodyMedium.fontWeight}
-            style={{ color: palette.fg, fontSize: sizeStyle.fontSize }}
+            style={{ color: fg, fontSize: sizeStyle.fontSize }}
           >
             {label}
           </MDText>

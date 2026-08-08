@@ -1,7 +1,8 @@
 import type { ComponentType } from 'react';
+import type { ImageSourcePropType } from 'react-native';
 import type { SvgProps } from 'react-native-svg';
 import { PRODUCT_IMAGES } from '@/constants/productImages';
-import { MANUFACTURER_LOGOS } from '@/constants/manufacturerLogos';
+import { MANUFACTURER_LOGO_RASTER, MANUFACTURER_LOGO_SVG } from '@/constants/manufacturerLogos';
 import { CATEGORY_ICONS } from '@/constants/categoryIcons';
 
 /** Returns the require()'d image source for a product, or null if unmapped. */
@@ -9,11 +10,19 @@ export function resolveProductImage(imagePath: string): number | null {
   return PRODUCT_IMAGES[imagePath] ?? null;
 }
 
-/** Returns the logo source (raster asset id or SVG component) for a manufacturer, or null if unmapped. */
-export function resolveManufacturerLogo(
-  manufacturerName: string,
-): number | ComponentType<SvgProps> | null {
-  return MANUFACTURER_LOGOS[manufacturerName.trim().toLowerCase()] ?? null;
+export type ManufacturerLogo =
+  | { kind: 'raster'; source: ImageSourcePropType }
+  | { kind: 'svg'; Component: ComponentType<SvgProps> }
+  | null;
+
+/** Returns the logo for a manufacturer as a discriminated raster/svg result, or null if unmapped. */
+export function resolveManufacturerLogo(manufacturerName: string): ManufacturerLogo {
+  const key = manufacturerName.trim().toLowerCase();
+  const raster = MANUFACTURER_LOGO_RASTER[key];
+  if (raster) return { kind: 'raster', source: raster };
+  const Svg = MANUFACTURER_LOGO_SVG[key];
+  if (Svg) return { kind: 'svg', Component: Svg };
+  return null;
 }
 
 /** Returns the SVG icon component for a category name, or null if unmapped. */

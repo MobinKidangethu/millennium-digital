@@ -11,9 +11,9 @@ interface MDManufacturerLogoProps {
 }
 
 export function MDManufacturerLogo({ manufacturer, width = 96, height = 28 }: MDManufacturerLogoProps) {
-  const source = resolveManufacturerLogo(manufacturer);
+  const logo = resolveManufacturerLogo(manufacturer);
 
-  if (!source) {
+  if (!logo) {
     const size = height;
     return (
       <View
@@ -34,10 +34,10 @@ export function MDManufacturerLogo({ manufacturer, width = 96, height = 28 }: MD
     );
   }
 
-  if (typeof source === 'number') {
+  if (logo.kind === 'raster') {
     return (
       <Image
-        source={source}
+        source={logo.source}
         style={{ width, height }}
         contentFit="contain"
         accessibilityLabel={manufacturer}
@@ -45,6 +45,6 @@ export function MDManufacturerLogo({ manufacturer, width = 96, height = 28 }: MD
     );
   }
 
-  const SvgLogo = source;
+  const SvgLogo = logo.Component;
   return <SvgLogo width={width} height={height} accessibilityLabel={manufacturer} />;
 }
