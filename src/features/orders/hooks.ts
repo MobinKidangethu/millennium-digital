@@ -2,12 +2,26 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCartStore } from '@/state';
 import * as service from './service';
 import type { CreateOrderInput } from './service';
+import type { OrderStatus } from '@/types';
 
 export const orderKeys = {
   all: ['orders'] as const,
   list: (userId: string) => ['orders', 'list', userId] as const,
   detail: (id: string) => ['orders', 'detail', id] as const,
+  allOrders: ['orders', 'all-admin'] as const,
 };
+
+export function useAllOrders() {
+  return useQuery({ queryKey: orderKeys.allOrders, queryFn: service.getAllOrders });
+}
+
+export function useUpdateOrderStatus() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, status }: { id: string; status: OrderStatus }) => service.updateOrderStatus(id, status),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: orderKeys.all }),
+  });
+}
 
 export function useOrders(userId: string | undefined) {
   return useQuery({

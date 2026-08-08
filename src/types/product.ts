@@ -50,12 +50,14 @@ export interface Manufacturer {
   name: string;
   slug: string;
   productCount: number;
+  disabled: boolean;
 }
 
 export interface Category {
   name: string;
   slug: string;
   productCount: number;
+  disabled: boolean;
 }
 
 export type SortOption =

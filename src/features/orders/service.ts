@@ -98,6 +98,29 @@ export async function getOrderById(id: string): Promise<Order | undefined> {
   return orders.find((o) => o.id === id);
 }
 
+/** Admin-facing: every order across every customer. */
+export async function getAllOrders(): Promise<Order[]> {
+  await delay(300);
+  const orders = await loadOrders();
+  return [...orders].sort((a, b) => new Date(b.placedAt).getTime() - new Date(a.placedAt).getTime());
+}
+
+export async function updateOrderStatus(id: string, status: OrderStatus): Promise<void> {
+  await delay(400);
+  const orders = await loadOrders();
+  const idx = orders.findIndex((o) => o.id === id);
+  if (idx < 0) return;
+  const order = orders[idx];
+  const updated: Order = {
+    ...order,
+    status,
+    timeline: [...order.timeline, { status, label: STATUS_LABEL[status], timestamp: new Date().toISOString() }],
+  };
+  const next = [...orders];
+  next[idx] = updated;
+  await saveOrders(next);
+}
+
 const STATUS_LABEL: Record<OrderStatus, string> = {
   placed: 'Order Placed',
   processing: 'Processing',

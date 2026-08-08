@@ -1,4 +1,5 @@
 import { delay, slugify } from '@/utils';
+import { useCatalogMetaStore } from '@/state/catalogMetaStore';
 import type { Manufacturer, Category, Product, ProductFilters } from '@/types';
 import * as repository from './repository';
 
@@ -86,10 +87,23 @@ export async function getProducts(filters: ProductFilters = {}): Promise<Product
   return applyFilters(publishedOnly(all), filters);
 }
 
+/** Admin-only: includes unpublished products, for the product management table. */
+export async function getProductsAdmin(filters: ProductFilters = {}): Promise<Product[]> {
+  const all = await repository.getAllProducts();
+  await delay();
+  return applyFilters(all, filters);
+}
+
 export async function getProductById(id: number): Promise<Product | undefined> {
   const product = await repository.getProductById(id);
   await delay();
   return product?.isPublished ? product : undefined;
+}
+
+/** Admin-only: returns a product regardless of publish state, for edit/preview screens. */
+export async function getProductByIdAdmin(id: number): Promise<Product | undefined> {
+  await delay();
+  return repository.getProductById(id);
 }
 
 export async function getProductBySlug(
@@ -125,37 +139,41 @@ export async function getRelatedProducts(product: Product, limit = 6): Promise<P
     .slice(0, limit);
 }
 
-export async function getManufacturers(): Promise<Manufacturer[]> {
+export async function getManufacturers(options: { includeDisabled?: boolean } = {}): Promise<Manufacturer[]> {
   const all = publishedOnly(await repository.getAllProducts());
   await delay(200);
+  const disabled = useCatalogMetaStore.getState().disabledManufacturers;
   const counts = new Map<string, number>();
   for (const p of all) {
     counts.set(p.manufacturer, (counts.get(p.manufacturer) ?? 0) + 1);
   }
   return Array.from(counts.entries())
-    .map(([name, productCount]) => ({ name, slug: slugify(name), productCount }))
+    .map(([name, productCount]) => ({ name, slug: slugify(name), productCount, disabled: disabled.includes(name) }))
+    .filter((m) => options.includeDisabled || !m.disabled)
     .sort((a, b) => b.productCount - a.productCount);
 }
 
 export async function getManufacturerBySlug(slug: string): Promise<Manufacturer | undefined> {
-  const manufacturers = await getManufacturers();
+  const manufacturers = await getManufacturers({ includeDisabled: true });
   return manufacturers.find((m) => m.slug === slug);
 }
 
-export async function getCategories(): Promise<Category[]> {
+export async function getCategories(options: { includeDisabled?: boolean } = {}): Promise<Category[]> {
   const all = publishedOnly(await repository.getAllProducts());
   await delay(200);
+  const disabled = useCatalogMetaStore.getState().disabledCategories;
   const counts = new Map<string, number>();
   for (const p of all) {
     counts.set(p.category, (counts.get(p.category) ?? 0) + 1);
   }
   return Array.from(counts.entries())
-    .map(([name, productCount]) => ({ name, slug: slugify(name), productCount }))
+    .map(([name, productCount]) => ({ name, slug: slugify(name), productCount, disabled: disabled.includes(name) }))
+    .filter((c) => options.includeDisabled || !c.disabled)
     .sort((a, b) => b.productCount - a.productCount);
 }
 
 export async function getCategoryBySlug(slug: string): Promise<Category | undefined> {
-  const categories = await getCategories();
+  const categories = await getCategories({ includeDisabled: true });
   return categories.find((c) => c.slug === slug);
 }
 

@@ -15,3 +15,6 @@ export * from './MDIconButton';
 export * from './MDToast';
 export * from './MDModal';
 export * from './MDBottomSheet';
+export * from './MDTable';
+export * from './MDPagination';
+export * from './MDChart';

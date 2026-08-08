@@ -8,3 +8,4 @@ export * from './searchStore';
 export * from './addressStore';
 export * from './checkoutStore';
 export * from './notificationPrefsStore';
+export * from './catalogMetaStore';

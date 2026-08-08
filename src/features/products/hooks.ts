@@ -27,10 +27,25 @@ export function useProducts(filters: ProductFilters = {}, options: { enabled?: b
   });
 }
 
+export function useProductsAdmin(filters: ProductFilters = {}) {
+  return useQuery({
+    queryKey: [...productKeys.list(filters), 'admin'],
+    queryFn: () => service.getProductsAdmin(filters),
+  });
+}
+
 export function useProduct(id: number | undefined) {
   return useQuery({
     queryKey: productKeys.detail(id ?? -1),
     queryFn: () => service.getProductById(id!),
+    enabled: id != null,
+  });
+}
+
+export function useProductAdmin(id: number | undefined) {
+  return useQuery({
+    queryKey: [...productKeys.detail(id ?? -1), 'admin'],
+    queryFn: () => service.getProductByIdAdmin(id!),
     enabled: id != null,
   });
 }
@@ -63,8 +78,11 @@ export function useRelatedProducts(product: Product | undefined) {
   });
 }
 
-export function useManufacturers() {
-  return useQuery({ queryKey: productKeys.manufacturers, queryFn: service.getManufacturers });
+export function useManufacturers(options: { includeDisabled?: boolean } = {}) {
+  return useQuery({
+    queryKey: [...productKeys.manufacturers, options.includeDisabled ?? false],
+    queryFn: () => service.getManufacturers(options),
+  });
 }
 
 export function useManufacturer(slug: string | undefined) {
@@ -75,8 +93,11 @@ export function useManufacturer(slug: string | undefined) {
   });
 }
 
-export function useCategories() {
-  return useQuery({ queryKey: productKeys.categories, queryFn: service.getCategories });
+export function useCategories(options: { includeDisabled?: boolean } = {}) {
+  return useQuery({
+    queryKey: [...productKeys.categories, options.includeDisabled ?? false],
+    queryFn: () => service.getCategories(options),
+  });
 }
 
 export function useCategory(slug: string | undefined) {

@@ -138,5 +138,13 @@ export async function changePassword(email: string, currentPassword: string, new
   await saveUsers(updated);
 }
 
+export async function getAllCustomers(): Promise<User[]> {
+  await delay(300);
+  const users = await loadUsers();
+  return users
+    .filter((u) => u.role === 'buyer')
+    .map(({ password: _password, ...user }) => user);
+}
+
 export const DEMO_BUYER_CREDENTIALS = { email: DEMO_USERS[0].email, password: DEMO_USERS[0].password };
 export const DEMO_ADMIN_CREDENTIALS = { email: DEMO_USERS[1].email, password: DEMO_USERS[1].password };

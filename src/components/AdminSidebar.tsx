@@ -10,7 +10,7 @@ interface NavItem {
   icon: keyof typeof Ionicons.glyphMap;
 }
 
-const NAV_ITEMS: NavItem[] = [
+export const ADMIN_NAV_ITEMS: NavItem[] = [
   { label: 'Dashboard', href: '/(admin)/dashboard', icon: 'grid-outline' },
   { label: 'Products', href: '/(admin)/products', icon: 'cube-outline' },
   { label: 'Inventory', href: '/(admin)/inventory', icon: 'file-tray-stacked-outline' },
@@ -19,6 +19,7 @@ const NAV_ITEMS: NavItem[] = [
   { label: 'Customers', href: '/(admin)/customers', icon: 'people-outline' },
   { label: 'Orders', href: '/(admin)/orders', icon: 'receipt-outline' },
   { label: 'Analytics', href: '/(admin)/analytics', icon: 'stats-chart-outline' },
+  { label: 'Settings', href: '/(admin)/settings', icon: 'settings-outline' },
 ];
 
 export function AdminSidebar() {
@@ -59,7 +60,7 @@ export function AdminSidebar() {
         </View>
 
         <ScrollView>
-          {NAV_ITEMS.map((item) => {
+          {ADMIN_NAV_ITEMS.map((item) => {
             const active = pathname.includes(item.href.replace('/(admin)', ''));
             return (
               <Pressable
