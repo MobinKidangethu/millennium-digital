@@ -7,16 +7,14 @@ import { useAuthStore, useCheckoutStore } from '@/state';
 import { useCartLines } from '@/features/cart';
 import { useCreateOrder } from '@/features/orders';
 import { CheckoutStepper } from '@/components/CheckoutStepper';
-import { MDProductImage } from '@/components/MDProductImage';
 import { formatPrice } from '@/utils';
-import { TAX_RATE } from '@/features/checkout';
 
 export default function CheckoutReview() {
   const router = useRouter();
   const toast = useToast();
   const session = useAuthStore((s) => s.session);
   const { shippingAddress, billingAddress, shippingMethod, paymentMethod, reset } = useCheckoutStore();
-  const { lines, subtotal } = useCartLines();
+  const { lines } = useCartLines();
   const createOrder = useCreateOrder();
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -26,8 +24,6 @@ export default function CheckoutReview() {
   }
 
   const currency = lines[0]?.product.currency ?? 'INR';
-  const tax = Math.round(subtotal * TAX_RATE * 100) / 100;
-  const total = subtotal + tax + shippingMethod.cost;
 
   const handlePlaceOrder = () => {
     if (!acceptedTerms) {
@@ -63,64 +59,25 @@ export default function CheckoutReview() {
         Review Your Order
       </MDText>
 
-      <View style={{ gap: spacing.md, marginBottom: spacing.xl }}>
-        {lines.map((line) => (
-          <View key={line.product.id} style={{ flexDirection: 'row', gap: spacing.md, alignItems: 'center' }}>
-            <View style={{ width: 56, height: 56 }}>
-              <MDProductImage imagePath={line.product.image} alt={line.product.title} style={{ width: '100%', height: '100%' }} />
-            </View>
-            <View style={{ flex: 1 }}>
-              <MDText variant="bodySm" weight="600">
-                {line.product.manufacturerPartNumber}
-              </MDText>
-              <MDText variant="caption" tone="tertiary">
-                Qty {line.quantity}
-              </MDText>
-            </View>
-            <MDText variant="bodySm" weight="600">
-              {formatPrice(line.lineTotal, line.product.currency)}
-            </MDText>
-          </View>
-        ))}
-      </View>
-
-      <ReviewSection title="Shipping Address" onEdit={() => router.push('/(buyer)/checkout/address')}>
+      <ReviewSection icon="location-outline" title="Shipping Address" onEdit={() => router.push('/(buyer)/checkout/address')}>
         <MDText variant="bodySm">{shippingAddress.fullName}</MDText>
         <MDText variant="bodySm" tone="secondary">
           {shippingAddress.line1}, {shippingAddress.city}, {shippingAddress.state} {shippingAddress.postalCode}
         </MDText>
       </ReviewSection>
 
-      <ReviewSection title="Shipping Method" onEdit={() => router.push('/(buyer)/checkout/shipping')}>
+      <ReviewSection icon="cube-outline" title="Shipping Method" onEdit={() => router.push('/(buyer)/checkout/shipping')}>
         <MDText variant="bodySm">
           {shippingMethod.label} · {shippingMethod.cost === 0 ? 'Free' : formatPrice(shippingMethod.cost, currency)}
         </MDText>
       </ReviewSection>
 
-      <ReviewSection title="Payment Method" onEdit={() => router.push('/(buyer)/checkout/payment')}>
+      <ReviewSection icon="card-outline" title="Payment Method" onEdit={() => router.push('/(buyer)/checkout/payment')}>
         <MDText variant="bodySm">
           {paymentMethod.label}
           {paymentMethod.reference ? ` · ${paymentMethod.reference}` : ''}
         </MDText>
       </ReviewSection>
-
-      <View
-        style={{
-          borderWidth: 1,
-          borderColor: colors.border,
-          borderRadius: radius.lg,
-          padding: spacing.lg,
-          gap: spacing.sm,
-          marginBottom: spacing.xl,
-        }}
-      >
-        <SummaryRow label="Subtotal" value={formatPrice(subtotal, currency)} />
-        <SummaryRow label="Shipping" value={shippingMethod.cost === 0 ? 'Free' : formatPrice(shippingMethod.cost, currency)} />
-        <SummaryRow label="Tax" value={formatPrice(tax, currency)} />
-        <View style={{ borderTopWidth: 1, borderTopColor: colors.border, paddingTop: spacing.sm }}>
-          <SummaryRow label="Total" value={formatPrice(total, currency)} bold />
-        </View>
-      </View>
 
       <Pressable
         onPress={() => setAcceptedTerms((v) => !v)}
@@ -165,29 +122,29 @@ export default function CheckoutReview() {
   );
 }
 
-function ReviewSection({ title, onEdit, children }: { title: string; onEdit: () => void; children: ReactNode }) {
+function ReviewSection({
+  icon,
+  title,
+  onEdit,
+  children,
+}: {
+  icon: keyof typeof Ionicons.glyphMap;
+  title: string;
+  onEdit: () => void;
+  children: ReactNode;
+}) {
   return (
     <View style={{ marginBottom: spacing.lg, paddingBottom: spacing.lg, borderBottomWidth: 1, borderBottomColor: colors.border }}>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: spacing.xs }}>
-        <MDText variant="bodyMedium">{title}</MDText>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing.xs }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs }}>
+          <Ionicons name={icon} size={16} color={colors.text.secondary} />
+          <MDText variant="bodyMedium">{title}</MDText>
+        </View>
         <MDText variant="caption" weight="600" style={{ color: colors.brand.primary }} onPress={onEdit}>
           Edit
         </MDText>
       </View>
       {children}
-    </View>
-  );
-}
-
-function SummaryRow({ label, value, bold }: { label: string; value: string; bold?: boolean }) {
-  return (
-    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-      <MDText variant={bold ? 'bodyMedium' : 'bodySm'} tone={bold ? 'primary' : 'secondary'}>
-        {label}
-      </MDText>
-      <MDText variant={bold ? 'bodyMedium' : 'bodySm'} weight={bold ? '700' : '400'}>
-        {value}
-      </MDText>
     </View>
   );
 }

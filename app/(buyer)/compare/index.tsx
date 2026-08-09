@@ -24,7 +24,7 @@ const COMPARE_ROWS: { label: string; get: (p: Product) => string }[] = [
 
 const COLUMN_WIDTH = 220;
 
-export default function Compare() {
+export function CompareContent() {
   const router = useRouter();
   const productIds = useCompareStore((s) => s.productIds);
   const removeFromCompare = useCompareStore((s) => s.remove);
@@ -32,8 +32,7 @@ export default function Compare() {
   const { data: products, isLoading } = useProductsByIds(productIds);
 
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: colors.background }}>
-      <View style={{ maxWidth: layout.maxContentWidth, width: '100%', alignSelf: 'center', padding: spacing.xl }}>
+    <>
         <View
           style={{
             flexDirection: 'row',
@@ -155,6 +154,15 @@ export default function Compare() {
             </View>
           </ScrollView>
         )}
+    </>
+  );
+}
+
+export default function Compare() {
+  return (
+    <ScrollView style={{ flex: 1, backgroundColor: colors.background }}>
+      <View style={{ maxWidth: layout.maxContentWidth, width: '100%', alignSelf: 'center', padding: spacing.xl }}>
+        <CompareContent />
       </View>
     </ScrollView>
   );

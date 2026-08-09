@@ -54,6 +54,9 @@ function applyFilters(list: Product[], filters: ProductFilters): Product[] {
   if (filters.priceMax != null) {
     result = result.filter((p) => p.price <= filters.priceMax!);
   }
+  if (filters.minAvailability != null) {
+    result = result.filter((p) => p.availability >= filters.minAvailability!);
+  }
   if (filters.tags?.length) {
     result = result.filter((p) => filters.tags!.some((tag) => p.tags.includes(tag)));
   }

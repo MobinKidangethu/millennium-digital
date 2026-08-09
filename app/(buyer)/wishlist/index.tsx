@@ -20,7 +20,7 @@ import { MDManufacturerLogo } from '@/components/MDManufacturerLogo';
 import { MDPrice } from '@/components/MDPrice';
 import { MDStockStatus } from '@/components/MDStockStatus';
 
-export default function Wishlist() {
+export function WishlistContent() {
   const router = useRouter();
   const { isDesktopUp } = useResponsive();
   const toast = useToast();
@@ -36,8 +36,7 @@ export default function Wishlist() {
   };
 
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: colors.background }}>
-      <View style={{ maxWidth: layout.maxContentWidth, width: '100%', alignSelf: 'center', padding: spacing.xl }}>
+    <>
         <MDText variant="h1" style={{ marginBottom: spacing.xl }}>
           Wishlist
         </MDText>
@@ -120,6 +119,15 @@ export default function Wishlist() {
             ))}
           </View>
         )}
+    </>
+  );
+}
+
+export default function Wishlist() {
+  return (
+    <ScrollView style={{ flex: 1, backgroundColor: colors.background }}>
+      <View style={{ maxWidth: layout.maxContentWidth, width: '100%', alignSelf: 'center', padding: spacing.xl }}>
+        <WishlistContent />
       </View>
     </ScrollView>
   );

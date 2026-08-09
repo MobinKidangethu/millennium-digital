@@ -1,15 +1,9 @@
 import { useState } from 'react';
-import { Image, View } from 'react-native';
+import { View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import {
-  colors,
-  spacing,
-  MDButton,
-  MDInput,
-  MDText,
-  MDBadge,
-} from '@/design-system';
+import { AuthScreenShell } from '@/components/AuthScreenShell';
+import { colors, spacing, MDButton, MDInput, MDText } from '@/design-system';
 import { useAdminLogin, DEMO_ADMIN_CREDENTIALS } from '@/features/auth';
 
 export default function AdminLogin() {
@@ -26,104 +20,94 @@ export default function AdminLogin() {
   };
 
   return (
-    <View
-      style={{
-        flex: 1,
-        backgroundColor: colors.gray[900],
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: spacing.xl,
+    <AuthScreenShell
+      title="Seller / Admin Console"
+      subtitle="Restricted access for authorized Millennium Digital staff and onboarded suppliers."
+      panel={{
+        tone: 'graphite',
+        badge: 'ENTERPRISE',
+        eyebrow: 'SELLER & OPERATIONS CONSOLE',
+        headline: 'Run your business inside the marketplace.',
+        description: 'Products, inventory, pricing, RFQs, orders, and Maker-Checker governance — in one console.',
+        slides: [
+          'Maker-Checker governed product publishing',
+          'RFQ and quote management with pricing governance',
+          'Order fulfillment, inventory, and analytics',
+        ],
       }}
     >
+      <View style={{ gap: spacing.lg }}>
+        <MDInput
+          label="Email address"
+          value={email}
+          onChangeText={setEmail}
+          placeholder="admin@millenniumdigital.com"
+          keyboardType="email-address"
+          autoCapitalize="none"
+          leftIcon={<Ionicons name="business-outline" size={16} color={colors.text.tertiary} />}
+        />
+
+        <MDInput
+          label="Password"
+          value={password}
+          onChangeText={setPassword}
+          placeholder="Enter your password"
+          secureTextEntry
+          returnKeyType="go"
+          onSubmitEditing={handleSubmit}
+        />
+
+        {adminLogin.isError ? (
+          <MDText variant="bodySm" style={{ color: colors.status.error }}>
+            {(adminLogin.error as Error).message}
+          </MDText>
+        ) : null}
+
+        <MDButton
+          label="Sign In to Console"
+          size="lg"
+          fullWidth
+          loading={adminLogin.isPending}
+          onPress={handleSubmit}
+        />
+
+        <MDText variant="caption" tone="tertiary" align="center">
+          Demo account: {DEMO_ADMIN_CREDENTIALS.email} / {DEMO_ADMIN_CREDENTIALS.password}
+        </MDText>
+      </View>
+
       <View
         style={{
-          width: '100%',
-          maxWidth: 420,
-          backgroundColor: colors.gray[800],
-          borderRadius: 20,
-          borderWidth: 1,
-          borderColor: colors.gray[700],
-          padding: spacing['2xl'],
+          flexDirection: 'row',
+          justifyContent: 'center',
+          gap: spacing.xs,
+          marginTop: spacing.xl,
+          flexWrap: 'wrap',
         }}
       >
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.md, marginBottom: spacing.xl }}>
-          <View
-            style={{
-              backgroundColor: colors.gray[0],
-              borderRadius: 8,
-              paddingVertical: spacing.sm,
-              paddingHorizontal: spacing.md,
-            }}
-          >
-            <Image
-              source={require('../../assets/Millenium_Logo_new.png')}
-              style={{ width: 140, height: 25 }}
-              resizeMode="contain"
-              accessibilityLabel="Millennium Digital"
-            />
-          </View>
-          <MDBadge label="ENTERPRISE" tone="neutral" />
-        </View>
-
-        <MDText variant="h2" style={{ color: colors.gray[0] }}>
-          Seller / Admin Console
+        <MDText variant="bodySm" tone="secondary">
+          New supplier?
         </MDText>
-        <MDText variant="body" style={{ color: colors.gray[400], marginTop: spacing.xs, marginBottom: spacing.xl }}>
-          Restricted access for authorized Millennium Digital staff.
-        </MDText>
-
-        <View style={{ gap: spacing.lg }}>
-          <MDInput
-            label="Email address"
-            labelColor={colors.gray[300]}
-            value={email}
-            onChangeText={setEmail}
-            placeholder="admin@millenniumdigital.com"
-            keyboardType="email-address"
-            autoCapitalize="none"
-            leftIcon={<Ionicons name="business-outline" size={16} color={colors.gray[500]} />}
-          />
-
-          <MDInput
-            label="Password"
-            labelColor={colors.gray[300]}
-            value={password}
-            onChangeText={setPassword}
-            placeholder="Enter your password"
-            secureTextEntry
-            returnKeyType="go"
-            onSubmitEditing={handleSubmit}
-          />
-
-          {adminLogin.isError ? (
-            <MDText variant="bodySm" style={{ color: colors.status.error }}>
-              {(adminLogin.error as Error).message}
-            </MDText>
-          ) : null}
-
-          <MDButton
-            label="Sign In to Console"
-            size="lg"
-            fullWidth
-            loading={adminLogin.isPending}
-            onPress={handleSubmit}
-          />
-
-          <MDText variant="caption" style={{ color: colors.gray[500] }} align="center">
-            Demo account: {DEMO_ADMIN_CREDENTIALS.email} / {DEMO_ADMIN_CREDENTIALS.password}
-          </MDText>
-        </View>
-
         <MDText
           variant="bodySm"
           weight="600"
-          align="center"
-          style={{ color: colors.gray[400], marginTop: spacing.xl }}
-          onPress={() => router.replace('/(auth)/welcome')}
+          style={{ color: colors.brand.primary }}
+          onPress={() => router.push('/(auth)/seller-register')}
         >
-          Back to buyer site
+          Apply to sell on Millennium Digital
         </MDText>
       </View>
-    </View>
+
+      <MDText
+        variant="bodySm"
+        weight="600"
+        align="center"
+        tone="tertiary"
+        style={{ marginTop: spacing.lg }}
+        onPress={() => router.replace('/(auth)/welcome')}
+      >
+        Back to buyer site
+      </MDText>
+    </AuthScreenShell>
   );
 }

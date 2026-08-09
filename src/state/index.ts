@@ -9,3 +9,5 @@ export * from './addressStore';
 export * from './checkoutStore';
 export * from './notificationPrefsStore';
 export * from './catalogMetaStore';
+export * from './governanceStore';
+export * from './bomWorkflowStore';

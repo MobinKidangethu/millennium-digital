@@ -19,6 +19,7 @@ export function useCatalogFilters(initial: ProductFilters = {}) {
   const setSearch = (search: string) => setFilters((prev) => ({ ...prev, search: search || undefined }));
   const setPriceRange = (priceMin?: number, priceMax?: number) =>
     setFilters((prev) => ({ ...prev, priceMin, priceMax }));
+  const setMinAvailability = (minAvailability?: number) => setFilters((prev) => ({ ...prev, minAvailability }));
 
   const clearAll = () => setFilters({ sort: filters.sort, search: filters.search });
 
@@ -31,11 +32,23 @@ export function useCatalogFilters(initial: ProductFilters = {}) {
     );
     if (filters.rohsOnly) count += 1;
     if (filters.priceMin != null || filters.priceMax != null) count += 1;
+    if (filters.minAvailability != null) count += 1;
     if (filters.tags?.length) count += filters.tags.length;
     return count;
   }, [filters]);
 
-  return { filters, setFilters, toggleValue, setRohsOnly, setSort, setSearch, setPriceRange, clearAll, activeFilterCount };
+  return {
+    filters,
+    setFilters,
+    toggleValue,
+    setRohsOnly,
+    setSort,
+    setSearch,
+    setPriceRange,
+    setMinAvailability,
+    clearAll,
+    activeFilterCount,
+  };
 }
 
 export interface FilterOption {

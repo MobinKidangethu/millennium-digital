@@ -1,26 +1,105 @@
-import { ActivityIndicator, Pressable, View } from 'react-native';
+import { useState } from 'react';
+import { ActivityIndicator, Pressable, ScrollView, View } from 'react-native';
 import { Redirect, Stack, usePathname, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, layout, spacing, useResponsive, MDText } from '@/design-system';
+import { colors, layout, radius, spacing, useResponsive, MDText } from '@/design-system';
 import { useAuthStore } from '@/state';
+import { ACCOUNT_NAV_GROUPS } from '@/constants/accountNav';
 
-const NAV_ITEMS = [
-  { label: 'Profile', href: '/(buyer)/account', icon: 'person-outline' as const, match: (p: string) => p === '/account' || p === '/' },
-  { label: 'Addresses', href: '/(buyer)/account/addresses', icon: 'location-outline' as const, match: (p: string) => p.includes('/addresses') },
-  { label: 'Order History', href: '/(buyer)/account/orders', icon: 'receipt-outline' as const, match: (p: string) => p.includes('/orders') },
-  { label: 'Wishlist', href: '/(buyer)/wishlist', icon: 'heart-outline' as const, match: () => false },
-  { label: 'Compare', href: '/(buyer)/compare', icon: 'git-compare-outline' as const, match: () => false },
-  { label: 'Recently Viewed', href: '/(buyer)/account/recently-viewed', icon: 'time-outline' as const, match: (p: string) => p.includes('/recently-viewed') },
-  { label: 'Notifications', href: '/(buyer)/account/notifications', icon: 'notifications-outline' as const, match: (p: string) => p.includes('/notifications') },
-  { label: 'Security', href: '/(buyer)/account/security', icon: 'shield-checkmark-outline' as const, match: (p: string) => p.includes('/security') },
-];
+function AccountNavGroups() {
+  const pathname = usePathname();
+  const router = useRouter();
+  const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
+
+  return (
+    <ScrollView
+      style={{ flex: 1 }}
+      contentContainerStyle={{ paddingRight: spacing.sm, paddingBottom: spacing.xl }}
+      showsVerticalScrollIndicator={false}
+    >
+      {ACCOUNT_NAV_GROUPS.map((group) => {
+        const isCollapsed = !!collapsed[group.key];
+        return (
+          <View key={group.key} style={{ marginBottom: spacing.sm, borderBottomWidth: 1, borderBottomColor: colors.border, paddingBottom: spacing.xs }}>
+            <Pressable
+              onPress={() => setCollapsed((c) => ({ ...c, [group.key]: !c[group.key] }))}
+              style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 6 }}
+              accessibilityRole="button"
+              accessibilityLabel={`${group.label} section`}
+            >
+              <MDText variant="overline" tone="tertiary">
+                {group.label.toUpperCase()}
+              </MDText>
+              <Ionicons
+                name="chevron-down"
+                size={13}
+                color={colors.text.tertiary}
+                style={{ transform: [{ rotate: isCollapsed ? '-90deg' : '0deg' }] }}
+              />
+            </Pressable>
+
+            {!isCollapsed ? (
+              <View>
+                {group.items.map((item) => {
+                  const active = item.match(pathname);
+                  return (
+                    <Pressable
+                      key={item.label}
+                      onPress={() => router.push(item.href as never)}
+                      style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        gap: spacing.sm,
+                        paddingVertical: 7,
+                        paddingHorizontal: spacing.sm,
+                        borderRadius: radius.sm,
+                        backgroundColor: active ? colors.brand.primarySoft : 'transparent',
+                        marginBottom: 1,
+                      }}
+                    >
+                      <Ionicons name={item.icon} size={16} color={active ? colors.brand.primary : colors.text.secondary} />
+                      <MDText
+                        variant="bodySm"
+                        weight={active ? '700' : '400'}
+                        style={{ color: active ? colors.brand.primary : colors.text.primary }}
+                      >
+                        {item.label}
+                      </MDText>
+                    </Pressable>
+                  );
+                })}
+              </View>
+            ) : null}
+          </View>
+        );
+      })}
+
+      <Pressable
+        onPress={() => router.push('/(auth)/seller-register')}
+        style={{
+          marginTop: 2,
+          borderWidth: 1,
+          borderColor: colors.brand.primarySoftBorder,
+          backgroundColor: colors.brand.primarySoft,
+          borderRadius: radius.md,
+          padding: spacing.sm,
+        }}
+      >
+        <MDText variant="caption" weight="700" style={{ color: colors.brand.primary, marginBottom: 2 }}>
+          Sell on Millennium Digital
+        </MDText>
+        <MDText variant="caption" tone="secondary">
+          Apply to list your catalogue as a verified supplier.
+        </MDText>
+      </Pressable>
+    </ScrollView>
+  );
+}
 
 export default function AccountLayout() {
   const hasHydrated = useAuthStore((s) => s.hasHydrated);
   const session = useAuthStore((s) => s.session);
   const { isDesktopUp } = useResponsive();
-  const pathname = usePathname();
-  const router = useRouter();
 
   if (!hasHydrated) {
     return (
@@ -42,43 +121,22 @@ export default function AccountLayout() {
           maxWidth: layout.maxContentWidth,
           width: '100%',
           alignSelf: 'center',
-          padding: spacing.xl,
-          gap: spacing['2xl'],
+          paddingHorizontal: spacing.lg,
+          paddingTop: spacing.lg,
+          gap: spacing.xl,
           flex: 1,
+          minHeight: 0,
         }}
       >
         {isDesktopUp ? (
-          <View style={{ width: 220 }}>
-            {NAV_ITEMS.map((item) => {
-              const active = item.match(pathname);
-              return (
-                <Pressable
-                  key={item.label}
-                  onPress={() => router.push(item.href as never)}
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    gap: spacing.sm,
-                    paddingVertical: spacing.sm,
-                    paddingHorizontal: spacing.md,
-                    borderRadius: 10,
-                    backgroundColor: active ? colors.brand.primarySoft : 'transparent',
-                    marginBottom: 2,
-                  }}
-                >
-                  <Ionicons name={item.icon} size={18} color={active ? colors.brand.primary : colors.text.secondary} />
-                  <MDText variant="bodySm" weight={active ? '700' : '400'} style={{ color: active ? colors.brand.primary : colors.text.primary }}>
-                    {item.label}
-                  </MDText>
-                </Pressable>
-              );
-            })}
+          <View style={{ width: 208, minHeight: 0 }}>
+            <AccountNavGroups />
           </View>
         ) : null}
 
-        <View style={{ flex: 1 }}>
+        <ScrollView style={{ flex: 1, minHeight: 0 }} contentContainerStyle={{ paddingBottom: spacing['2xl'] }}>
           <Stack screenOptions={{ headerShown: false }} />
-        </View>
+        </ScrollView>
       </View>
     </View>
   );

@@ -1,0 +1,332 @@
+import { useMemo, useRef, useState } from 'react';
+import { Pressable, ScrollView, TextInput, View } from 'react-native';
+import { useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
+import { colors, radius, shadow, spacing, zIndex, MDText } from '@/design-system';
+import { useProducts } from '@/features/products';
+import { useCategories } from '@/features/categories';
+import { useManufacturers } from '@/features/manufacturers';
+import { SITE_SEARCH_INDEX } from '@/constants/siteSearchIndex';
+import { MDProductImage } from '@/components/MDProductImage';
+import { formatPrice } from '@/utils';
+import { noWebOutline } from '@/design-system/webStyles';
+
+const MAX_PAGES = 4;
+const MAX_CATEGORIES = 3;
+const MAX_MANUFACTURERS = 3;
+const MAX_PRODUCTS = 5;
+
+/**
+ * Header search — searches across the whole app, not just the product
+ * catalog: app sections/workflows (SITE_SEARCH_INDEX), categories,
+ * manufacturers, and products (via the existing useProducts search filter),
+ * with a live autocomplete dropdown. Also docks an "Upload BOM" shortcut
+ * inside the bar itself since BOM upload is one of the platform's primary
+ * entry points alongside search.
+ */
+export function GlobalSearchBar({ style }: { style?: object }) {
+  const router = useRouter();
+  const [query, setQuery] = useState('');
+  const [focused, setFocused] = useState(false);
+  const blurTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const trimmed = query.trim();
+  const showDropdown = focused && trimmed.length > 0;
+
+  const { data: categories } = useCategories();
+  const { data: manufacturers } = useManufacturers();
+  const { data: productMatches } = useProducts(
+    { search: trimmed, sort: 'relevance' },
+    { enabled: trimmed.length >= 2 },
+  );
+
+  const matchedPages = useMemo(() => {
+    if (!trimmed) return [];
+    const q = trimmed.toLowerCase();
+    return SITE_SEARCH_INDEX.filter(
+      (entry) => entry.label.toLowerCase().includes(q) || entry.keywords.some((k) => k.includes(q)),
+    ).slice(0, MAX_PAGES);
+  }, [trimmed]);
+
+  const matchedCategories = useMemo(() => {
+    if (!trimmed || !categories) return [];
+    const q = trimmed.toLowerCase();
+    return categories.filter((c) => c.name.toLowerCase().includes(q)).slice(0, MAX_CATEGORIES);
+  }, [trimmed, categories]);
+
+  const matchedManufacturers = useMemo(() => {
+    if (!trimmed || !manufacturers) return [];
+    const q = trimmed.toLowerCase();
+    return manufacturers.filter((m) => m.name.toLowerCase().includes(q)).slice(0, MAX_MANUFACTURERS);
+  }, [trimmed, manufacturers]);
+
+  const products = (productMatches ?? []).slice(0, MAX_PRODUCTS);
+
+  const hasResults =
+    matchedPages.length > 0 || matchedCategories.length > 0 || matchedManufacturers.length > 0 || products.length > 0;
+
+  const close = () => setFocused(false);
+
+  const handleBlur = () => {
+    // Delay so a result's onPress fires before the dropdown unmounts.
+    blurTimer.current = setTimeout(close, 150);
+  };
+
+  const handleFocus = () => {
+    if (blurTimer.current) clearTimeout(blurTimer.current);
+    setFocused(true);
+  };
+
+  const submitFullSearch = () => {
+    if (!trimmed) return;
+    close();
+    router.push({ pathname: '/(buyer)/search', params: { q: trimmed } });
+  };
+
+  const goTo = (href: string) => {
+    close();
+    router.push(href as never);
+  };
+
+  return (
+    <View style={[{ position: 'relative' }, style]}>
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: spacing.sm,
+          backgroundColor: colors.surface,
+          borderWidth: 1,
+          borderColor: focused ? colors.brand.primary : colors.border,
+          borderRadius: radius.md,
+          paddingHorizontal: spacing.md,
+          height: 44,
+        }}
+      >
+        <Ionicons name="search" size={18} color={colors.text.tertiary} />
+        <TextInput
+          value={query}
+          onChangeText={setQuery}
+          placeholder="Search products, categories, manufacturers, or tools…"
+          placeholderTextColor={colors.text.tertiary}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
+          onSubmitEditing={submitFullSearch}
+          returnKeyType="search"
+          style={[
+            {
+              flex: 1,
+              height: '100%',
+              fontSize: 14,
+              lineHeight: 18,
+              paddingVertical: 0,
+              color: colors.text.primary,
+            },
+            noWebOutline,
+          ]}
+        />
+        {query.length > 0 ? (
+          <Pressable accessibilityLabel="Clear search" onPress={() => setQuery('')}>
+            <Ionicons name="close-circle" size={18} color={colors.text.tertiary} />
+          </Pressable>
+        ) : null}
+
+        <View style={{ width: 1, height: 22, backgroundColor: colors.border }} />
+
+        <Pressable
+          accessibilityLabel="Upload a BOM"
+          onPress={() => goTo('/(buyer)/bom')}
+          style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}
+        >
+          <Ionicons name="document-attach-outline" size={16} color={colors.brand.primary} />
+          <MDText variant="caption" weight="700" style={{ color: colors.brand.primary }}>
+            Upload BOM
+          </MDText>
+        </Pressable>
+      </View>
+
+      {showDropdown ? (
+        <View
+          style={[
+            {
+              position: 'absolute',
+              top: 48,
+              left: 0,
+              right: 0,
+              backgroundColor: colors.surface,
+              borderWidth: 1,
+              borderColor: colors.border,
+              borderRadius: radius.lg,
+              maxHeight: 440,
+              overflow: 'hidden',
+              zIndex: zIndex.dropdown,
+            },
+            shadow.lg,
+          ]}
+        >
+          <ScrollView keyboardShouldPersistTaps="handled">
+            {!hasResults ? (
+              <View style={{ padding: spacing.lg, alignItems: 'center' }}>
+                <MDText variant="bodySm" tone="tertiary">
+                  No matches for "{trimmed}"
+                </MDText>
+              </View>
+            ) : (
+              <View style={{ paddingVertical: spacing.xs }}>
+                {matchedPages.length > 0 ? (
+                  <DropdownSection label="Pages & Tools">
+                    {matchedPages.map((entry) => (
+                      <ResultRow
+                        key={entry.href}
+                        icon={entry.icon}
+                        title={entry.label}
+                        subtitle={entry.description}
+                        onPress={() => goTo(entry.href)}
+                      />
+                    ))}
+                  </DropdownSection>
+                ) : null}
+
+                {matchedCategories.length > 0 ? (
+                  <DropdownSection label="Categories">
+                    {matchedCategories.map((c) => (
+                      <ResultRow
+                        key={c.slug}
+                        icon="grid-outline"
+                        title={c.name}
+                        subtitle={`${c.productCount} product${c.productCount === 1 ? '' : 's'}`}
+                        onPress={() => goTo(`/(buyer)/category/${c.slug}`)}
+                      />
+                    ))}
+                  </DropdownSection>
+                ) : null}
+
+                {matchedManufacturers.length > 0 ? (
+                  <DropdownSection label="Manufacturers">
+                    {matchedManufacturers.map((m) => (
+                      <ResultRow
+                        key={m.slug}
+                        icon="business-outline"
+                        title={m.name}
+                        subtitle={`${m.productCount} product${m.productCount === 1 ? '' : 's'}`}
+                        onPress={() => goTo(`/(buyer)/manufacturers/${m.slug}`)}
+                      />
+                    ))}
+                  </DropdownSection>
+                ) : null}
+
+                {products.length > 0 ? (
+                  <DropdownSection label="Products">
+                    {products.map((product) => (
+                      <Pressable
+                        key={product.id}
+                        onPress={() =>
+                          goTo(
+                            `/(buyer)/products/${product.manufacturerSlug}/${product.partSlug}`,
+                          )
+                        }
+                        style={{
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                          gap: spacing.sm,
+                          paddingHorizontal: spacing.md,
+                          paddingVertical: spacing.xs,
+                        }}
+                      >
+                        <View style={{ width: 32, height: 32 }}>
+                          <MDProductImage imagePath={product.image} alt={product.title} style={{ width: '100%', height: '100%' }} />
+                        </View>
+                        <View style={{ flex: 1 }}>
+                          <MDText variant="caption" weight="700" numberOfLines={1}>
+                            {product.manufacturerPartNumber}
+                          </MDText>
+                          <MDText variant="caption" tone="tertiary" numberOfLines={1}>
+                            {product.manufacturer}
+                          </MDText>
+                        </View>
+                        <MDText variant="caption" weight="600" style={{ color: colors.brand.primary }}>
+                          {formatPrice(product.price, product.currency)}
+                        </MDText>
+                      </Pressable>
+                    ))}
+                  </DropdownSection>
+                ) : null}
+              </View>
+            )}
+
+            <Pressable
+              onPress={submitFullSearch}
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 4,
+                paddingVertical: spacing.sm,
+                borderTopWidth: 1,
+                borderTopColor: colors.border,
+                backgroundColor: colors.surfaceRaised,
+              }}
+            >
+              <MDText variant="caption" weight="700" style={{ color: colors.brand.primary }}>
+                See all results for "{trimmed}"
+              </MDText>
+              <Ionicons name="arrow-forward" size={12} color={colors.brand.primary} />
+            </Pressable>
+          </ScrollView>
+        </View>
+      ) : null}
+    </View>
+  );
+}
+
+function DropdownSection({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <View style={{ marginBottom: spacing.xs }}>
+      <MDText
+        variant="overline"
+        tone="tertiary"
+        style={{ paddingHorizontal: spacing.md, paddingVertical: 4 }}
+      >
+        {label.toUpperCase()}
+      </MDText>
+      {children}
+    </View>
+  );
+}
+
+function ResultRow({
+  icon,
+  title,
+  subtitle,
+  onPress,
+}: {
+  icon: keyof typeof Ionicons.glyphMap;
+  title: string;
+  subtitle?: string;
+  onPress: () => void;
+}) {
+  return (
+    <Pressable
+      onPress={onPress}
+      style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: spacing.sm,
+        paddingHorizontal: spacing.md,
+        paddingVertical: spacing.xs,
+      }}
+    >
+      <Ionicons name={icon} size={16} color={colors.text.secondary} />
+      <View style={{ flex: 1 }}>
+        <MDText variant="bodySm" numberOfLines={1}>
+          {title}
+        </MDText>
+        {subtitle ? (
+          <MDText variant="caption" tone="tertiary" numberOfLines={1}>
+            {subtitle}
+          </MDText>
+        ) : null}
+      </View>
+    </Pressable>
+  );
+}

@@ -1,10 +1,12 @@
-import { ActivityIndicator, ScrollView, View } from 'react-native';
+import { ActivityIndicator, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, radius, spacing, MDButton, MDEmptyState, MDText, useToast } from '@/design-system';
 import { useCancelOrder, useOrder, useReorder } from '@/features/orders';
 import { MDOrderStatus } from '@/components/MDOrderStatus';
 import { MDProductImage } from '@/components/MDProductImage';
+import { LogisticsTracker } from '@/components/LogisticsTracker';
+import { ProtoBadge } from '@/components/ProtoBadge';
 import { formatPrice } from '@/utils';
 
 export default function OrderDetail() {
@@ -34,20 +36,27 @@ export default function OrderDetail() {
   const canCancel = order.status === 'placed' || order.status === 'processing';
 
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: colors.background }}>
-      <View style={{ maxWidth: 720, width: '100%', alignSelf: 'center', padding: spacing.xl }}>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: spacing.xl }}>
+    <View style={{ maxWidth: 720, width: '100%' }}>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: spacing.lg }}>
           <View>
-            <MDText variant="h1">Order #{order.orderNumber}</MDText>
-            <MDText variant="body" tone="secondary" style={{ marginTop: spacing.xs }}>
+            <MDText variant="h2">Order #{order.orderNumber}</MDText>
+            <MDText variant="bodySm" tone="secondary" style={{ marginTop: 2 }}>
               Placed {new Date(order.placedAt).toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' })}
             </MDText>
           </View>
           <MDOrderStatus status={order.status} />
         </View>
 
+        <View style={{ marginBottom: spacing.lg }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, marginBottom: spacing.xs }}>
+            <MDText variant="h4">Shipment Tracking</MDText>
+            <ProtoBadge label="Logistics tracking — prototype simulation" />
+          </View>
+          <LogisticsTracker status={order.status} />
+        </View>
+
         {order.status !== 'cancelled' ? (
-          <View style={{ marginBottom: spacing['2xl'] }}>
+          <View style={{ marginBottom: spacing.lg }}>
             <MDText variant="h4" style={{ marginBottom: spacing.md }}>
               Order Timeline
             </MDText>
@@ -81,10 +90,10 @@ export default function OrderDetail() {
           </View>
         ) : null}
 
-        <MDText variant="h4" style={{ marginBottom: spacing.md }}>
+        <MDText variant="h4" style={{ marginBottom: spacing.sm }}>
           Items
         </MDText>
-        <View style={{ gap: spacing.md, marginBottom: spacing['2xl'] }}>
+        <View style={{ gap: spacing.sm, marginBottom: spacing.lg }}>
           {order.items.map((item) => (
             <View key={item.productId} style={{ flexDirection: 'row', gap: spacing.md, alignItems: 'center' }}>
               <View style={{ width: 56, height: 56 }}>
@@ -105,7 +114,7 @@ export default function OrderDetail() {
           ))}
         </View>
 
-        <View style={{ flexDirection: 'row', gap: spacing.xl, marginBottom: spacing['2xl'] }}>
+        <View style={{ flexDirection: 'row', gap: spacing.lg, marginBottom: spacing.lg }}>
           <View style={{ flex: 1 }}>
             <MDText variant="h4" style={{ marginBottom: spacing.xs }}>
               Shipping
@@ -176,9 +185,9 @@ export default function OrderDetail() {
           <MDButton label="Contact Support" variant="ghost" onPress={() => router.push('/(buyer)/help')} />
         </View>
       </View>
-    </ScrollView>
   );
 }
+
 
 function SummaryRow({ label, value, bold }: { label: string; value: string; bold?: boolean }) {
   return (

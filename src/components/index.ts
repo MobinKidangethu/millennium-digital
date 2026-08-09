@@ -11,3 +11,4 @@ export * from './MobileBottomNav';
 export * from './AdminSidebar';
 export * from './AuthScreenShell';
 export * from './MDStatsCard';
+export * from './MDRohsBadge';

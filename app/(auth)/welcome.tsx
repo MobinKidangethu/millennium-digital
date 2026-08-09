@@ -115,18 +115,34 @@ export default function Welcome() {
             ))}
           </View>
 
-          <MDText
-            variant="caption"
-            tone="tertiary"
-            align="center"
-            style={{ marginTop: spacing['2xl'] }}
-            onPress={() => {
-              markSeen();
-              router.push('/(auth)/admin-login');
-            }}
-          >
-            Seller / Admin sign in
-          </MDText>
+          <View style={{ flexDirection: 'row', gap: spacing.md, marginTop: spacing['2xl'] }}>
+            <MDText
+              variant="caption"
+              tone="tertiary"
+              align="center"
+              onPress={() => {
+                markSeen();
+                router.push('/(auth)/admin-login');
+              }}
+            >
+              Seller / Admin sign in
+            </MDText>
+            <MDText variant="caption" tone="tertiary">
+              ·
+            </MDText>
+            <MDText
+              variant="caption"
+              weight="600"
+              align="center"
+              style={{ color: colors.brand.primary }}
+              onPress={() => {
+                markSeen();
+                router.push('/(auth)/seller-register');
+              }}
+            >
+              Sell on Millennium Digital
+            </MDText>
+          </View>
         </View>
       </View>
     </ScrollView>

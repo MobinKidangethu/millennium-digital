@@ -52,7 +52,10 @@ export function MDSearchBar({
         style={[
           {
             flex: 1,
+            height: '100%',
             fontSize: 14,
+            lineHeight: 18,
+            paddingVertical: 0,
             color: colors.text.primary,
           },
           noWebOutline,

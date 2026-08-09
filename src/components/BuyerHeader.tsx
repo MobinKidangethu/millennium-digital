@@ -1,6 +1,5 @@
-import { useState } from 'react';
 import { Image, Pressable, ScrollView, View } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, usePathname } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import {
   colors,
@@ -9,10 +8,39 @@ import {
   useResponsive,
   MDText,
   MDButton,
-  MDSearchBar,
 } from '@/design-system';
-import { useCategories } from '@/features/categories';
 import { useCartStore, selectCartCount, useWishlistStore, useCompareStore, useAuthStore } from '@/state';
+import { GlobalSearchBar } from '@/components/GlobalSearchBar';
+
+interface SubNavItem {
+  key: string;
+  label: string;
+  href: string;
+  icon?: keyof typeof Ionicons.glyphMap;
+  match: (pathname: string) => boolean;
+}
+
+const SUB_NAV_ITEMS: SubNavItem[] = [
+  {
+    key: 'products',
+    label: 'Products',
+    href: '/(buyer)/products',
+    match: (p) => p.includes('/products') || p.includes('/category'),
+  },
+  {
+    key: 'engineering',
+    label: 'Engineering Workspace',
+    href: '/(buyer)/engineering',
+    icon: 'sparkles-outline',
+    match: (p) => p.includes('/engineering'),
+  },
+  {
+    key: 'manufacturers',
+    label: 'Manufacturers',
+    href: '/(buyer)/manufacturers',
+    match: (p) => p.includes('/manufacturers'),
+  },
+];
 
 function HeaderIconLink({
   icon,
@@ -59,18 +87,12 @@ function HeaderIconLink({
 
 export function BuyerHeader() {
   const router = useRouter();
+  const pathname = usePathname();
   const { isDesktopUp } = useResponsive();
-  const [query, setQuery] = useState('');
-  const { data: categories } = useCategories();
   const cartCount = useCartStore(selectCartCount);
   const wishlistCount = useWishlistStore((s) => s.productIds.length);
   const compareCount = useCompareStore((s) => s.productIds.length);
   const session = useAuthStore((s) => s.session);
-
-  const submitSearch = () => {
-    if (!query.trim()) return;
-    router.push({ pathname: '/(buyer)/search', params: { q: query } });
-  };
 
   if (!isDesktopUp) {
     return (
@@ -93,57 +115,11 @@ export function BuyerHeader() {
             resizeMode="contain"
           />
         </Pressable>
-        <HeaderIconLink
-          icon="cart-outline"
-          label="Cart"
-          count={cartCount}
-          onPress={() => router.push('/(buyer)/cart')}
-        />
-      </View>
-    );
-  }
-
-  return (
-    <View style={{ backgroundColor: colors.background, borderBottomWidth: 1, borderBottomColor: colors.border }}>
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          gap: spacing.xl,
-          maxWidth: layout.maxContentWidth,
-          width: '100%',
-          alignSelf: 'center',
-          paddingHorizontal: spacing.xl,
-          height: layout.headerHeight,
-        }}
-      >
-        <Pressable onPress={() => router.push('/(buyer)')} accessibilityLabel="Millennium Digital home">
-          <Image
-            source={require('../../assets/Millenium_Logo_new.png')}
-            style={{ width: 176, height: 31 }}
-            resizeMode="contain"
-          />
-        </Pressable>
-
-        <MDSearchBar
-          value={query}
-          onChangeText={setQuery}
-          onSubmit={submitSearch}
-          style={{ flex: 1, maxWidth: 560 }}
-        />
-
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <HeaderIconLink
-            icon="git-compare-outline"
-            label="Compare products"
-            count={compareCount}
-            onPress={() => router.push('/(buyer)/compare')}
-          />
-          <HeaderIconLink
-            icon="heart-outline"
-            label="Wishlist"
-            count={wishlistCount}
-            onPress={() => router.push('/(buyer)/wishlist')}
+            icon="sparkles-outline"
+            label="Engineering Workspace"
+            onPress={() => router.push('/(buyer)/engineering')}
           />
           <HeaderIconLink
             icon="cart-outline"
@@ -151,63 +127,128 @@ export function BuyerHeader() {
             count={cartCount}
             onPress={() => router.push('/(buyer)/cart')}
           />
-          {session ? (
-            <Pressable
-              onPress={() => router.push('/(buyer)/account')}
-              style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs, paddingLeft: spacing.md }}
-              accessibilityLabel="Account"
-            >
-              <Ionicons name="person-circle-outline" size={24} color={colors.text.primary} />
-              <MDText variant="bodySm" weight="600">
-                {session.user.fullName.split(' ')[0]}
-              </MDText>
-            </Pressable>
-          ) : (
-            <MDButton
-              label="Log In"
-              size="sm"
-              variant="outline"
-              style={{ marginLeft: spacing.md }}
-              onPress={() => router.push('/(auth)/login')}
+        </View>
+      </View>
+    );
+  }
+
+  return (
+    <View style={{ backgroundColor: colors.background, borderBottomWidth: 1, borderBottomColor: colors.border }}>
+      <View style={{ flexDirection: 'row', justifyContent: 'center', width: '100%' }}>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: spacing.xl,
+            width: '100%',
+            maxWidth: layout.maxContentWidth,
+            paddingHorizontal: spacing.xl,
+            height: layout.headerHeight,
+          }}
+        >
+          <Pressable onPress={() => router.push('/(buyer)')} accessibilityLabel="Millennium Digital home">
+            <Image
+              source={require('../../assets/Millenium_Logo_new.png')}
+              style={{ width: 176, height: 31 }}
+              resizeMode="contain"
             />
-          )}
+          </Pressable>
+
+          <GlobalSearchBar style={{ flex: 1 }} />
+
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <HeaderIconLink
+              icon="git-compare-outline"
+              label="Compare products"
+              count={compareCount}
+              onPress={() => router.push('/(buyer)/compare')}
+            />
+            <HeaderIconLink
+              icon="heart-outline"
+              label="Wishlist"
+              count={wishlistCount}
+              onPress={() => router.push('/(buyer)/wishlist')}
+            />
+            <HeaderIconLink
+              icon="cart-outline"
+              label="Cart"
+              count={cartCount}
+              onPress={() => router.push('/(buyer)/cart')}
+            />
+            {session ? (
+              <Pressable
+                onPress={() => router.push('/(buyer)/account')}
+                style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs, paddingLeft: spacing.md }}
+                accessibilityLabel="Account"
+              >
+                <Ionicons name="person-circle-outline" size={24} color={colors.text.primary} />
+                <MDText variant="bodySm" weight="600">
+                  {session.user.fullName.split(' ')[0]}
+                </MDText>
+              </Pressable>
+            ) : (
+              <MDButton
+                label="Log In"
+                size="sm"
+                variant="outline"
+                style={{ marginLeft: spacing.md }}
+                onPress={() => router.push('/(auth)/login')}
+              />
+            )}
+          </View>
         </View>
       </View>
 
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'center',
+          width: '100%',
+          borderTopWidth: 1,
+          borderTopColor: colors.border,
+        }}
+      >
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        style={{ borderTopWidth: 1, borderTopColor: colors.border }}
+        style={{ width: '100%', maxWidth: layout.maxContentWidth }}
         contentContainerStyle={{
-          maxWidth: layout.maxContentWidth,
-          alignSelf: 'center',
           paddingHorizontal: spacing.xl,
           gap: spacing.xl,
           height: 44,
           alignItems: 'center',
         }}
       >
-        <Pressable onPress={() => router.push('/(buyer)/products')}>
-          <MDText variant="bodySm" weight="600" tone="secondary">
-            All Products
-          </MDText>
-        </Pressable>
-        {categories?.map((category) => (
-          <Pressable
-            key={category.slug}
-            onPress={() => router.push({ pathname: '/(buyer)/category/[slug]', params: { slug: category.slug } })}
-          >
-            <MDText variant="bodySm" tone="secondary">
-              {category.name}
-            </MDText>
-          </Pressable>
-        ))}
-        <Pressable onPress={() => router.push('/(buyer)/manufacturers')}>
-          <MDText variant="bodySm" tone="secondary">
-            Manufacturers
-          </MDText>
-        </Pressable>
+        {SUB_NAV_ITEMS.map((item) => {
+          const active = item.match(pathname ?? '');
+          return (
+            <Pressable
+              key={item.key}
+              onPress={() => router.push(item.href as never)}
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 4,
+                height: '100%',
+                borderBottomWidth: 2,
+                borderBottomColor: active ? colors.brand.primary : 'transparent',
+              }}
+            >
+              {item.icon ? (
+                <Ionicons name={item.icon} size={13} color={active ? colors.brand.primary : colors.text.tertiary} />
+              ) : null}
+              <MDText
+                variant="bodySm"
+                weight="600"
+                style={{ color: active ? colors.brand.primary : colors.text.secondary }}
+              >
+                {item.label}
+              </MDText>
+            </Pressable>
+          );
+        })}
       </ScrollView>
+      </View>
     </View>
   );
 }

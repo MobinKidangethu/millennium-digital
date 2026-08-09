@@ -88,6 +88,16 @@ export default function Login() {
           Create an account
         </MDText>
       </View>
+
+      <MDText
+        variant="caption"
+        tone="tertiary"
+        align="center"
+        style={{ marginTop: spacing.lg }}
+        onPress={() => router.push('/(auth)/seller-register')}
+      >
+        Selling electronics components? Apply as a seller
+      </MDText>
     </AuthScreenShell>
   );
 }

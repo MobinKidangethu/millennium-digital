@@ -3,6 +3,7 @@ import { Stack } from 'expo-router';
 import { colors, useResponsive } from '@/design-system';
 import { BuyerHeader } from '@/components/BuyerHeader';
 import { MobileBottomNav } from '@/components/MobileBottomNav';
+import { AIAssistantWidget } from '@/components/AIAssistantWidget';
 
 export default function BuyerLayout() {
   const { isDesktopUp } = useResponsive();
@@ -12,6 +13,7 @@ export default function BuyerLayout() {
       <BuyerHeader />
       <View style={{ flex: 1 }}>
         <Stack screenOptions={{ headerShown: false }} />
+        <AIAssistantWidget />
       </View>
       {!isDesktopUp ? <MobileBottomNav /> : null}
     </View>

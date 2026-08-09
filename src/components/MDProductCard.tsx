@@ -9,6 +9,7 @@ import { MDProductImage } from './MDProductImage';
 import { MDManufacturerLogo } from './MDManufacturerLogo';
 import { MDPrice } from './MDPrice';
 import { MDStockStatus } from './MDStockStatus';
+import { MDRohsBadge } from './MDRohsBadge';
 
 interface MDProductCardProps {
   product: Product;
@@ -125,7 +126,7 @@ export function MDProductCard({ product, layout = 'grid' }: MDProductCardProps) 
 
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs, marginTop: 2 }}>
           {product.package ? <MDBadge label={product.package} tone="neutral" /> : null}
-          {product.rohs ? <MDBadge label="RoHS" tone="success" /> : null}
+          {product.rohs ? <MDRohsBadge /> : null}
         </View>
 
         <View

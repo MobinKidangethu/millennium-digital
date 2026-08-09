@@ -4,6 +4,7 @@ import { colors, radius, spacing, useToast, MDEmptyState, MDText } from '@/desig
 import { useOrder, useUpdateOrderStatus } from '@/features/orders';
 import { MDOrderStatus } from '@/components/MDOrderStatus';
 import { MDProductImage } from '@/components/MDProductImage';
+import { LogisticsTracker } from '@/components/LogisticsTracker';
 import { formatPrice } from '@/utils';
 import type { OrderStatus } from '@/types';
 
@@ -45,6 +46,13 @@ export default function AdminOrderDetail() {
             </MDText>
           </View>
           <MDOrderStatus status={order.status} />
+        </View>
+
+        <View style={{ marginBottom: spacing.xl }}>
+          <MDText variant="h4" style={{ marginBottom: spacing.sm }}>
+            Shipment Tracking
+          </MDText>
+          <LogisticsTracker status={order.status} />
         </View>
 
         {order.status !== 'cancelled' ? (

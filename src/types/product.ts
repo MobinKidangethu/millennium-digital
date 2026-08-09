@@ -78,6 +78,8 @@ export interface ProductFilters {
   rohsOnly?: boolean;
   priceMin?: number;
   priceMax?: number;
+  /** Minimum available quantity — parametric "Availability" filter. */
+  minAvailability?: number;
   tags?: ProductTag[];
   sort?: SortOption;
 }

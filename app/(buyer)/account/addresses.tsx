@@ -67,7 +67,7 @@ export default function Addresses() {
     <View>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing.xl }}>
         <MDText variant="h1">Addresses</MDText>
-        {!showForm ? <MDButton label="Add Address" size="sm" onPress={startAdd} /> : null}
+        {!showForm && addresses.length > 0 ? <MDButton label="Add Address" size="sm" onPress={startAdd} /> : null}
       </View>
 
       {showForm ? (

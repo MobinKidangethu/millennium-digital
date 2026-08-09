@@ -3,6 +3,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { colors, radius, spacing, MDText } from '@/design-system';
 
 const STEPS = [
+  { key: 'cart', label: 'Cart' },
   { key: 'address', label: 'Address' },
   { key: 'shipping', label: 'Shipping' },
   { key: 'payment', label: 'Payment' },
