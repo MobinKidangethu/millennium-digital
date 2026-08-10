@@ -1,10 +1,11 @@
 import { useMemo, useState } from 'react';
-import { Pressable, ScrollView, View } from 'react-native';
+import { Image, Pressable, ScrollView, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import {
   colors,
   radius,
+  shadow,
   spacing,
   layout,
   useResponsive,
@@ -15,9 +16,9 @@ import {
   MDSkeleton,
 } from '@/design-system';
 import { useManufacturers } from '@/features/manufacturers';
-import { MDManufacturerCard } from '@/components/MDManufacturerCard';
 import { MDBreadcrumb } from '@/components/MDBreadcrumb';
-import { LINE_CARD_BRANDS } from '@/constants/lineCardBrands';
+import { LINE_CARD_BRANDS, type LineCardBrand } from '@/constants/lineCardBrands';
+import { manufacturerInitials } from '@/utils';
 import type { Manufacturer } from '@/types';
 
 /** Loose case-insensitive match so "Renesas" (line card) links to "Renesas Electronics" (catalog), etc. */
@@ -29,35 +30,79 @@ function findCatalogMatch(brand: string, manufacturers: Manufacturer[]): Manufac
   });
 }
 
-function LineCardChip({ brand, match }: { brand: string; match?: Manufacturer }) {
+function LineCardTile({ brand, logoUrl, match }: { brand: string; logoUrl: string; match?: Manufacturer }) {
   const router = useRouter();
-  const { hovered, hoverHandlers } = useHoverPress();
+  const [failed, setFailed] = useState(false);
+  const { hovered, pressed, hoverHandlers, pressHandlers } = useHoverPress();
   const clickable = !!match;
 
   return (
     <Pressable
       disabled={!clickable}
       onPress={() => match && router.push({ pathname: '/(buyer)/manufacturers/[slug]', params: { slug: match.slug } })}
+      accessibilityLabel={clickable ? `${brand} — browse products` : `${brand} — authorized brand, sourced on request`}
       {...hoverHandlers}
+      {...pressHandlers}
       style={[
         webTransition,
         {
-          flexDirection: 'row',
-          alignItems: 'center',
-          gap: 6,
+          width: 148,
           borderWidth: 1,
           borderColor: clickable && hovered ? colors.brand.primary : colors.border,
-          backgroundColor: clickable && hovered ? colors.brand.primarySoft : colors.surfaceRaised,
-          borderRadius: radius.pill,
-          paddingHorizontal: spacing.md,
-          paddingVertical: spacing.xs,
+          borderRadius: radius.lg,
+          backgroundColor: colors.surfaceRaised,
+          padding: spacing.md,
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: spacing.sm,
+          minHeight: 108,
+          position: 'relative',
+          transform: [
+            { translateY: clickable && hovered && !pressed ? -3 : 0 },
+            { scale: pressed && clickable ? 0.98 : 1 },
+          ],
         },
+        clickable && hovered ? shadow.hover : shadow.sm,
       ]}
     >
-      <MDText variant="bodySm" weight={clickable ? '600' : '400'} style={{ color: clickable ? colors.brand.primary : colors.text.secondary }}>
+      {clickable ? (
+        <View style={{ position: 'absolute', top: 8, right: 8 }}>
+          <Ionicons name="checkmark-circle" size={14} color={colors.status.success} />
+        </View>
+      ) : null}
+
+      {!failed ? (
+        <Image
+          source={{ uri: logoUrl }}
+          style={{ width: '100%', height: 36 }}
+          resizeMode="contain"
+          onError={() => setFailed(true)}
+        />
+      ) : (
+        <View
+          style={{
+            width: 36,
+            height: 36,
+            borderRadius: radius.pill,
+            backgroundColor: colors.brand.primarySoft,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <MDText variant="caption" weight="700" style={{ color: colors.brand.primary }}>
+            {manufacturerInitials(brand)}
+          </MDText>
+        </View>
+      )}
+      <MDText
+        variant="caption"
+        weight={clickable ? '600' : '400'}
+        tone={clickable ? 'primary' : 'secondary'}
+        numberOfLines={1}
+        align="center"
+      >
         {brand}
       </MDText>
-      {clickable ? <Ionicons name="arrow-forward" size={11} color={colors.brand.primary} /> : null}
     </Pressable>
   );
 }
@@ -65,17 +110,17 @@ function LineCardChip({ brand, match }: { brand: string; match?: Manufacturer })
 export default function ManufacturerListing() {
   const router = useRouter();
   const { data: manufacturers, isLoading } = useManufacturers();
-  const { isDesktopUp, isTabletUp } = useResponsive();
-  const columns = isDesktopUp ? 4 : isTabletUp ? 3 : 2;
+  useResponsive();
   const [showAllBrands, setShowAllBrands] = useState(false);
 
   const lineCard = useMemo(() => {
     const list = manufacturers ?? [];
-    return LINE_CARD_BRANDS.map((brand) => ({ brand, match: findCatalogMatch(brand, list) })).sort(
-      (a, b) => Number(!!b.match) - Number(!!a.match) || a.brand.localeCompare(b.brand),
-    );
+    return LINE_CARD_BRANDS.map((entry: LineCardBrand) => ({
+      ...entry,
+      match: findCatalogMatch(entry.name, list),
+    })).sort((a, b) => Number(!!b.match) - Number(!!a.match) || a.name.localeCompare(b.name));
   }, [manufacturers]);
-  const visibleLineCard = showAllBrands ? lineCard : lineCard.slice(0, 24);
+  const visibleLineCard = showAllBrands ? lineCard : lineCard.slice(0, 30);
   const searchableCount = lineCard.filter((b) => b.match).length;
 
   return (
@@ -85,54 +130,45 @@ export default function ManufacturerListing() {
           <MDBreadcrumb items={[{ label: 'Home', href: '/(buyer)' }, { label: 'Manufacturers' }]} />
         </View>
         <MDText variant="h1">Manufacturer &amp; Supplier Directory</MDText>
-        <MDText variant="body" tone="secondary" style={{ marginTop: spacing.xs, marginBottom: spacing.xl, maxWidth: 640 }}>
-          Genuine components from verified, authorized manufacturers — each profile shows real portfolio
-          breadth, RoHS coverage, and documentation drawn from the live catalog.
+        <MDText variant="body" tone="secondary" style={{ marginTop: spacing.xs, marginBottom: spacing.md, maxWidth: 680 }}>
+          Millennium Digital's full authorized distributor network — {LINE_CARD_BRANDS.length} brand
+          partners worldwide, sourced from our published line card. {searchableCount} are already
+          searchable in the live catalog (marked <Ionicons name="checkmark-circle" size={12} color={colors.status.success} />,
+          tap to browse); the rest are sourced on request through our procurement team.
         </MDText>
 
-        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.lg, marginBottom: spacing['2xl'] }}>
-          {isLoading
-            ? Array.from({ length: 8 }).map((_, i) => (
-                <View key={i} style={{ width: `${100 / columns - 3}%` }}>
-                  <MDSkeleton height={128} />
-                </View>
-              ))
-            : manufacturers?.map((manufacturer) => (
-                <View key={manufacturer.slug} style={{ width: `${100 / columns - 3}%` }}>
-                  <MDManufacturerCard manufacturer={manufacturer} />
-                </View>
-              ))}
-        </View>
-
-        <View style={{ marginBottom: spacing['2xl'] }}>
-          <MDText variant="h2" style={{ marginBottom: 4 }}>
-            Global Line Card
-          </MDText>
-          <MDText variant="bodySm" tone="secondary" style={{ marginBottom: spacing.lg, maxWidth: 640 }}>
-            Millennium Digital's full authorized distributor network — {LINE_CARD_BRANDS.length} brand
-            partners worldwide. {searchableCount} are already searchable in the live catalog above
-            (highlighted, tap to browse); the rest are sourced on request through our procurement team.
-          </MDText>
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm }}>
-            {visibleLineCard.map(({ brand, match }) => (
-              <LineCardChip key={brand} brand={brand} match={match} />
+        {isLoading ? (
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md, marginBottom: spacing['2xl'] }}>
+            {Array.from({ length: 12 }).map((_, i) => (
+              <MDSkeleton key={i} width={148} height={108} />
             ))}
           </View>
-          {lineCard.length > visibleLineCard.length ? (
-            <MDButton
-              label={`Show All ${lineCard.length} Brands`}
-              variant="ghost"
-              size="sm"
-              style={{ marginTop: spacing.md, alignSelf: 'flex-start' }}
-              onPress={() => setShowAllBrands(true)}
-            />
-          ) : null}
-        </View>
+        ) : (
+          <>
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md, marginBottom: spacing.lg }}>
+              {visibleLineCard.map((entry) => (
+                <LineCardTile key={entry.name} brand={entry.name} logoUrl={entry.logoUrl} match={entry.match} />
+              ))}
+            </View>
+            {lineCard.length > visibleLineCard.length ? (
+              <MDButton
+                label={`Show All ${lineCard.length} Brands`}
+                variant="ghost"
+                size="sm"
+                style={{ marginBottom: spacing['2xl'], alignSelf: 'flex-start' }}
+                onPress={() => setShowAllBrands(true)}
+              />
+            ) : (
+              <View style={{ marginBottom: spacing['2xl'] }} />
+            )}
+          </>
+        )}
 
         <View
           style={{
-            flexDirection: isDesktopUp ? 'row' : 'column',
-            alignItems: isDesktopUp ? 'center' : 'flex-start',
+            flexDirection: 'row',
+            flexWrap: 'wrap',
+            alignItems: 'center',
             justifyContent: 'space-between',
             gap: spacing.md,
             backgroundColor: colors.gray[900],
@@ -140,7 +176,7 @@ export default function ManufacturerListing() {
             padding: spacing.xl,
           }}
         >
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.md, flex: 1 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.md, flex: 1, minWidth: 240 }}>
             <Ionicons name="business" size={24} color={colors.gray[0]} />
             <View style={{ flex: 1 }}>
               <MDText variant="h4" style={{ color: colors.gray[0] }}>
