@@ -7,6 +7,8 @@ import {
   radius,
   spacing,
   useResponsive,
+  useHoverPress,
+  webTransition,
   MDBadge,
   MDBottomSheet,
   MDButton,
@@ -32,6 +34,41 @@ const VIEW_MODES: { key: ViewMode; icon: ComponentProps<typeof Ionicons>['name']
   { key: 'paginated', icon: 'albums-outline', label: 'Paginated view' },
 ];
 
+function ViewModeSegment({
+  mode,
+  active,
+  isFirst,
+  onPress,
+}: {
+  mode: (typeof VIEW_MODES)[number];
+  active: boolean;
+  isFirst: boolean;
+  onPress: () => void;
+}) {
+  const { hovered, hoverHandlers } = useHoverPress();
+
+  return (
+    <Pressable
+      onPress={onPress}
+      accessibilityLabel={mode.label}
+      accessibilityState={{ selected: active }}
+      {...hoverHandlers}
+      style={[
+        webTransition,
+        {
+          paddingHorizontal: spacing.sm,
+          paddingVertical: spacing.sm - 1,
+          backgroundColor: active ? colors.brand.primary : hovered ? colors.surface : 'transparent',
+          borderLeftWidth: isFirst ? 0 : 1,
+          borderLeftColor: colors.border,
+        },
+      ]}
+    >
+      <Ionicons name={mode.icon} size={15} color={active ? colors.gray[0] : hovered ? colors.brand.primary : colors.text.secondary} />
+    </Pressable>
+  );
+}
+
 function ViewModeToggle({ value, onChange }: { value: ViewMode; onChange: (v: ViewMode) => void }) {
   return (
     <View
@@ -43,27 +80,71 @@ function ViewModeToggle({ value, onChange }: { value: ViewMode; onChange: (v: Vi
         overflow: 'hidden',
       }}
     >
-      {VIEW_MODES.map((mode, i) => {
-        const active = value === mode.key;
-        return (
-          <Pressable
-            key={mode.key}
-            onPress={() => onChange(mode.key)}
-            accessibilityLabel={mode.label}
-            accessibilityState={{ selected: active }}
-            style={{
-              paddingHorizontal: spacing.sm,
-              paddingVertical: spacing.sm - 1,
-              backgroundColor: active ? colors.brand.primary : 'transparent',
-              borderLeftWidth: i === 0 ? 0 : 1,
-              borderLeftColor: colors.border,
-            }}
-          >
-            <Ionicons name={mode.icon} size={15} color={active ? colors.gray[0] : colors.text.secondary} />
-          </Pressable>
-        );
-      })}
+      {VIEW_MODES.map((mode, i) => (
+        <ViewModeSegment key={mode.key} mode={mode} active={value === mode.key} isFirst={i === 0} onPress={() => onChange(mode.key)} />
+      ))}
     </View>
+  );
+}
+
+function PageArrowButton({
+  icon,
+  disabled,
+  onPress,
+  accessibilityLabel,
+}: {
+  icon: ComponentProps<typeof Ionicons>['name'];
+  disabled: boolean;
+  onPress: () => void;
+  accessibilityLabel: string;
+}) {
+  const { hovered, hoverHandlers } = useHoverPress();
+
+  return (
+    <Pressable
+      onPress={onPress}
+      disabled={disabled}
+      accessibilityLabel={accessibilityLabel}
+      {...hoverHandlers}
+      style={[
+        webTransition,
+        {
+          padding: spacing.sm,
+          borderRadius: radius.sm,
+          opacity: disabled ? 0.35 : 1,
+          backgroundColor: !disabled && hovered ? colors.surface : 'transparent',
+        },
+      ]}
+    >
+      <Ionicons name={icon} size={16} color={!disabled && hovered ? colors.brand.primary : colors.text.secondary} />
+    </Pressable>
+  );
+}
+
+function PageNumberButton({ page, active, onPress }: { page: number; active: boolean; onPress: () => void }) {
+  const { hovered, hoverHandlers } = useHoverPress();
+
+  return (
+    <Pressable
+      onPress={onPress}
+      accessibilityLabel={`Page ${page}`}
+      {...hoverHandlers}
+      style={[
+        webTransition,
+        {
+          width: 30,
+          height: 30,
+          borderRadius: radius.sm,
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: active ? colors.brand.primary : hovered ? colors.surface : 'transparent',
+        },
+      ]}
+    >
+      <MDText variant="caption" weight="700" style={{ color: active ? colors.gray[0] : hovered ? colors.brand.primary : colors.text.secondary }}>
+        {page}
+      </MDText>
+    </Pressable>
   );
 }
 
@@ -92,14 +173,12 @@ function PaginationControls({
         marginTop: spacing.xl,
       }}
     >
-      <Pressable
-        onPress={() => onChange(Math.max(1, page - 1))}
+      <PageArrowButton
+        icon="chevron-back"
         disabled={page === 1}
-        style={{ padding: spacing.sm, opacity: page === 1 ? 0.35 : 1 }}
+        onPress={() => onChange(Math.max(1, page - 1))}
         accessibilityLabel="Previous page"
-      >
-        <Ionicons name="chevron-back" size={16} color={colors.text.secondary} />
-      </Pressable>
+      />
 
       {pages.map((p, i) => (
         <View key={p} style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -108,33 +187,16 @@ function PaginationControls({
               …
             </MDText>
           ) : null}
-          <Pressable
-            onPress={() => onChange(p)}
-            style={{
-              width: 30,
-              height: 30,
-              borderRadius: radius.sm,
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor: p === page ? colors.brand.primary : 'transparent',
-            }}
-            accessibilityLabel={`Page ${p}`}
-          >
-            <MDText variant="caption" weight="700" style={{ color: p === page ? colors.gray[0] : colors.text.secondary }}>
-              {p}
-            </MDText>
-          </Pressable>
+          <PageNumberButton page={p} active={p === page} onPress={() => onChange(p)} />
         </View>
       ))}
 
-      <Pressable
-        onPress={() => onChange(Math.min(totalPages, page + 1))}
+      <PageArrowButton
+        icon="chevron-forward"
         disabled={page === totalPages}
-        style={{ padding: spacing.sm, opacity: page === totalPages ? 0.35 : 1 }}
+        onPress={() => onChange(Math.min(totalPages, page + 1))}
         accessibilityLabel="Next page"
-      >
-        <Ionicons name="chevron-forward" size={16} color={colors.text.secondary} />
-      </Pressable>
+      />
     </View>
   );
 }

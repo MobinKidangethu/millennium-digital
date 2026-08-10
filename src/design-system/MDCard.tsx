@@ -1,6 +1,7 @@
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { Pressable, View, type StyleProp, type ViewStyle } from 'react-native';
 import { colors, radius, shadow, spacing } from './tokens';
+import { webTransition } from './webStyles';
 
 interface MDCardProps {
   children: ReactNode;
@@ -23,6 +24,8 @@ export function MDCard({
   testID,
   accessibilityLabel,
 }: MDCardProps) {
+  const [hovered, setHovered] = useState(false);
+
   const base: StyleProp<ViewStyle> = [
     {
       backgroundColor: colors.surfaceRaised,
@@ -42,7 +45,17 @@ export function MDCard({
         accessibilityRole="button"
         accessibilityLabel={accessibilityLabel}
         onPress={onPress}
-        style={({ pressed }) => [base, pressed ? { opacity: 0.9 } : null]}
+        onHoverIn={() => setHovered(true)}
+        onHoverOut={() => setHovered(false)}
+        style={({ pressed }) => [
+          base,
+          webTransition,
+          hovered && !pressed
+            ? { borderColor: colors.interaction.hoverBorder, transform: [{ translateY: -2 }] }
+            : null,
+          hovered ? shadow.hover : null,
+          pressed ? { opacity: 0.92, transform: [{ translateY: 0 }, { scale: 0.99 }] } : null,
+        ]}
       >
         {children}
       </Pressable>

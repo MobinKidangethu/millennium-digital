@@ -12,6 +12,7 @@ import {
   MDBadge,
   MDButton,
   MDEmptyState,
+  MDIconButton,
   MDSkeleton,
   MDText,
 } from '@/design-system';
@@ -212,41 +213,25 @@ export default function Cart() {
                       ) : null}
 
                       <View style={{ flexDirection: 'row', gap: spacing.md, marginTop: spacing.xs }}>
-                        <Pressable
+                        <MDIconButton
                           onPress={() => {
                             toggleWishlist(line.product.id);
                             removeItem(line.product.id);
                           }}
                           accessibilityLabel="Save for later"
-                          hitSlop={8}
-                          style={{
-                            width: 28,
-                            height: 28,
-                            borderRadius: radius.sm,
-                            borderWidth: 1,
-                            borderColor: colors.border,
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                          }}
+                          variant="outline"
+                          size={28}
                         >
                           <Ionicons name="bookmark-outline" size={14} color={colors.text.secondary} />
-                        </Pressable>
-                        <Pressable
+                        </MDIconButton>
+                        <MDIconButton
                           onPress={() => removeItem(line.product.id)}
                           accessibilityLabel="Remove from cart"
-                          hitSlop={8}
-                          style={{
-                            width: 28,
-                            height: 28,
-                            borderRadius: radius.sm,
-                            borderWidth: 1,
-                            borderColor: colors.border,
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                          }}
+                          variant="outline"
+                          size={28}
                         >
                           <Ionicons name="trash-outline" size={14} color={colors.status.error} />
-                        </Pressable>
+                        </MDIconButton>
                       </View>
                     </View>
                   </View>

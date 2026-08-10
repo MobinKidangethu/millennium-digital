@@ -2,7 +2,7 @@ import { useMemo, useRef, useState } from 'react';
 import { Pressable, ScrollView, TextInput, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, radius, shadow, spacing, zIndex, MDText } from '@/design-system';
+import { colors, radius, shadow, spacing, zIndex, useHoverPress, webTransition, MDText } from '@/design-system';
 import { useProducts } from '@/features/products';
 import { useCategories } from '@/features/categories';
 import { useManufacturers } from '@/features/manufacturers';
@@ -10,6 +10,7 @@ import { SITE_SEARCH_INDEX } from '@/constants/siteSearchIndex';
 import { MDProductImage } from '@/components/MDProductImage';
 import { formatPrice } from '@/utils';
 import { noWebOutline } from '@/design-system/webStyles';
+import type { Product } from '@/types';
 
 const MAX_PAGES = 4;
 const MAX_CATEGORIES = 3;
@@ -29,6 +30,9 @@ export function GlobalSearchBar({ style }: { style?: object }) {
   const [query, setQuery] = useState('');
   const [focused, setFocused] = useState(false);
   const blurTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const clearHover = useHoverPress();
+  const bomHover = useHoverPress();
+  const seeAllHover = useHoverPress();
 
   const trimmed = query.trim();
   const showDropdown = focused && trimmed.length > 0;
@@ -126,8 +130,13 @@ export function GlobalSearchBar({ style }: { style?: object }) {
           ]}
         />
         {query.length > 0 ? (
-          <Pressable accessibilityLabel="Clear search" onPress={() => setQuery('')}>
-            <Ionicons name="close-circle" size={18} color={colors.text.tertiary} />
+          <Pressable
+            accessibilityLabel="Clear search"
+            onPress={() => setQuery('')}
+            {...clearHover.hoverHandlers}
+            style={[webTransition, { transform: [{ scale: clearHover.hovered ? 1.15 : 1 }] }]}
+          >
+            <Ionicons name="close-circle" size={18} color={clearHover.hovered ? colors.text.secondary : colors.text.tertiary} />
           </Pressable>
         ) : null}
 
@@ -136,7 +145,16 @@ export function GlobalSearchBar({ style }: { style?: object }) {
         <Pressable
           accessibilityLabel="Upload a BOM"
           onPress={() => goTo('/(buyer)/bom')}
-          style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}
+          {...bomHover.hoverHandlers}
+          style={[
+            webTransition,
+            {
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: 4,
+              opacity: bomHover.hovered ? 0.75 : 1,
+            },
+          ]}
         >
           <Ionicons name="document-attach-outline" size={16} color={colors.brand.primary} />
           <MDText variant="caption" weight="700" style={{ color: colors.brand.primary }}>
@@ -218,36 +236,15 @@ export function GlobalSearchBar({ style }: { style?: object }) {
                 {products.length > 0 ? (
                   <DropdownSection label="Products">
                     {products.map((product) => (
-                      <Pressable
+                      <ProductResultRow
                         key={product.id}
+                        product={product}
                         onPress={() =>
                           goTo(
                             `/(buyer)/products/${product.manufacturerSlug}/${product.partSlug}`,
                           )
                         }
-                        style={{
-                          flexDirection: 'row',
-                          alignItems: 'center',
-                          gap: spacing.sm,
-                          paddingHorizontal: spacing.md,
-                          paddingVertical: spacing.xs,
-                        }}
-                      >
-                        <View style={{ width: 32, height: 32 }}>
-                          <MDProductImage imagePath={product.image} alt={product.title} style={{ width: '100%', height: '100%' }} />
-                        </View>
-                        <View style={{ flex: 1 }}>
-                          <MDText variant="caption" weight="700" numberOfLines={1}>
-                            {product.manufacturerPartNumber}
-                          </MDText>
-                          <MDText variant="caption" tone="tertiary" numberOfLines={1}>
-                            {product.manufacturer}
-                          </MDText>
-                        </View>
-                        <MDText variant="caption" weight="600" style={{ color: colors.brand.primary }}>
-                          {formatPrice(product.price, product.currency)}
-                        </MDText>
-                      </Pressable>
+                      />
                     ))}
                   </DropdownSection>
                 ) : null}
@@ -256,16 +253,20 @@ export function GlobalSearchBar({ style }: { style?: object }) {
 
             <Pressable
               onPress={submitFullSearch}
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 4,
-                paddingVertical: spacing.sm,
-                borderTopWidth: 1,
-                borderTopColor: colors.border,
-                backgroundColor: colors.surfaceRaised,
-              }}
+              {...seeAllHover.hoverHandlers}
+              style={[
+                webTransition,
+                {
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 4,
+                  paddingVertical: spacing.sm,
+                  borderTopWidth: 1,
+                  borderTopColor: colors.border,
+                  backgroundColor: seeAllHover.hovered ? colors.surface : colors.surfaceRaised,
+                },
+              ]}
             >
               <MDText variant="caption" weight="700" style={{ color: colors.brand.primary }}>
                 See all results for "{trimmed}"
@@ -305,18 +306,25 @@ function ResultRow({
   subtitle?: string;
   onPress: () => void;
 }) {
+  const { hovered, hoverHandlers } = useHoverPress();
+
   return (
     <Pressable
       onPress={onPress}
-      style={{
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: spacing.sm,
-        paddingHorizontal: spacing.md,
-        paddingVertical: spacing.xs,
-      }}
+      {...hoverHandlers}
+      style={[
+        webTransition,
+        {
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: spacing.sm,
+          paddingHorizontal: spacing.md,
+          paddingVertical: spacing.xs,
+          backgroundColor: hovered ? colors.surface : 'transparent',
+        },
+      ]}
     >
-      <Ionicons name={icon} size={16} color={colors.text.secondary} />
+      <Ionicons name={icon} size={16} color={hovered ? colors.brand.primary : colors.text.secondary} />
       <View style={{ flex: 1 }}>
         <MDText variant="bodySm" numberOfLines={1}>
           {title}
@@ -327,6 +335,43 @@ function ResultRow({
           </MDText>
         ) : null}
       </View>
+    </Pressable>
+  );
+}
+
+function ProductResultRow({ product, onPress }: { product: Product; onPress: () => void }) {
+  const { hovered, hoverHandlers } = useHoverPress();
+
+  return (
+    <Pressable
+      onPress={onPress}
+      {...hoverHandlers}
+      style={[
+        webTransition,
+        {
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: spacing.sm,
+          paddingHorizontal: spacing.md,
+          paddingVertical: spacing.xs,
+          backgroundColor: hovered ? colors.surface : 'transparent',
+        },
+      ]}
+    >
+      <View style={{ width: 32, height: 32 }}>
+        <MDProductImage imagePath={product.image} alt={product.title} style={{ width: '100%', height: '100%' }} />
+      </View>
+      <View style={{ flex: 1 }}>
+        <MDText variant="caption" weight="700" numberOfLines={1}>
+          {product.manufacturerPartNumber}
+        </MDText>
+        <MDText variant="caption" tone="tertiary" numberOfLines={1}>
+          {product.manufacturer}
+        </MDText>
+      </View>
+      <MDText variant="caption" weight="600" style={{ color: colors.brand.primary }}>
+        {formatPrice(product.price, product.currency)}
+      </MDText>
     </Pressable>
   );
 }

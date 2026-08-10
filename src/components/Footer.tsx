@@ -1,6 +1,6 @@
 import { Image, Pressable, View } from 'react-native';
 import { useRouter } from 'expo-router';
-import { colors, layout, spacing, useResponsive, MDText } from '@/design-system';
+import { colors, layout, spacing, useResponsive, useHoverPress, webTransition, MDText } from '@/design-system';
 
 interface FooterLink {
   label: string;
@@ -46,6 +46,18 @@ const COLUMNS: FooterColumn[] = [
     ],
   },
 ];
+
+function FooterLinkItem({ link, onPress }: { link: FooterLink; onPress: () => void }) {
+  const { hovered, hoverHandlers } = useHoverPress();
+
+  return (
+    <Pressable onPress={onPress} {...hoverHandlers} style={webTransition}>
+      <MDText variant="bodySm" style={{ color: hovered ? colors.gray[0] : colors.gray[400] }}>
+        {link.label}
+      </MDText>
+    </Pressable>
+  );
+}
 
 export function Footer() {
   const router = useRouter();
@@ -97,11 +109,7 @@ export function Footer() {
                   {column.title}
                 </MDText>
                 {column.links.map((link) => (
-                  <Pressable key={link.label} onPress={() => router.push(link.href as never)}>
-                    <MDText variant="bodySm" style={{ color: colors.gray[400] }}>
-                      {link.label}
-                    </MDText>
-                  </Pressable>
+                  <FooterLinkItem key={link.label} link={link} onPress={() => router.push(link.href as never)} />
                 ))}
               </View>
             ))}

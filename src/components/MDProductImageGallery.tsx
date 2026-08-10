@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Modal, Platform, Pressable, View } from 'react-native';
 import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, radius, shadow, spacing, useResponsive, MDBadge, MDText } from '@/design-system';
+import { colors, radius, shadow, spacing, useResponsive, useHoverPress, webTransition, MDBadge, MDText } from '@/design-system';
 import { resolveProductImage } from '@/utils';
 import { MDImagePlaceholder } from './MDImagePlaceholder';
 
@@ -125,12 +125,81 @@ function ZoomableImage({
   );
 }
 
+function Thumbnail({
+  source,
+  active,
+  alt,
+  index,
+  onPress,
+}: {
+  source: number;
+  active: boolean;
+  alt: string;
+  index: number;
+  onPress: () => void;
+}) {
+  const { hovered, pressed, hoverHandlers, pressHandlers } = useHoverPress();
+
+  return (
+    <Pressable
+      onPress={onPress}
+      accessibilityLabel={`View image ${index + 1} of ${alt}`}
+      {...hoverHandlers}
+      {...pressHandlers}
+      style={[
+        webTransition,
+        {
+          width: 56,
+          height: 56,
+          borderRadius: radius.sm,
+          borderWidth: 1.5,
+          borderColor: active ? colors.brand.primary : hovered ? colors.brand.primarySoftBorder : colors.border,
+          overflow: 'hidden',
+          transform: [{ scale: pressed ? 0.94 : hovered ? 1.05 : 1 }],
+        },
+      ]}
+    >
+      <Image source={source} contentFit="contain" style={{ width: '100%', height: '100%' }} />
+    </Pressable>
+  );
+}
+
+function ModalCloseButton({ onPress }: { onPress: () => void }) {
+  const { hovered, hoverHandlers } = useHoverPress();
+
+  return (
+    <Pressable
+      onPress={onPress}
+      accessibilityLabel="Close"
+      {...hoverHandlers}
+      style={[
+        webTransition,
+        {
+          position: 'absolute',
+          top: spacing.xl,
+          right: spacing.xl,
+          width: 40,
+          height: 40,
+          borderRadius: radius.pill,
+          backgroundColor: hovered ? 'rgba(255,255,255,0.22)' : 'rgba(255,255,255,0.12)',
+          alignItems: 'center',
+          justifyContent: 'center',
+          transform: [{ scale: hovered ? 1.08 : 1 }],
+        },
+      ]}
+    >
+      <Ionicons name="close" size={22} color={colors.gray[0]} />
+    </Pressable>
+  );
+}
+
 export function MDProductImageGallery({ imagePath, alt, badge, thumbnailCount = 3 }: MDProductImageGalleryProps) {
   const { isDesktopUp } = useResponsive();
   const source = resolveProductImage(imagePath);
   const [failed, setFailed] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [activeThumb, setActiveThumb] = useState(0);
+  const { hovered: mainHovered, hoverHandlers: mainHoverHandlers } = useHoverPress();
 
   if (!source || failed) {
     return (
@@ -150,13 +219,28 @@ export function MDProductImageGallery({ imagePath, alt, badge, thumbnailCount = 
     <Pressable
       onPress={() => setModalOpen(true)}
       accessibilityLabel={`View larger image of ${alt}`}
-      style={verticalRail ? { flex: 1, minWidth: 0 } : undefined}
+      {...mainHoverHandlers}
+      style={[webTransition, verticalRail ? { flex: 1, minWidth: 0 } : undefined]}
     >
-      <View style={{ width: '100%', aspectRatio: 1, position: 'relative', borderRadius: radius.md, overflow: 'hidden' }}>
+      <View
+        style={{
+          width: '100%',
+          aspectRatio: 1,
+          position: 'relative',
+          borderRadius: radius.md,
+          overflow: 'hidden',
+          borderWidth: 1.5,
+          borderColor: mainHovered ? colors.brand.primarySoftBorder : 'transparent',
+        }}
+      >
         <Image
           source={source}
           contentFit="contain"
-          style={{ width: '100%', height: '100%' }}
+          style={{
+            width: '100%',
+            height: '100%',
+            transform: [{ scale: mainHovered ? 1.03 : 1 }],
+          }}
           accessibilityLabel={alt}
           onError={() => setFailed(true)}
         />
@@ -198,24 +282,17 @@ export function MDProductImageGallery({ imagePath, alt, badge, thumbnailCount = 
         }}
       >
         {Array.from({ length: thumbnailCount }).map((_, i) => (
-          <Pressable
+          <Thumbnail
             key={i}
+            source={source}
+            active={i === activeThumb}
+            alt={alt}
+            index={i}
             onPress={() => {
               setActiveThumb(i);
               setModalOpen(true);
             }}
-            accessibilityLabel={`View image ${i + 1} of ${alt}`}
-            style={{
-              width: 56,
-              height: 56,
-              borderRadius: radius.sm,
-              borderWidth: 1.5,
-              borderColor: i === activeThumb ? colors.brand.primary : colors.border,
-              overflow: 'hidden',
-            }}
-          >
-            <Image source={source} contentFit="contain" style={{ width: '100%', height: '100%' }} />
-          </Pressable>
+          />
         ))}
       </View>
     ) : null;
@@ -259,23 +336,7 @@ export function MDProductImageGallery({ imagePath, alt, badge, thumbnailCount = 
               </MDText>
             ) : null}
           </Pressable>
-          <Pressable
-            onPress={() => setModalOpen(false)}
-            accessibilityLabel="Close"
-            style={{
-              position: 'absolute',
-              top: spacing.xl,
-              right: spacing.xl,
-              width: 40,
-              height: 40,
-              borderRadius: radius.pill,
-              backgroundColor: 'rgba(255,255,255,0.12)',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <Ionicons name="close" size={22} color={colors.gray[0]} />
-          </Pressable>
+          <ModalCloseButton onPress={() => setModalOpen(false)} />
         </Pressable>
       </Modal>
     </View>

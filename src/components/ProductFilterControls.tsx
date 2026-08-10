@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Pressable, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, radius, spacing, MDButton, MDInput, MDText } from '@/design-system';
+import { colors, radius, spacing, useHoverPress, webTransition, MDButton, MDInput, MDText } from '@/design-system';
 import type { FilterOption } from '@/features/products';
 import type { ProductFilters } from '@/types';
 
@@ -13,57 +13,77 @@ interface FilterSectionProps {
   defaultOpen?: boolean;
 }
 
+function FilterOptionRow({
+  option,
+  checked,
+  onPress,
+}: {
+  option: FilterOption;
+  checked: boolean;
+  onPress: () => void;
+}) {
+  const { hovered, hoverHandlers } = useHoverPress();
+
+  return (
+    <Pressable
+      onPress={onPress}
+      {...hoverHandlers}
+      style={[webTransition, { flexDirection: 'row', alignItems: 'center', gap: spacing.xs, minWidth: 0, borderRadius: radius.sm, paddingVertical: 2, paddingHorizontal: 2, backgroundColor: hovered ? colors.surface : 'transparent' }]}
+      accessibilityRole="checkbox"
+      accessibilityState={{ checked }}
+    >
+      <View
+        style={{
+          width: 15,
+          height: 15,
+          borderRadius: radius.sm - 3,
+          borderWidth: 1.5,
+          borderColor: checked ? colors.brand.primary : hovered ? colors.brand.primary : colors.borderStrong,
+          backgroundColor: checked ? colors.brand.primary : 'transparent',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        {checked ? <Ionicons name="checkmark" size={11} color={colors.gray[0]} /> : null}
+      </View>
+      <MDText variant="caption" style={{ flex: 1, minWidth: 0 }} numberOfLines={1}>
+        {option.label}
+      </MDText>
+      <MDText variant="caption" tone="tertiary">
+        {option.count}
+      </MDText>
+    </Pressable>
+  );
+}
+
 function FilterSection({ title, options, selected, onToggle, defaultOpen = true }: FilterSectionProps) {
   const [open, setOpen] = useState(defaultOpen);
+  const { hovered, hoverHandlers } = useHoverPress();
   if (options.length === 0) return null;
 
   return (
     <View style={{ borderBottomWidth: 1, borderBottomColor: colors.border, paddingVertical: spacing.sm, minWidth: 0 }}>
       <Pressable
         onPress={() => setOpen((v) => !v)}
-        style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 2 }}
+        {...hoverHandlers}
+        style={[webTransition, { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 2 }]}
       >
-        <MDText variant="bodySm" weight="700">
+        <MDText variant="bodySm" weight="700" style={{ color: hovered ? colors.brand.primary : colors.text.primary }}>
           {title}
         </MDText>
-        <Ionicons name={open ? 'chevron-up' : 'chevron-down'} size={13} color={colors.text.tertiary} />
+        <Ionicons name={open ? 'chevron-up' : 'chevron-down'} size={13} color={hovered ? colors.brand.primary : colors.text.tertiary} />
       </Pressable>
 
       {open ? (
         <View style={{ marginTop: spacing.xs, gap: 6, minWidth: 0 }}>
-          {options.map((option) => {
-            const checked = selected.includes(option.value);
-            return (
-              <Pressable
-                key={option.value}
-                onPress={() => onToggle(option.value)}
-                style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs, minWidth: 0 }}
-                accessibilityRole="checkbox"
-                accessibilityState={{ checked }}
-              >
-                <View
-                  style={{
-                    width: 15,
-                    height: 15,
-                    borderRadius: radius.sm - 3,
-                    borderWidth: 1.5,
-                    borderColor: checked ? colors.brand.primary : colors.borderStrong,
-                    backgroundColor: checked ? colors.brand.primary : 'transparent',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  {checked ? <Ionicons name="checkmark" size={11} color={colors.gray[0]} /> : null}
-                </View>
-                <MDText variant="caption" style={{ flex: 1, minWidth: 0 }} numberOfLines={1}>
-                  {option.label}
-                </MDText>
-                <MDText variant="caption" tone="tertiary">
-                  {option.count}
-                </MDText>
-              </Pressable>
-            );
-          })}
+          {options.map((option) => (
+            <FilterOptionRow
+              key={option.value}
+              option={option}
+              checked={selected.includes(option.value)}
+              onPress={() => onToggle(option.value)}
+            />
+          ))}
         </View>
       ) : null}
     </View>
@@ -96,6 +116,76 @@ const AVAILABILITY_TIERS = [
   { label: '5,000+ units', value: 5000 },
 ];
 
+function AvailabilityChip({ label, selected, onPress }: { label: string; selected: boolean; onPress: () => void }) {
+  const { hovered, hoverHandlers } = useHoverPress();
+
+  return (
+    <Pressable
+      onPress={onPress}
+      {...hoverHandlers}
+      style={[
+        webTransition,
+        {
+          paddingHorizontal: spacing.sm,
+          paddingVertical: 3,
+          borderRadius: radius.pill,
+          borderWidth: 1,
+          borderColor: selected || hovered ? colors.brand.primary : colors.borderStrong,
+          backgroundColor: selected ? colors.brand.primarySoft : hovered ? colors.gray[50] : 'transparent',
+        },
+      ]}
+    >
+      <MDText variant="caption" weight={selected ? '700' : '400'} style={{ color: selected || hovered ? colors.brand.primary : colors.text.secondary }}>
+        {label}
+      </MDText>
+    </Pressable>
+  );
+}
+
+function ClearAllLink({ onPress }: { onPress: () => void }) {
+  const { hovered, hoverHandlers } = useHoverPress();
+
+  return (
+    <Pressable onPress={onPress} hitSlop={6} {...hoverHandlers} style={webTransition}>
+      <MDText variant="caption" weight="700" style={{ color: colors.brand.primary, textDecorationLine: hovered ? 'underline' : 'none' }}>
+        Clear All
+      </MDText>
+    </Pressable>
+  );
+}
+
+function RohsToggleRow({ checked, onPress }: { checked: boolean; onPress: () => void }) {
+  const { hovered, hoverHandlers } = useHoverPress();
+
+  return (
+    <Pressable
+      onPress={onPress}
+      {...hoverHandlers}
+      style={[webTransition, { flexDirection: 'row', alignItems: 'center', gap: spacing.xs, paddingVertical: spacing.sm }]}
+      accessibilityRole="checkbox"
+      accessibilityState={{ checked }}
+    >
+      <View
+        style={{
+          width: 15,
+          height: 15,
+          borderRadius: radius.sm - 3,
+          borderWidth: 1.5,
+          borderColor: checked || hovered ? colors.brand.primary : colors.borderStrong,
+          backgroundColor: checked ? colors.brand.primary : 'transparent',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        {checked ? <Ionicons name="checkmark" size={11} color={colors.gray[0]} /> : null}
+      </View>
+      <MDText variant="caption" style={{ color: hovered ? colors.text.primary : colors.text.secondary }}>
+        RoHS Compliant Only
+      </MDText>
+    </Pressable>
+  );
+}
+
 export function ProductFilterControls({
   filters,
   optionSets,
@@ -114,11 +204,7 @@ export function ProductFilterControls({
     <View style={{ minWidth: 0 }}>
       <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: spacing.xs }}>
         <MDText variant="bodyMedium">Filters</MDText>
-        <Pressable onPress={onClearAll} hitSlop={6}>
-          <MDText variant="caption" weight="700" style={{ color: colors.brand.primary }}>
-            Clear All
-          </MDText>
-        </Pressable>
+        <ClearAllLink onPress={onClearAll} />
       </View>
 
       {!hideCategory ? (
@@ -215,50 +301,19 @@ export function ProductFilterControls({
             {AVAILABILITY_TIERS.map((tier) => {
               const selected = filters.minAvailability === tier.value;
               return (
-                <Pressable
+                <AvailabilityChip
                   key={tier.value}
+                  label={tier.label}
+                  selected={selected}
                   onPress={() => onSetMinAvailability(selected ? undefined : tier.value)}
-                  style={{
-                    paddingHorizontal: spacing.sm,
-                    paddingVertical: 3,
-                    borderRadius: radius.pill,
-                    borderWidth: 1,
-                    borderColor: selected ? colors.brand.primary : colors.borderStrong,
-                    backgroundColor: selected ? colors.brand.primarySoft : 'transparent',
-                  }}
-                >
-                  <MDText variant="caption" weight={selected ? '700' : '400'} style={{ color: selected ? colors.brand.primary : colors.text.secondary }}>
-                    {tier.label}
-                  </MDText>
-                </Pressable>
+                />
               );
             })}
           </View>
         </View>
       ) : null}
 
-      <Pressable
-        onPress={() => onSetRohsOnly(!filters.rohsOnly)}
-        style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs, paddingVertical: spacing.sm }}
-        accessibilityRole="checkbox"
-        accessibilityState={{ checked: !!filters.rohsOnly }}
-      >
-        <View
-          style={{
-            width: 15,
-            height: 15,
-            borderRadius: radius.sm - 3,
-            borderWidth: 1.5,
-            borderColor: filters.rohsOnly ? colors.brand.primary : colors.borderStrong,
-            backgroundColor: filters.rohsOnly ? colors.brand.primary : 'transparent',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          {filters.rohsOnly ? <Ionicons name="checkmark" size={11} color={colors.gray[0]} /> : null}
-        </View>
-        <MDText variant="caption">RoHS Compliant Only</MDText>
-      </Pressable>
+      <RohsToggleRow checked={!!filters.rohsOnly} onPress={() => onSetRohsOnly(!filters.rohsOnly)} />
     </View>
   );
 }

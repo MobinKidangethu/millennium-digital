@@ -1,7 +1,8 @@
+import { useState } from 'react';
 import { Pressable, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, radius, shadow, spacing, MDBadge, MDButton, MDIconButton, MDText } from '@/design-system';
+import { colors, radius, shadow, spacing, webTransition, MDBadge, MDButton, MDIconButton, MDText } from '@/design-system';
 import type { Product } from '@/types';
 import { useCartStore, useCompareStore, useWishlistStore } from '@/state';
 import { useToast } from '@/design-system';
@@ -25,6 +26,7 @@ const TAG_LABEL: Record<string, string> = {
 export function MDProductCard({ product, layout = 'grid' }: MDProductCardProps) {
   const router = useRouter();
   const toast = useToast();
+  const [hovered, setHovered] = useState(false);
   const addToCart = useCartStore((s) => s.addItem);
   const isWishlisted = useWishlistStore((s) => s.productIds.includes(product.id));
   const toggleWishlist = useWishlistStore((s) => s.toggle);
@@ -69,17 +71,21 @@ export function MDProductCard({ product, layout = 'grid' }: MDProductCardProps) 
       // actual <button> tag, so nesting would produce invalid/broken HTML.
       accessibilityRole="link"
       accessibilityLabel={`${product.manufacturer} ${product.manufacturerPartNumber}`}
-      style={[
+      onHoverIn={() => setHovered(true)}
+      onHoverOut={() => setHovered(false)}
+      style={({ pressed }) => [
         {
           flexDirection: isList ? 'row' : 'column',
           backgroundColor: colors.surfaceRaised,
           borderRadius: radius.lg,
           borderWidth: 1,
-          borderColor: colors.border,
+          borderColor: hovered ? colors.interaction.hoverBorder : colors.border,
           overflow: 'hidden',
           flex: 1,
+          transform: [{ translateY: hovered && !pressed ? -3 : 0 }, { scale: pressed ? 0.99 : 1 }],
         },
-        shadow.sm,
+        webTransition,
+        hovered ? shadow.hover : shadow.sm,
       ]}
     >
       <View

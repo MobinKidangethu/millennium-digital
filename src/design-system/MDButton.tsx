@@ -7,8 +7,9 @@ import {
   type StyleProp,
   type ViewStyle,
 } from 'react-native';
-import { colors, radius, spacing, typography } from './tokens';
+import { colors, radius, shadow, spacing, typography } from './tokens';
 import { MDText } from './MDText';
+import { webTransition } from './webStyles';
 
 type Variant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
 type Size = 'sm' | 'md' | 'lg';
@@ -52,9 +53,10 @@ export function MDButton({
   textColor,
 }: MDButtonProps) {
   const [pressed, setPressed] = useState(false);
+  const [hovered, setHovered] = useState(false);
   const isDisabled = disabled || loading;
   const sizeStyle = SIZE_STYLES[size];
-  const palette = variantPalette(variant, isDisabled, pressed);
+  const palette = variantPalette(variant, isDisabled, pressed, hovered);
   const fg = textColor ?? palette.fg;
 
   return (
@@ -73,8 +75,11 @@ export function MDButton({
       }}
       onPressIn={() => setPressed(true)}
       onPressOut={() => setPressed(false)}
+      onHoverIn={() => setHovered(true)}
+      onHoverOut={() => setHovered(false)}
       style={[
         styles.base,
+        webTransition,
         {
           backgroundColor: palette.bg,
           borderColor: palette.border,
@@ -83,7 +88,9 @@ export function MDButton({
           paddingHorizontal: sizeStyle.paddingH,
           opacity: isDisabled && !loading ? 0.5 : 1,
           width: fullWidth ? '100%' : undefined,
+          transform: [{ scale: pressed && !isDisabled ? 0.97 : 1 }],
         },
+        !isDisabled && (hovered || pressed) ? shadow.sm : null,
         style,
       ]}
     >
@@ -105,35 +112,43 @@ export function MDButton({
   );
 }
 
-function variantPalette(variant: Variant, disabled?: boolean, pressed?: boolean) {
+function variantPalette(variant: Variant, disabled?: boolean, pressed?: boolean, hovered?: boolean) {
   switch (variant) {
     case 'primary':
       return {
-        bg: pressed ? colors.brand.primaryPressed : colors.brand.primary,
+        bg: pressed
+          ? colors.brand.primaryPressed
+          : hovered
+            ? colors.brand.primaryHover
+            : colors.brand.primary,
         fg: colors.text.onPrimary,
         border: 'transparent',
       };
     case 'secondary':
       return {
-        bg: pressed ? colors.gray[300] : colors.gray[100],
+        bg: pressed ? colors.gray[300] : hovered ? colors.gray[200] : colors.gray[100],
         fg: colors.text.primary,
         border: 'transparent',
       };
     case 'outline':
       return {
-        bg: pressed ? colors.brand.primarySoft : 'transparent',
+        bg: pressed ? colors.brand.primarySoft : hovered ? colors.gray[50] : 'transparent',
         fg: colors.brand.primary,
-        border: colors.borderStrong,
+        border: hovered || pressed ? colors.brand.primary : colors.borderStrong,
       };
     case 'ghost':
       return {
-        bg: pressed ? colors.gray[100] : 'transparent',
+        bg: pressed ? colors.gray[100] : hovered ? colors.gray[50] : 'transparent',
         fg: colors.text.primary,
         border: 'transparent',
       };
     case 'danger':
       return {
-        bg: pressed ? colors.status.errorStrong : colors.status.error,
+        bg: pressed
+          ? colors.status.errorStrong
+          : hovered
+            ? colors.status.errorStrong
+            : colors.status.error,
         fg: colors.text.onPrimary,
         border: 'transparent',
       };

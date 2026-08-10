@@ -1,6 +1,7 @@
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { Pressable, type GestureResponderEvent, type StyleProp, type ViewStyle } from 'react-native';
 import { colors, radius } from './tokens';
+import { webTransition } from './webStyles';
 
 interface MDIconButtonProps {
   children: ReactNode;
@@ -21,6 +22,8 @@ export function MDIconButton({
   style,
   disabled,
 }: MDIconButtonProps) {
+  const [hovered, setHovered] = useState(false);
+
   return (
     <Pressable
       accessibilityRole="button"
@@ -32,8 +35,11 @@ export function MDIconButton({
         e.stopPropagation?.();
         onPress?.();
       }}
+      onHoverIn={() => setHovered(true)}
+      onHoverOut={() => setHovered(false)}
       disabled={disabled}
       style={({ pressed }) => [
+        webTransition,
         {
           width: size,
           height: size,
@@ -42,13 +48,20 @@ export function MDIconButton({
           justifyContent: 'center',
           backgroundColor:
             variant === 'filled'
-              ? colors.gray[100]
+              ? pressed
+                ? colors.gray[300]
+                : hovered
+                  ? colors.gray[200]
+                  : colors.gray[100]
               : pressed
-                ? colors.gray[100]
-                : 'transparent',
+                ? colors.brand.primarySoft
+                : hovered
+                  ? colors.gray[100]
+                  : 'transparent',
           borderWidth: variant === 'outline' ? 1 : 0,
-          borderColor: colors.border,
+          borderColor: variant === 'outline' && (hovered || pressed) ? colors.brand.primary : colors.border,
           opacity: disabled ? 0.5 : 1,
+          transform: [{ scale: pressed && !disabled ? 0.9 : hovered && !disabled ? 1.06 : 1 }],
         },
         style,
       ]}

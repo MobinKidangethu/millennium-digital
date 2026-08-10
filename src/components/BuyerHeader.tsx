@@ -1,11 +1,14 @@
+import { useState, type ReactNode } from 'react';
 import { Image, Pressable, ScrollView, View } from 'react-native';
 import { useRouter, usePathname } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import {
   colors,
   layout,
+  radius,
   spacing,
   useResponsive,
+  webTransition,
   MDText,
   MDButton,
 } from '@/design-system';
@@ -53,14 +56,33 @@ function HeaderIconLink({
   count?: number;
   onPress: () => void;
 }) {
+  const [hovered, setHovered] = useState(false);
+  const [pressed, setPressed] = useState(false);
+
   return (
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={label}
       onPress={onPress}
-      style={{ alignItems: 'center', paddingHorizontal: spacing.sm, position: 'relative' }}
+      onHoverIn={() => setHovered(true)}
+      onHoverOut={() => setHovered(false)}
+      onPressIn={() => setPressed(true)}
+      onPressOut={() => setPressed(false)}
+      style={[
+        webTransition,
+        {
+          alignItems: 'center',
+          justifyContent: 'center',
+          paddingHorizontal: spacing.sm,
+          position: 'relative',
+          height: 36,
+          borderRadius: radius.pill,
+          backgroundColor: pressed ? colors.gray[200] : hovered ? colors.gray[100] : 'transparent',
+          transform: [{ scale: pressed ? 0.92 : hovered ? 1.06 : 1 }],
+        },
+      ]}
     >
-      <Ionicons name={icon} size={22} color={colors.text.primary} />
+      <Ionicons name={icon} size={22} color={hovered ? colors.brand.primary : colors.text.primary} />
       {count ? (
         <View
           style={{
@@ -81,6 +103,71 @@ function HeaderIconLink({
           </MDText>
         </View>
       ) : null}
+    </Pressable>
+  );
+}
+
+function SubNavTab({
+  item,
+  active,
+  onPress,
+}: {
+  item: SubNavItem;
+  active: boolean;
+  onPress: () => void;
+}) {
+  const [hovered, setHovered] = useState(false);
+  const tinted = active || hovered;
+
+  return (
+    <Pressable
+      onPress={onPress}
+      onHoverIn={() => setHovered(true)}
+      onHoverOut={() => setHovered(false)}
+      style={[
+        webTransition,
+        {
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: 4,
+          height: '100%',
+          borderBottomWidth: 2,
+          borderBottomColor: active ? colors.brand.primary : hovered ? colors.brand.primarySoftBorder : 'transparent',
+        },
+      ]}
+    >
+      {item.icon ? (
+        <Ionicons name={item.icon} size={13} color={tinted ? colors.brand.primary : colors.text.tertiary} />
+      ) : null}
+      <MDText variant="bodySm" weight="600" style={{ color: tinted ? colors.brand.primary : colors.text.secondary }}>
+        {item.label}
+      </MDText>
+    </Pressable>
+  );
+}
+
+function FadePressable({
+  onPress,
+  accessibilityLabel,
+  style,
+  children,
+}: {
+  onPress: () => void;
+  accessibilityLabel: string;
+  style?: object;
+  children: ReactNode;
+}) {
+  const [hovered, setHovered] = useState(false);
+
+  return (
+    <Pressable
+      onPress={onPress}
+      accessibilityLabel={accessibilityLabel}
+      onHoverIn={() => setHovered(true)}
+      onHoverOut={() => setHovered(false)}
+      style={({ pressed }) => [webTransition, { opacity: pressed ? 0.7 : hovered ? 0.85 : 1 }, style]}
+    >
+      {children}
     </Pressable>
   );
 }
@@ -108,13 +195,13 @@ export function BuyerHeader() {
           borderBottomColor: colors.border,
         }}
       >
-        <Pressable onPress={() => router.push('/(buyer)')} accessibilityLabel="Millennium Digital home">
+        <FadePressable onPress={() => router.push('/(buyer)')} accessibilityLabel="Millennium Digital home">
           <Image
             source={require('../../assets/Millenium_Logo_new.png')}
             style={{ width: 132, height: 23 }}
             resizeMode="contain"
           />
-        </Pressable>
+        </FadePressable>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <HeaderIconLink
             icon="sparkles-outline"
@@ -146,13 +233,13 @@ export function BuyerHeader() {
             height: layout.headerHeight,
           }}
         >
-          <Pressable onPress={() => router.push('/(buyer)')} accessibilityLabel="Millennium Digital home">
+          <FadePressable onPress={() => router.push('/(buyer)')} accessibilityLabel="Millennium Digital home">
             <Image
               source={require('../../assets/Millenium_Logo_new.png')}
               style={{ width: 176, height: 31 }}
               resizeMode="contain"
             />
-          </Pressable>
+          </FadePressable>
 
           <GlobalSearchBar style={{ flex: 1 }} />
 
@@ -176,7 +263,7 @@ export function BuyerHeader() {
               onPress={() => router.push('/(buyer)/cart')}
             />
             {session ? (
-              <Pressable
+              <FadePressable
                 onPress={() => router.push('/(buyer)/account')}
                 style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs, paddingLeft: spacing.md }}
                 accessibilityLabel="Account"
@@ -185,7 +272,7 @@ export function BuyerHeader() {
                 <MDText variant="bodySm" weight="600">
                   {session.user.fullName.split(' ')[0]}
                 </MDText>
-              </Pressable>
+              </FadePressable>
             ) : (
               <MDButton
                 label="Log In"
@@ -219,34 +306,9 @@ export function BuyerHeader() {
           alignItems: 'center',
         }}
       >
-        {SUB_NAV_ITEMS.map((item) => {
-          const active = item.match(pathname ?? '');
-          return (
-            <Pressable
-              key={item.key}
-              onPress={() => router.push(item.href as never)}
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                gap: 4,
-                height: '100%',
-                borderBottomWidth: 2,
-                borderBottomColor: active ? colors.brand.primary : 'transparent',
-              }}
-            >
-              {item.icon ? (
-                <Ionicons name={item.icon} size={13} color={active ? colors.brand.primary : colors.text.tertiary} />
-              ) : null}
-              <MDText
-                variant="bodySm"
-                weight="600"
-                style={{ color: active ? colors.brand.primary : colors.text.secondary }}
-              >
-                {item.label}
-              </MDText>
-            </Pressable>
-          );
-        })}
+        {SUB_NAV_ITEMS.map((item) => (
+          <SubNavTab key={item.key} item={item} active={item.match(pathname ?? '')} onPress={() => router.push(item.href as never)} />
+        ))}
       </ScrollView>
       </View>
     </View>

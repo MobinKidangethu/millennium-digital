@@ -2,7 +2,7 @@ import { Pressable, View } from 'react-native';
 import { usePathname, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, layout, spacing, MDText } from '@/design-system';
+import { colors, layout, radius, spacing, webTransition, useHoverPress, MDText } from '@/design-system';
 import { useCartStore, selectCartCount, useWishlistStore } from '@/state';
 
 interface NavItem {
@@ -65,6 +65,82 @@ const ITEMS: NavItem[] = [
   },
 ];
 
+function NavTabItem({
+  item,
+  active,
+  badge,
+  onPress,
+}: {
+  item: NavItem;
+  active: boolean;
+  badge: number;
+  onPress: () => void;
+}) {
+  const { hovered, pressed, hoverHandlers, pressHandlers } = useHoverPress();
+
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={item.label}
+      onPress={onPress}
+      {...hoverHandlers}
+      {...pressHandlers}
+      style={[
+        webTransition,
+        {
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 2,
+          paddingVertical: 4,
+          marginHorizontal: 2,
+          borderRadius: radius.md,
+          backgroundColor: pressed ? colors.gray[100] : hovered ? colors.surface : 'transparent',
+          transform: [{ scale: pressed ? 0.94 : 1 }],
+        },
+      ]}
+    >
+      <View>
+        <Ionicons
+          name={active ? item.activeIcon : item.icon}
+          size={22}
+          color={active ? colors.brand.primary : hovered ? colors.text.secondary : colors.text.tertiary}
+        />
+        {badge ? (
+          <View
+            style={{
+              position: 'absolute',
+              top: -3,
+              right: -8,
+              backgroundColor: colors.brand.primary,
+              borderRadius: 999,
+              minWidth: 14,
+              height: 14,
+              alignItems: 'center',
+              justifyContent: 'center',
+              paddingHorizontal: 3,
+            }}
+          >
+            <MDText style={{ color: colors.gray[0], fontSize: 9 }} weight="700">
+              {badge > 9 ? '9+' : badge}
+            </MDText>
+          </View>
+        ) : null}
+      </View>
+      <MDText
+        variant="caption"
+        style={{
+          color: active ? colors.brand.primary : colors.text.tertiary,
+          fontSize: 10,
+        }}
+        weight={active ? '700' : '400'}
+      >
+        {item.label}
+      </MDText>
+    </Pressable>
+  );
+}
+
 export function MobileBottomNav() {
   const router = useRouter();
   const pathname = usePathname();
@@ -89,57 +165,15 @@ export function MobileBottomNav() {
         height: layout.mobileNavHeight + insets.bottom,
       }}
     >
-      {ITEMS.map((item) => {
-        const active = item.match(pathname);
-        const badge = badgeFor(item.key);
-        return (
-          <Pressable
-            key={item.key}
-            accessibilityRole="button"
-            accessibilityLabel={item.label}
-            onPress={() => router.push(item.href as never)}
-            style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 2 }}
-          >
-            <View>
-              <Ionicons
-                name={active ? item.activeIcon : item.icon}
-                size={22}
-                color={active ? colors.brand.primary : colors.text.tertiary}
-              />
-              {badge ? (
-                <View
-                  style={{
-                    position: 'absolute',
-                    top: -3,
-                    right: -8,
-                    backgroundColor: colors.brand.primary,
-                    borderRadius: 999,
-                    minWidth: 14,
-                    height: 14,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    paddingHorizontal: 3,
-                  }}
-                >
-                  <MDText style={{ color: colors.gray[0], fontSize: 9 }} weight="700">
-                    {badge > 9 ? '9+' : badge}
-                  </MDText>
-                </View>
-              ) : null}
-            </View>
-            <MDText
-              variant="caption"
-              style={{
-                color: active ? colors.brand.primary : colors.text.tertiary,
-                fontSize: 10,
-              }}
-              weight={active ? '700' : '400'}
-            >
-              {item.label}
-            </MDText>
-          </Pressable>
-        );
-      })}
+      {ITEMS.map((item) => (
+        <NavTabItem
+          key={item.key}
+          item={item}
+          active={item.match(pathname)}
+          badge={badgeFor(item.key)}
+          onPress={() => router.push(item.href as never)}
+        />
+      ))}
     </View>
   );
 }

@@ -1,5 +1,6 @@
 export * from './tokens';
 export * from './useResponsive';
+export * from './useHoverPress';
 export * from './MDText';
 export * from './MDButton';
 export * from './MDCard';

@@ -1,7 +1,8 @@
+import type { ReactNode } from 'react';
 import { Image, Pressable, ScrollView, View } from 'react-native';
 import { usePathname, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, spacing, radius, MDText } from '@/design-system';
+import { colors, spacing, radius, webTransition, useHoverPress, MDText } from '@/design-system';
 import { useAuthStore } from '@/state';
 
 interface NavItem {
@@ -21,6 +22,72 @@ export const ADMIN_NAV_ITEMS: NavItem[] = [
   { label: 'Analytics', href: '/(admin)/analytics', icon: 'stats-chart-outline' },
   { label: 'Settings', href: '/(admin)/settings', icon: 'settings-outline' },
 ];
+
+function AdminNavItem({ item, active, onPress }: { item: NavItem; active: boolean; onPress: () => void }) {
+  const { hovered, pressHandlers, hoverHandlers } = useHoverPress();
+
+  return (
+    <Pressable
+      onPress={onPress}
+      {...hoverHandlers}
+      {...pressHandlers}
+      style={[
+        webTransition,
+        {
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: spacing.md,
+          paddingHorizontal: spacing.lg,
+          paddingVertical: spacing.md,
+          backgroundColor: active ? colors.gray[800] : hovered ? colors.gray[800] : 'transparent',
+          opacity: !active && hovered ? 0.85 : 1,
+          borderLeftWidth: 3,
+          borderLeftColor: active ? colors.brand.accent : hovered ? colors.gray[600] : 'transparent',
+        },
+      ]}
+    >
+      <Ionicons name={item.icon} size={18} color={active || hovered ? colors.gray[0] : colors.gray[400]} />
+      <MDText
+        variant="bodySm"
+        weight={active ? '700' : '400'}
+        style={{ color: active || hovered ? colors.gray[0] : colors.gray[400] }}
+      >
+        {item.label}
+      </MDText>
+    </Pressable>
+  );
+}
+
+function AdminFooterLink({
+  icon,
+  label,
+  onPress,
+  children,
+}: {
+  icon?: keyof typeof Ionicons.glyphMap;
+  label?: string;
+  onPress: () => void;
+  children?: ReactNode;
+}) {
+  const { hovered, hoverHandlers } = useHoverPress();
+
+  return (
+    <Pressable
+      onPress={onPress}
+      {...hoverHandlers}
+      style={[webTransition, { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, opacity: hovered ? 0.75 : 1 }]}
+    >
+      {children ?? (
+        <>
+          {icon ? <Ionicons name={icon} size={18} color={colors.gray[400]} /> : null}
+          <MDText variant="bodySm" style={{ color: colors.gray[400] }}>
+            {label}
+          </MDText>
+        </>
+      )}
+    </Pressable>
+  );
+}
 
 export function AdminSidebar() {
   const router = useRouter();
@@ -60,46 +127,19 @@ export function AdminSidebar() {
         </View>
 
         <ScrollView>
-          {ADMIN_NAV_ITEMS.map((item) => {
-            const active = pathname.includes(item.href.replace('/(admin)', ''));
-            return (
-              <Pressable
-                key={item.href}
-                onPress={() => router.push(item.href as never)}
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  gap: spacing.md,
-                  paddingHorizontal: spacing.lg,
-                  paddingVertical: spacing.md,
-                  backgroundColor: active ? colors.gray[800] : 'transparent',
-                  borderLeftWidth: 3,
-                  borderLeftColor: active ? colors.brand.accent : 'transparent',
-                }}
-              >
-                <Ionicons
-                  name={item.icon}
-                  size={18}
-                  color={active ? colors.gray[0] : colors.gray[400]}
-                />
-                <MDText
-                  variant="bodySm"
-                  weight={active ? '700' : '400'}
-                  style={{ color: active ? colors.gray[0] : colors.gray[400] }}
-                >
-                  {item.label}
-                </MDText>
-              </Pressable>
-            );
-          })}
+          {ADMIN_NAV_ITEMS.map((item) => (
+            <AdminNavItem
+              key={item.href}
+              item={item}
+              active={pathname.includes(item.href.replace('/(admin)', ''))}
+              onPress={() => router.push(item.href as never)}
+            />
+          ))}
         </ScrollView>
       </View>
 
       <View style={{ paddingHorizontal: spacing.lg, gap: spacing.md }}>
-        <Pressable
-          onPress={() => router.push('/(admin)/profile')}
-          style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}
-        >
+        <AdminFooterLink onPress={() => router.push('/(admin)/profile')}>
           <View
             style={{
               width: 32,
@@ -122,19 +162,15 @@ export function AdminSidebar() {
               {session?.user.email}
             </MDText>
           </View>
-        </Pressable>
-        <Pressable
+        </AdminFooterLink>
+        <AdminFooterLink
+          icon="log-out-outline"
+          label="Log Out"
           onPress={() => {
             logout();
             router.replace('/(auth)/admin-login');
           }}
-          style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}
-        >
-          <Ionicons name="log-out-outline" size={18} color={colors.gray[400]} />
-          <MDText variant="bodySm" style={{ color: colors.gray[400] }}>
-            Log Out
-          </MDText>
-        </Pressable>
+        />
       </View>
     </View>
   );

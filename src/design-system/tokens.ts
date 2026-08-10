@@ -50,12 +50,31 @@ const red = {
   600: '#A32E22',
 };
 
+/**
+ * Secondary accent — a deep, muted teal chosen as the cool counterpart to
+ * the warm plum primary (split-complementary, not a random addition).
+ * Used sparingly for "informational/technical" signals — info badges,
+ * hover rings on neutral surfaces, secondary data-viz series — so the
+ * app reads as a considered two-tone system rather than single-color
+ * with grayscale. Deliberately not blue (avoids generic-SaaS default)
+ * and not bright/neon (stays in the "sophisticated, enterprise" register).
+ */
+const teal = {
+  50: '#E9F4F3',
+  100: '#CFE6E4',
+  200: '#A3D0CC',
+  500: '#2A7D79',
+  600: '#1F615E',
+  700: '#174947',
+};
+
 export const colors = {
   plum,
   gray,
   green,
   amber,
   red,
+  teal,
 
   brand: {
     primary: plum[600],
@@ -65,6 +84,11 @@ export const colors = {
     primarySoftBorder: plum[200],
     accent: plum[400],
     secondary: gray[800],
+    // Cool secondary accent — see `teal` above for rationale.
+    teal: teal[500],
+    tealHover: teal[600],
+    tealSoft: teal[50],
+    tealSoftBorder: teal[200],
   },
 
   background: gray[0],
@@ -92,8 +116,27 @@ export const colors = {
     error: red[500],
     errorSoft: red[50],
     errorStrong: red[600],
-    info: plum[500],
-    infoSoft: plum[50],
+    // Info now uses the teal accent instead of reusing brand plum, so
+    // "informational" reads as its own distinct signal (matches the
+    // conventional blue/teal-for-info pattern) rather than looking like
+    // a brand-tinted variant of primary.
+    info: teal[500],
+    infoSoft: teal[50],
+  },
+
+  /**
+   * Shared hover/press feedback tokens so every interactive component
+   * (buttons, icon buttons, cards, table rows) reaches for the same
+   * values instead of each inventing its own opacity/tint. Kept as
+   * translucent overlays (not solid fills) so they layer correctly over
+   * any background — plum-tinted on light neutral surfaces to stay on
+   *-brand rather than a generic gray dim.
+   */
+  interaction: {
+    hoverTint: 'rgba(147, 56, 108, 0.045)',
+    pressTint: 'rgba(147, 56, 108, 0.09)',
+    hoverBorder: plum[200],
+    focusRing: plum[300],
   },
 };
 
@@ -137,6 +180,17 @@ export const shadow = {
       shadowOpacity: 0.08,
       shadowRadius: 12,
       elevation: 3,
+    },
+  }),
+  /** Slightly heavier than `sm`, lighter than `md` — the resting-to-hover lift for pressable cards. */
+  hover: Platform.select({
+    web: { boxShadow: '0 6px 18px rgba(35,34,38,0.10)' },
+    default: {
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 3 },
+      shadowOpacity: 0.1,
+      shadowRadius: 9,
+      elevation: 4,
     },
   }),
   lg: Platform.select({

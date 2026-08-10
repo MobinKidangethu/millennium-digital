@@ -2,7 +2,7 @@ import { useRef, useState } from 'react';
 import { Platform, Pressable, ScrollView, TextInput, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, radius, shadow, spacing, zIndex, useResponsive, MDText } from '@/design-system';
+import { colors, radius, shadow, spacing, zIndex, useResponsive, useHoverPress, webTransition, MDText } from '@/design-system';
 import { aiService } from '@/features/ai';
 import { ProtoBadge } from '@/components/ProtoBadge';
 import type { Product } from '@/types';
@@ -30,6 +30,69 @@ const GREETING: ChatMessage = {
     "I'm the Millennium Digital technical product assistant. Describe a requirement in plain language — I'll turn it into search criteria against the live catalog and show matches.",
 };
 
+function SuggestionChip({ text, onPress }: { text: string; onPress: () => void }) {
+  const { hovered, hoverHandlers } = useHoverPress();
+
+  return (
+    <Pressable
+      onPress={onPress}
+      {...hoverHandlers}
+      style={[
+        webTransition,
+        {
+          borderWidth: 1,
+          borderColor: hovered ? colors.brand.primary : colors.brand.primarySoftBorder,
+          backgroundColor: hovered ? colors.brand.primary : colors.brand.primarySoft,
+          borderRadius: radius.pill,
+          paddingHorizontal: spacing.sm,
+          paddingVertical: 6,
+          alignSelf: 'flex-start',
+        },
+      ]}
+    >
+      <MDText variant="caption" weight="600" style={{ color: hovered ? colors.gray[0] : colors.brand.primary }}>
+        {text}
+      </MDText>
+    </Pressable>
+  );
+}
+
+function MatchCard({ product, onPress }: { product: Product; onPress: () => void }) {
+  const { hovered, hoverHandlers } = useHoverPress();
+
+  return (
+    <Pressable
+      onPress={onPress}
+      {...hoverHandlers}
+      style={[
+        webTransition,
+        {
+          borderWidth: 1,
+          borderColor: hovered ? colors.brand.primary : colors.border,
+          borderRadius: radius.md,
+          padding: spacing.sm,
+          backgroundColor: hovered ? colors.brand.primarySoft : colors.surface,
+        },
+      ]}
+    >
+      <MDText variant="caption" weight="700" numberOfLines={1}>
+        {product.manufacturerPartNumber}
+      </MDText>
+      <MDText variant="caption" tone="tertiary" numberOfLines={1}>
+        {product.manufacturer}
+      </MDText>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 2 }}>
+        <MDText variant="caption" weight="600" style={{ color: colors.brand.primary }}>
+          {product.currency} {product.price}
+        </MDText>
+        <MDText variant="caption" tone="tertiary">
+          {product.availability} in stock
+        </MDText>
+      </View>
+    </Pressable>
+  );
+}
+
 /**
  * Global floating engineering-search assistant — available on every buyer
  * screen (mounted once in the buyer layout), not embedded in or dependent
@@ -46,6 +109,9 @@ export function AIAssistantWidget() {
   const [loading, setLoading] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([GREETING]);
   const scrollRef = useRef<ScrollView>(null);
+  const closeHover = useHoverPress();
+  const sendHover = useHoverPress();
+  const fabHover = useHoverPress();
 
   // Mounted as a sibling of the routed Stack inside the buyer layout's
   // inner flex:1 container, which already excludes header + (on mobile)
@@ -137,7 +203,13 @@ export function AIAssistantWidget() {
                 <ProtoBadge label="Prototype AI simulation" />
               </View>
             </View>
-            <Pressable onPress={() => setOpen(false)} hitSlop={8} accessibilityLabel="Close assistant">
+            <Pressable
+              onPress={() => setOpen(false)}
+              hitSlop={8}
+              accessibilityLabel="Close assistant"
+              {...closeHover.hoverHandlers}
+              style={[webTransition, { transform: [{ scale: closeHover.hovered ? 1.15 : 1 }] }]}
+            >
               <Ionicons name="close" size={20} color={colors.gray[0]} />
             </Pressable>
           </View>
@@ -178,32 +250,7 @@ export function AIAssistantWidget() {
                 {msg.matches && msg.matches.length > 0 ? (
                   <View style={{ gap: spacing.xs }}>
                     {msg.matches.map((product) => (
-                      <Pressable
-                        key={product.id}
-                        onPress={() => goToProduct(product)}
-                        style={{
-                          borderWidth: 1,
-                          borderColor: colors.border,
-                          borderRadius: radius.md,
-                          padding: spacing.sm,
-                          backgroundColor: colors.surface,
-                        }}
-                      >
-                        <MDText variant="caption" weight="700" numberOfLines={1}>
-                          {product.manufacturerPartNumber}
-                        </MDText>
-                        <MDText variant="caption" tone="tertiary" numberOfLines={1}>
-                          {product.manufacturer}
-                        </MDText>
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 2 }}>
-                          <MDText variant="caption" weight="600" style={{ color: colors.brand.primary }}>
-                            {product.currency} {product.price}
-                          </MDText>
-                          <MDText variant="caption" tone="tertiary">
-                            {product.availability} in stock
-                          </MDText>
-                        </View>
-                      </Pressable>
+                      <MatchCard key={product.id} product={product} onPress={() => goToProduct(product)} />
                     ))}
                     {msg.totalMatches && msg.totalMatches > msg.matches.length ? (
                       <Pressable
@@ -227,23 +274,7 @@ export function AIAssistantWidget() {
                   Try asking:
                 </MDText>
                 {SUGGESTIONS.map((s) => (
-                  <Pressable
-                    key={s}
-                    onPress={() => ask(s)}
-                    style={{
-                      borderWidth: 1,
-                      borderColor: colors.brand.primarySoftBorder,
-                      backgroundColor: colors.brand.primarySoft,
-                      borderRadius: radius.pill,
-                      paddingHorizontal: spacing.sm,
-                      paddingVertical: 6,
-                      alignSelf: 'flex-start',
-                    }}
-                  >
-                    <MDText variant="caption" weight="600" style={{ color: colors.brand.primary }}>
-                      {s}
-                    </MDText>
-                  </Pressable>
+                  <SuggestionChip key={s} text={s} onPress={() => ask(s)} />
                 ))}
               </View>
             ) : null}
@@ -285,14 +316,23 @@ export function AIAssistantWidget() {
             <Pressable
               onPress={() => ask(input)}
               disabled={loading || !input.trim()}
-              style={{
-                width: 32,
-                height: 32,
-                borderRadius: radius.pill,
-                backgroundColor: input.trim() ? colors.brand.primary : colors.gray[200],
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
+              {...sendHover.hoverHandlers}
+              style={[
+                webTransition,
+                {
+                  width: 32,
+                  height: 32,
+                  borderRadius: radius.pill,
+                  backgroundColor: input.trim()
+                    ? sendHover.hovered
+                      ? colors.brand.primaryHover
+                      : colors.brand.primary
+                    : colors.gray[200],
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  transform: [{ scale: sendHover.hovered && input.trim() ? 1.08 : 1 }],
+                },
+              ]}
             >
               <Ionicons name="arrow-up" size={16} color={colors.gray[0]} />
             </Pressable>
@@ -303,14 +343,17 @@ export function AIAssistantWidget() {
       <Pressable
         onPress={() => setOpen((v) => !v)}
         accessibilityLabel={open ? 'Close technical assistant' : 'Open technical assistant'}
+        {...fabHover.hoverHandlers}
         style={[
+          webTransition,
           {
             width: 56,
             height: 56,
             borderRadius: radius.pill,
-            backgroundColor: colors.brand.primary,
+            backgroundColor: fabHover.hovered ? colors.brand.primaryHover : colors.brand.primary,
             alignItems: 'center',
             justifyContent: 'center',
+            transform: [{ scale: fabHover.hovered ? 1.08 : 1 }],
           },
           shadow.lg,
         ]}

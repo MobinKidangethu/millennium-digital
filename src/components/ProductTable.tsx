@@ -1,7 +1,8 @@
+import { useState } from 'react';
 import { Pressable, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, radius, spacing, MDText } from '@/design-system';
+import { colors, radius, spacing, webTransition, MDText } from '@/design-system';
 import type { Product } from '@/types';
 import { MDProductImage } from './MDProductImage';
 import { MDPrice } from './MDPrice';
@@ -34,6 +35,7 @@ function HeaderCell({ label, flex, width }: { label: string; flex?: number; widt
 
 function TableRow({ product }: { product: Product }) {
   const router = useRouter();
+  const [hovered, setHovered] = useState(false);
 
   const goToDetail = () =>
     router.push({
@@ -46,7 +48,10 @@ function TableRow({ product }: { product: Product }) {
       onPress={goToDetail}
       accessibilityRole="link"
       accessibilityLabel={`${product.manufacturer} ${product.manufacturerPartNumber}`}
-      style={({ hovered }: any) => [
+      onHoverIn={() => setHovered(true)}
+      onHoverOut={() => setHovered(false)}
+      style={({ pressed }) => [
+        webTransition,
         {
           flexDirection: 'row',
           alignItems: 'center',
@@ -55,7 +60,7 @@ function TableRow({ product }: { product: Product }) {
           borderBottomWidth: 1,
           borderBottomColor: colors.border,
           gap: spacing.sm,
-          backgroundColor: hovered ? colors.surface : 'transparent',
+          backgroundColor: pressed ? colors.gray[100] : hovered ? colors.surface : 'transparent',
         },
       ]}
     >

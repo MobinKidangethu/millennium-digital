@@ -1,8 +1,9 @@
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { Pressable, ScrollView, View } from 'react-native';
 import { colors, radius, spacing } from './tokens';
 import { MDText } from './MDText';
 import { MDEmptyState } from './MDEmptyState';
+import { webTransition } from './webStyles';
 
 export interface MDTableColumn<T> {
   key: string;
@@ -19,6 +20,61 @@ interface MDTableProps<T> {
   onRowPress?: (row: T) => void;
   emptyTitle?: string;
   emptyDescription?: string;
+}
+
+interface MDTableRowProps<T> {
+  row: T;
+  columns: MDTableColumn<T>[];
+  isLast: boolean;
+  onRowPress?: (row: T) => void;
+}
+
+function MDTableRow<T>({ row, columns, isLast, onRowPress }: MDTableRowProps<T>) {
+  const [hovered, setHovered] = useState(false);
+
+  const cells = (
+    <>
+      {columns.map((col) => (
+        <View key={col.key} style={{ width: col.width ?? 140, paddingVertical: spacing.md, paddingHorizontal: spacing.md, justifyContent: 'center' }}>
+          {col.render(row)}
+        </View>
+      ))}
+    </>
+  );
+
+  if (onRowPress) {
+    return (
+      <Pressable
+        onPress={() => onRowPress(row)}
+        onHoverIn={() => setHovered(true)}
+        onHoverOut={() => setHovered(false)}
+        style={({ pressed }) => [
+          webTransition,
+          {
+            flexDirection: 'row',
+            backgroundColor: pressed ? colors.gray[100] : hovered ? colors.surface : colors.surfaceRaised,
+            borderBottomWidth: isLast ? 0 : 1,
+            borderBottomColor: colors.border,
+          },
+        ]}
+      >
+        {cells}
+      </Pressable>
+    );
+  }
+
+  return (
+    <View
+      style={{
+        flexDirection: 'row',
+        backgroundColor: colors.surfaceRaised,
+        borderBottomWidth: isLast ? 0 : 1,
+        borderBottomColor: colors.border,
+      }}
+    >
+      {cells}
+    </View>
+  );
 }
 
 export function MDTable<T>({ columns, data, keyExtractor, onRowPress, emptyTitle, emptyDescription }: MDTableProps<T>) {
@@ -39,33 +95,15 @@ export function MDTable<T>({ columns, data, keyExtractor, onRowPress, emptyTitle
           ))}
         </View>
 
-        {data.map((row, index) => {
-          const rowContent = (
-            <View
-              style={{
-                flexDirection: 'row',
-                backgroundColor: colors.surfaceRaised,
-                borderBottomWidth: index < data.length - 1 ? 1 : 0,
-                borderBottomColor: colors.border,
-              }}
-            >
-              {columns.map((col) => (
-                <View key={col.key} style={{ width: col.width ?? 140, paddingVertical: spacing.md, paddingHorizontal: spacing.md, justifyContent: 'center' }}>
-                  {col.render(row)}
-                </View>
-              ))}
-            </View>
-          );
-
-          if (onRowPress) {
-            return (
-              <Pressable key={keyExtractor(row)} onPress={() => onRowPress(row)}>
-                {rowContent}
-              </Pressable>
-            );
-          }
-          return <View key={keyExtractor(row)}>{rowContent}</View>;
-        })}
+        {data.map((row, index) => (
+          <MDTableRow
+            key={keyExtractor(row)}
+            row={row}
+            columns={columns}
+            isLast={index === data.length - 1}
+            onRowPress={onRowPress}
+          />
+        ))}
       </View>
     </ScrollView>
   );
