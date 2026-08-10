@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Pressable, ScrollView, View } from 'react-native';
+import { Image, Pressable, ScrollView, View } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -30,12 +30,69 @@ import { ProductRail } from '@/components/ProductRail';
 import { Footer } from '@/components/Footer';
 import { ProtoBadge } from '@/components/ProtoBadge';
 
-const SUPPORT_GRID: { icon: keyof typeof Ionicons.glyphMap; title: string }[] = [
-  { icon: 'headset-outline', title: 'Enterprise Support' },
-  { icon: 'trending-up-outline', title: 'Governed Pricing' },
-  { icon: 'navigate-outline', title: 'Order Tracking' },
-  { icon: 'git-network-outline', title: 'Integration Ready' },
+const SUPPORT_GRID: { icon: keyof typeof Ionicons.glyphMap; title: string; imageUrl: string }[] = [
+  {
+    icon: 'headset-outline',
+    title: 'Enterprise Support',
+    imageUrl: 'https://images.unsplash.com/photo-1766066014237-00645c74e9c6?auto=format&fit=crop&w=400&q=80',
+  },
+  {
+    icon: 'trending-up-outline',
+    title: 'Governed Pricing',
+    imageUrl: 'https://images.unsplash.com/photo-1618044733300-9472054094ee?auto=format&fit=crop&w=400&q=80',
+  },
+  {
+    icon: 'navigate-outline',
+    title: 'Order Tracking',
+    imageUrl: 'https://images.unsplash.com/photo-1618381297523-e6c0ab13a5b2?auto=format&fit=crop&w=400&q=80',
+  },
+  {
+    icon: 'git-network-outline',
+    title: 'Integration Ready',
+    imageUrl: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=400&q=80',
+  },
 ];
+
+function SupportGridImage({
+  icon,
+  imageUrl,
+  title,
+}: {
+  icon: keyof typeof Ionicons.glyphMap;
+  imageUrl: string;
+  title: string;
+}) {
+  const [failed, setFailed] = useState(false);
+
+  if (failed) {
+    return (
+      <View
+        style={{
+          width: 56,
+          height: 56,
+          borderRadius: radius.pill,
+          backgroundColor: colors.brand.primarySoft,
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <Ionicons name={icon} size={22} color={colors.brand.primary} />
+      </View>
+    );
+  }
+
+  return (
+    <View style={{ width: 56, height: 56, borderRadius: radius.pill, overflow: 'hidden', borderWidth: 2, borderColor: colors.brand.primarySoftBorder }}>
+      <Image
+        source={{ uri: imageUrl }}
+        style={{ width: '100%', height: '100%' }}
+        resizeMode="cover"
+        onError={() => setFailed(true)}
+        accessibilityLabel={title}
+      />
+    </View>
+  );
+}
 
 export default function Home() {
   const router = useRouter();
@@ -65,6 +122,35 @@ export default function Home() {
           }}
         >
           <SegmentCarousel />
+        </View>
+      </View>
+
+      {/* Shop by Category — directly below the hero carousel */}
+      <View style={{ maxWidth: layout.maxContentWidth, width: '100%', alignSelf: 'center', paddingHorizontal: spacing.xl, paddingTop: spacing.xl, marginBottom: spacing['2xl'] }}>
+        <MDText variant="h2" style={{ marginBottom: spacing.xs }}>
+          Browse All Categories
+        </MDText>
+        <MDText variant="bodySm" tone="secondary" style={{ marginBottom: spacing.lg }}>
+          Jump straight to a category to filter, compare, and source parts.
+        </MDText>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginHorizontal: -spacing.sm }}>
+          {categoriesLoading
+            ? Array.from({ length: 8 }).map((_, i) => (
+                <View
+                  key={i}
+                  style={{ width: isDesktopUp ? '25%' : '50%', paddingHorizontal: spacing.sm, marginBottom: spacing.lg }}
+                >
+                  <MDSkeleton height={168} />
+                </View>
+              ))
+            : categories?.map((category) => (
+                <View
+                  key={category.slug}
+                  style={{ width: isDesktopUp ? '25%' : '50%', paddingHorizontal: spacing.sm, marginBottom: spacing.lg }}
+                >
+                  <MDCategoryCard category={category} />
+                </View>
+              ))}
         </View>
       </View>
 
@@ -265,35 +351,6 @@ export default function Home() {
           isLoading={newArrivalsLoading}
           viewAllHref="/(buyer)/products"
         />
-
-        {/* Shop by Category */}
-        <View style={{ marginBottom: spacing['3xl'] }}>
-          <MDText variant="h2" style={{ marginBottom: spacing.xs }}>
-            Browse All Categories
-          </MDText>
-          <MDText variant="bodySm" tone="secondary" style={{ marginBottom: spacing.lg }}>
-            Jump straight to a category to filter, compare, and source parts.
-          </MDText>
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginHorizontal: -spacing.sm }}>
-            {categoriesLoading
-              ? Array.from({ length: 8 }).map((_, i) => (
-                  <View
-                    key={i}
-                    style={{ width: isDesktopUp ? '25%' : '50%', paddingHorizontal: spacing.sm, marginBottom: spacing.lg }}
-                  >
-                    <MDSkeleton height={168} />
-                  </View>
-                ))
-              : categories?.map((category) => (
-                  <View
-                    key={category.slug}
-                    style={{ width: isDesktopUp ? '25%' : '50%', paddingHorizontal: spacing.sm, marginBottom: spacing.lg }}
-                  >
-                    <MDCategoryCard category={category} />
-                  </View>
-                ))}
-          </View>
-        </View>
 
         {/* Supplier ecosystem split */}
         <View
@@ -603,18 +660,7 @@ export default function Home() {
           >
             {SUPPORT_GRID.map((item) => (
               <View key={item.title} style={{ width: '47%', alignItems: 'center', gap: spacing.sm, paddingVertical: spacing.md }}>
-                <View
-                  style={{
-                    width: 44,
-                    height: 44,
-                    borderRadius: radius.pill,
-                    backgroundColor: colors.brand.primarySoft,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <Ionicons name={item.icon} size={20} color={colors.brand.primary} />
-                </View>
+                <SupportGridImage icon={item.icon} imageUrl={item.imageUrl} title={item.title} />
                 <MDText variant="caption" weight="700" align="center">
                   {item.title}
                 </MDText>
