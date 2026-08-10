@@ -64,27 +64,33 @@ function RohsDonut({ pct }: { pct: number }) {
   const strokeWidth = 10;
   const r = (size - strokeWidth) / 2;
   const c = 2 * Math.PI * r;
-  const dash = (Math.max(0, Math.min(100, pct)) / 100) * c;
+  const safePct = Number.isFinite(pct) ? Math.max(0, Math.min(100, pct)) : 0;
+  const dash = (safePct / 100) * c;
+  const center = size / 2;
 
   return (
     <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>
       <Svg width={size} height={size}>
-        <Circle cx={size / 2} cy={size / 2} r={r} stroke={colors.gray[100]} strokeWidth={strokeWidth} fill="none" />
+        <Circle cx={center} cy={center} r={r} stroke={colors.gray[100]} strokeWidth={strokeWidth} fill="none" />
+        {/* Rotation is applied via the standard SVG `transform` attribute
+            rather than react-native-svg's `rotation`/`origin` shorthand
+            props — those aren't reliably handled on the web target and
+            crashed the renderer; `transform` is a plain SVG attribute
+            supported everywhere. */}
         <Circle
-          cx={size / 2}
-          cy={size / 2}
+          cx={center}
+          cy={center}
           r={r}
           stroke={colors.status.success}
           strokeWidth={strokeWidth}
           strokeDasharray={`${dash} ${c - dash}`}
           strokeLinecap="round"
           fill="none"
-          rotation="-90"
-          origin={`${size / 2}, ${size / 2}`}
+          transform={`rotate(-90 ${center} ${center})`}
         />
       </Svg>
       <View style={{ position: 'absolute', alignItems: 'center' }}>
-        <MDText variant="h3">{pct}%</MDText>
+        <MDText variant="h3">{safePct}%</MDText>
       </View>
     </View>
   );
