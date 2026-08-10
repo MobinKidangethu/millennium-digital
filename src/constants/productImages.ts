@@ -34,4 +34,5 @@ export const PRODUCT_IMAGES: Record<string, number> = {
   'assets/images/products/S8NR-S36024-A0L2-IL3.png': require('../../assets/images/products/S8NR-S36024-A0L2-IL3.png'),
   'assets/images/products/1119230.png': require('../../assets/images/products/1119230.png'),
   'assets/images/products/EKI-2711MPSI-A.png': require('../../assets/images/products/EKI-2711MPSI-A.png'),
+  'assets/images/products/391173-001-C.png': require('../../assets/images/products/391173-001-C.png'),
 };

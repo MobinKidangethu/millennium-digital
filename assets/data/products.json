@@ -24,9 +24,7 @@
     "category": "Semiconductors",
     "stockType": "Stock",
     "image": "assets/images/products/AIGBG15N120S7ATMA1.webp",
-    "tags": [
-      "new"
-    ]
+    "tags": []
   },
   {
     "id": 2,
@@ -235,9 +233,7 @@
     "category": "Semiconductors",
     "stockType": "Stock",
     "image": "assets/images/products/3KDFN15CA-M3H.webp",
-    "tags": [
-      "new"
-    ]
+    "tags": []
   },
   {
     "id": 10,
@@ -446,9 +442,7 @@
     "category": "Semiconductors",
     "stockType": "Stock",
     "image": "assets/images/products/BZG03C62-HM3_A-08.webp",
-    "tags": [
-      "new"
-    ]
+    "tags": []
   },
   {
     "id": 18,
@@ -683,10 +677,7 @@
     "category": "Semiconductors",
     "stockType": "Stock",
     "image": "assets/images/products/2KDFN27CA-M3H.webp",
-    "tags": [
-      "new",
-      "featured"
-    ]
+    "tags": []
   },
   {
     "id": 27,
@@ -895,11 +886,7 @@
     "category": "Semiconductors",
     "stockType": "Stock",
     "image": "assets/images/products/AIGBG15N120S7ATMA1.webp",
-    "tags": [
-      "new",
-      "best-seller",
-      "featured"
-    ]
+    "tags": []
   },
   {
     "id": 35,
@@ -1108,10 +1095,7 @@
     "category": "Semiconductors",
     "stockType": "Stock",
     "image": "assets/images/products/2KDFN27CA-M3H.webp",
-    "tags": [
-      "new",
-      "best-seller"
-    ]
+    "tags": []
   },
   {
     "id": 43,
@@ -1346,9 +1330,7 @@
     "category": "Semiconductors",
     "stockType": "Stock",
     "image": "assets/images/products/BZG03C62-HM3_A-08.webp",
-    "tags": [
-      "new"
-    ]
+    "tags": []
   },
   {
     "id": 52,
@@ -1557,11 +1539,7 @@
     "category": "Semiconductors",
     "stockType": "Stock",
     "image": "assets/images/products/3KDFN15CA-M3H.webp",
-    "tags": [
-      "new",
-      "best-seller",
-      "featured"
-    ]
+    "tags": []
   },
   {
     "id": 60,
@@ -1770,10 +1748,7 @@
     "category": "Semiconductors",
     "stockType": "Stock",
     "image": "assets/images/products/SS8PH102-M3I.webp",
-    "tags": [
-      "new",
-      "best-seller"
-    ]
+    "tags": []
   },
   {
     "id": 68,
@@ -2008,9 +1983,7 @@
     "category": "Semiconductors",
     "stockType": "Stock",
     "image": "assets/images/products/3KDFN15CA-M3H.webp",
-    "tags": [
-      "new"
-    ]
+    "tags": []
   },
   {
     "id": 77,
@@ -2219,10 +2192,7 @@
     "category": "Semiconductors",
     "stockType": "Stock",
     "image": "assets/images/products/AIGBG15N120S7ATMA1.webp",
-    "tags": [
-      "new",
-      "featured"
-    ]
+    "tags": []
   },
   {
     "id": 85,
@@ -2431,10 +2401,7 @@
     "category": "Semiconductors",
     "stockType": "Stock",
     "image": "assets/images/products/2KDFN27CA-M3H.webp",
-    "tags": [
-      "new",
-      "featured"
-    ]
+    "tags": []
   },
   {
     "id": 93,
@@ -2669,9 +2636,7 @@
     "category": "Semiconductors",
     "stockType": "Stock",
     "image": "assets/images/products/2KDFN27CA-M3H.webp",
-    "tags": [
-      "new"
-    ]
+    "tags": []
   },
   {
     "id": 102,
@@ -2880,10 +2845,7 @@
     "category": "Semiconductors",
     "stockType": "Stock",
     "image": "assets/images/products/SE50124-M3I.webp",
-    "tags": [
-      "new",
-      "featured"
-    ]
+    "tags": []
   },
   {
     "id": 110,
@@ -3092,10 +3054,7 @@
     "category": "Semiconductors",
     "stockType": "Stock",
     "image": "assets/images/products/2KDFN27CA-M3H.webp",
-    "tags": [
-      "new",
-      "best-seller"
-    ]
+    "tags": []
   },
   {
     "id": 118,
@@ -3329,7 +3288,10 @@
     "quantity": 1,
     "category": "Tools & Supplies",
     "stockType": "Stock",
-    "image": "assets/images/components/melexis-ptc-04-db-90316.png"
+    "image": "assets/images/components/melexis-ptc-04-db-90316.png",
+    "tags": [
+      "featured"
+    ]
   },
   {
     "id": 127,
@@ -3355,7 +3317,10 @@
     "quantity": 1,
     "category": "Tools & Supplies",
     "stockType": "Stock",
-    "image": "assets/images/components/melexis-ptc04-db-922xx.png"
+    "image": "assets/images/components/melexis-ptc04-db-922xx.png",
+    "tags": [
+      "featured"
+    ]
   },
   {
     "id": 128,
@@ -3381,7 +3346,10 @@
     "quantity": 1,
     "category": "Wire & Cable",
     "stockType": "Stock",
-    "image": "assets/images/components/melexis-mlx-universal-master-interface-cable.png"
+    "image": "assets/images/components/melexis-mlx-universal-master-interface-cable.png",
+    "tags": [
+      "featured"
+    ]
   },
   {
     "id": 129,
@@ -3407,7 +3375,10 @@
     "quantity": 1,
     "category": "Sensors",
     "stockType": "Stock",
-    "image": "assets/images/components/melexis-evb90632.png"
+    "image": "assets/images/components/melexis-evb90632.png",
+    "tags": [
+      "featured"
+    ]
   },
   {
     "id": 130,
@@ -3433,7 +3404,10 @@
     "quantity": 1,
     "category": "Sensors",
     "stockType": "Stock",
-    "image": "assets/images/components/melexis-evb90640-41.png"
+    "image": "assets/images/components/melexis-evb90640-41.png",
+    "tags": [
+      "featured"
+    ]
   },
   {
     "id": 131,
@@ -3459,7 +3433,10 @@
     "quantity": 1,
     "category": "Sensors",
     "stockType": "Stock",
-    "image": "assets/images/components/melexis-evb90393.png"
+    "image": "assets/images/components/melexis-evb90393.png",
+    "tags": [
+      "featured"
+    ]
   },
   {
     "id": 132,
@@ -3485,7 +3462,10 @@
     "quantity": 1,
     "category": "Sensors",
     "stockType": "Stock",
-    "image": "assets/images/components/melexis-evb90372-gdc-300-rev1.png"
+    "image": "assets/images/components/melexis-evb90372-gdc-300-rev1.png",
+    "tags": [
+      "best-seller"
+    ]
   },
   {
     "id": 133,
@@ -3511,7 +3491,10 @@
     "quantity": 1,
     "category": "Sensors",
     "stockType": "Stock",
-    "image": "assets/images/components/melexis-evb90316-go.png"
+    "image": "assets/images/components/melexis-evb90316-go.png",
+    "tags": [
+      "best-seller"
+    ]
   },
   {
     "id": 134,
@@ -3537,7 +3520,10 @@
     "quantity": 1,
     "category": "Tools & Supplies",
     "stockType": "Stock",
-    "image": "assets/images/components/melexis-ptc04-db-hall05.png"
+    "image": "assets/images/components/melexis-ptc04-db-hall05.png",
+    "tags": [
+      "best-seller"
+    ]
   },
   {
     "id": 135,
@@ -3563,7 +3549,10 @@
     "quantity": 1,
     "category": "Passive Components",
     "stockType": "Stock",
-    "image": "assets/images/components/littelfuse-lpwi201610h1r0t.png"
+    "image": "assets/images/components/littelfuse-lpwi201610h1r0t.png",
+    "tags": [
+      "best-seller"
+    ]
   },
   {
     "id": 136,
@@ -3589,7 +3578,10 @@
     "quantity": 1,
     "category": "Passive Components",
     "stockType": "Stock",
-    "image": "assets/images/components/hartland-littelfuse-cap-10-440r.png"
+    "image": "assets/images/components/hartland-littelfuse-cap-10-440r.png",
+    "tags": [
+      "best-seller"
+    ]
   },
   {
     "id": 137,
@@ -3615,7 +3607,10 @@
     "quantity": 1,
     "category": "Connectors",
     "stockType": "Stock",
-    "image": "assets/images/components/te-connectivity-1-1744036-1.png"
+    "image": "assets/images/components/te-connectivity-1-1744036-1.png",
+    "tags": [
+      "new"
+    ]
   },
   {
     "id": 138,
@@ -3641,7 +3636,10 @@
     "quantity": 1,
     "category": "Embedded Solutions",
     "stockType": "Stock",
-    "image": "assets/images/components/analog-devices-maxim-maxessential02ep.png"
+    "image": "assets/images/components/analog-devices-maxim-maxessential02ep.png",
+    "tags": [
+      "new"
+    ]
   },
   {
     "id": 139,
@@ -3667,7 +3665,10 @@
     "quantity": 1,
     "category": "Power",
     "stockType": "Stock",
-    "image": "assets/images/products/PS67K-3S-24L-250.png"
+    "image": "assets/images/products/PS67K-3S-24L-250.png",
+    "tags": [
+      "new"
+    ]
   },
   {
     "id": 140,
@@ -3693,7 +3694,10 @@
     "quantity": 1,
     "category": "Power",
     "stockType": "Stock",
-    "image": "assets/images/products/DQD6N-24-D15-T.png"
+    "image": "assets/images/products/DQD6N-24-D15-T.png",
+    "tags": [
+      "new"
+    ]
   },
   {
     "id": 141,
@@ -3719,7 +3723,10 @@
     "quantity": 1,
     "category": "Power",
     "stockType": "Stock",
-    "image": "assets/images/products/S8NR-S36024-A0L2-IL3.png"
+    "image": "assets/images/products/S8NR-S36024-A0L2-IL3.png",
+    "tags": [
+      "new"
+    ]
   },
   {
     "id": 142,
@@ -4291,6 +4298,6 @@
     "quantity": 1,
     "category": "Power",
     "stockType": "Stock",
-    "image": ""
+    "image": "assets/images/products/391173-001-C.png"
   }
 ]

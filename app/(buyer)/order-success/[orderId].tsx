@@ -3,13 +3,15 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, radius, spacing, MDButton, MDEmptyState, MDText, useToast } from '@/design-system';
 import { useOrder } from '@/features/orders';
-import { formatPrice } from '@/utils';
+import { formatDisplayPrice } from '@/utils';
+import { useCurrencyStore } from '@/state';
 
 export default function OrderSuccess() {
   const router = useRouter();
   const toast = useToast();
   const { orderId } = useLocalSearchParams<{ orderId: string }>();
   const { data: order, isLoading } = useOrder(orderId);
+  const displayCurrency = useCurrencyStore((s) => s.currency);
 
   if (isLoading) {
     return (
@@ -69,14 +71,14 @@ export default function OrderSuccess() {
                 {item.manufacturerPartNumber} × {item.quantity}
               </MDText>
               <MDText variant="bodySm" weight="600">
-                {formatPrice(item.price * item.quantity, order.currency)}
+                {formatDisplayPrice(item.price * item.quantity, order.currency, displayCurrency)}
               </MDText>
             </View>
           ))}
           <View style={{ borderTopWidth: 1, borderTopColor: colors.border, paddingTop: spacing.sm, flexDirection: 'row', justifyContent: 'space-between' }}>
             <MDText variant="bodyMedium">Total</MDText>
             <MDText variant="bodyMedium" weight="700">
-              {formatPrice(order.total, order.currency)}
+              {formatDisplayPrice(order.total, order.currency, displayCurrency)}
             </MDText>
           </View>
         </View>

@@ -8,7 +8,8 @@ import { useCategories } from '@/features/categories';
 import { useManufacturers } from '@/features/manufacturers';
 import { SITE_SEARCH_INDEX } from '@/constants/siteSearchIndex';
 import { MDProductImage } from '@/components/MDProductImage';
-import { formatPrice } from '@/utils';
+import { formatDisplayPrice } from '@/utils';
+import { useCurrencyStore } from '@/state';
 import { noWebOutline } from '@/design-system/webStyles';
 import type { Product } from '@/types';
 
@@ -341,6 +342,7 @@ function ResultRow({
 
 function ProductResultRow({ product, onPress }: { product: Product; onPress: () => void }) {
   const { hovered, hoverHandlers } = useHoverPress();
+  const displayCurrency = useCurrencyStore((s) => s.currency);
 
   return (
     <Pressable
@@ -370,7 +372,7 @@ function ProductResultRow({ product, onPress }: { product: Product; onPress: () 
         </MDText>
       </View>
       <MDText variant="caption" weight="600" style={{ color: colors.brand.primary }}>
-        {formatPrice(product.price, product.currency)}
+        {formatDisplayPrice(product.price, product.currency, displayCurrency)}
       </MDText>
     </Pressable>
   );

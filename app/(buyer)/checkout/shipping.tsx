@@ -2,10 +2,10 @@ import { useState } from 'react';
 import { Pressable, View } from 'react-native';
 import { Redirect, useRouter } from 'expo-router';
 import { colors, radius, spacing, MDButton, MDText } from '@/design-system';
-import { useCheckoutStore } from '@/state';
+import { useCheckoutStore, useCurrencyStore } from '@/state';
 import { SHIPPING_METHODS } from '@/features/checkout';
 import { CheckoutStepper } from '@/components/CheckoutStepper';
-import { formatPrice } from '@/utils';
+import { formatDisplayPrice } from '@/utils';
 import type { ShippingMethodOption } from '@/types';
 
 export default function CheckoutShipping() {
@@ -14,6 +14,7 @@ export default function CheckoutShipping() {
   const shippingMethod = useCheckoutStore((s) => s.shippingMethod);
   const setShippingMethod = useCheckoutStore((s) => s.setShippingMethod);
   const [selected, setSelected] = useState<ShippingMethodOption | null>(shippingMethod ?? SHIPPING_METHODS[0]);
+  const displayCurrency = useCurrencyStore((s) => s.currency);
 
   if (!shippingAddress) {
     return <Redirect href="/(buyer)/checkout/address" />;
@@ -74,7 +75,7 @@ export default function CheckoutShipping() {
                 </View>
               </View>
               <MDText variant="bodyMedium" weight="700">
-                {method.cost === 0 ? 'Free' : formatPrice(method.cost, 'INR')}
+                {method.cost === 0 ? 'Free' : formatDisplayPrice(method.cost, 'INR', displayCurrency)}
               </MDText>
             </Pressable>
           );

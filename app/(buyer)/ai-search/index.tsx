@@ -18,13 +18,13 @@ import {
 } from '@/design-system';
 import { aiService } from '@/features/ai';
 import { rfqService } from '@/features/rfq';
-import { useBomWorkflowStore, useCartStore, useCompareStore } from '@/state';
+import { useBomWorkflowStore, useCartStore, useCompareStore, useCurrencyStore } from '@/state';
 import { ProtoBadge } from '@/components/ProtoBadge';
 import { MDProductImage } from '@/components/MDProductImage';
 import { MDManufacturerLogo } from '@/components/MDManufacturerLogo';
 import { MDPrice } from '@/components/MDPrice';
 import { MDStockStatus } from '@/components/MDStockStatus';
-import { formatPrice } from '@/utils';
+import { formatDisplayPrice } from '@/utils';
 import type { AiSearchResult, Product } from '@/types';
 
 const EXAMPLE_QUERIES = [
@@ -109,6 +109,7 @@ export default function AiEngineeringSearch() {
   const [requestingId, setRequestingId] = useState<number | null>(null);
   const setRfq = useBomWorkflowStore((s) => s.setRfq);
   const setQuote = useBomWorkflowStore((s) => s.setQuote);
+  const displayCurrency = useCurrencyStore((s) => s.currency);
 
   const runSearch = async (text: string) => {
     if (!text.trim()) return;
@@ -221,7 +222,7 @@ export default function AiEngineeringSearch() {
                 {result.criteria.manufacturer ? <MDBadge label={`Mfr: ${result.criteria.manufacturer}`} tone="brand" /> : null}
                 {result.criteria.rohsOnly ? <MDBadge label="RoHS" tone="success" /> : null}
                 {result.criteria.minAvailability != null ? <MDBadge label={`Availability > ${result.criteria.minAvailability}`} tone="brand" /> : null}
-                {result.criteria.maxPrice != null ? <MDBadge label={`Price < ${formatPrice(result.criteria.maxPrice, 'INR')}`} tone="brand" /> : null}
+                {result.criteria.maxPrice != null ? <MDBadge label={`Price < ${formatDisplayPrice(result.criteria.maxPrice, 'INR', displayCurrency)}`} tone="brand" /> : null}
               </View>
             </View>
 

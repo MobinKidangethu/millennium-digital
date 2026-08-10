@@ -20,7 +20,7 @@ export function MDProductImage({ imagePath, alt, style }: MDProductImageProps) {
       {source && !failed ? (
         <Image
           source={source}
-          contentFit="contain"
+          contentFit="cover"
           style={{ width: '100%', height: '100%' }}
           accessibilityLabel={alt}
           onError={() => setFailed(true)}

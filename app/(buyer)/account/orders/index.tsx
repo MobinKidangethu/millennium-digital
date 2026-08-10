@@ -2,10 +2,10 @@ import { View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, radius, spacing, MDButton, MDEmptyState, MDSkeleton, MDText, useToast } from '@/design-system';
-import { useAuthStore } from '@/state';
+import { useAuthStore, useCurrencyStore } from '@/state';
 import { useOrders, useReorder } from '@/features/orders';
 import { MDOrderStatus } from '@/components/MDOrderStatus';
-import { formatPrice } from '@/utils';
+import { formatDisplayPrice } from '@/utils';
 
 export default function OrderHistory() {
   const router = useRouter();
@@ -13,6 +13,7 @@ export default function OrderHistory() {
   const session = useAuthStore((s) => s.session);
   const { data: orders, isLoading } = useOrders(session?.user.id);
   const reorder = useReorder();
+  const displayCurrency = useCurrencyStore((s) => s.currency);
 
   return (
     <View>
@@ -60,7 +61,7 @@ export default function OrderHistory() {
               </View>
 
               <MDText variant="bodySm" weight="700" style={{ marginBottom: spacing.sm }}>
-                {formatPrice(order.total, order.currency)}
+                {formatDisplayPrice(order.total, order.currency, displayCurrency)}
               </MDText>
 
               <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs }}>

@@ -5,7 +5,8 @@ import { colors, radius, spacing, MDInput, MDSkeleton, MDTable, MDText, type MDT
 import { useAllOrders } from '@/features/orders';
 import { useCustomers } from '@/features/customers';
 import { MDOrderStatus } from '@/components/MDOrderStatus';
-import { formatPrice } from '@/utils';
+import { formatDisplayPrice } from '@/utils';
+import { useCurrencyStore } from '@/state';
 import type { Order, OrderStatus } from '@/types';
 
 const STATUS_TABS: (OrderStatus | 'all')[] = ['all', 'placed', 'processing', 'shipped', 'out-for-delivery', 'delivered', 'cancelled'];
@@ -16,6 +17,7 @@ export default function AdminOrders() {
   const { data: customers } = useCustomers();
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<OrderStatus | 'all'>('all');
+  const displayCurrency = useCurrencyStore((s) => s.currency);
 
   const customerById = useMemo(() => new Map((customers ?? []).map((c) => [c.id, c])), [customers]);
 
@@ -58,7 +60,7 @@ export default function AdminOrders() {
       render: (o) => <MDText variant="bodySm">{new Date(o.placedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</MDText>,
     },
     { key: 'items', label: 'Items', width: 70, render: (o) => <MDText variant="bodySm">{o.items.length}</MDText> },
-    { key: 'total', label: 'Total', width: 120, render: (o) => <MDText variant="bodySm" weight="600">{formatPrice(o.total, o.currency)}</MDText> },
+    { key: 'total', label: 'Total', width: 120, render: (o) => <MDText variant="bodySm" weight="600">{formatDisplayPrice(o.total, o.currency, displayCurrency)}</MDText> },
     { key: 'status', label: 'Status', width: 150, render: (o) => <MDOrderStatus status={o.status} /> },
   ];
 

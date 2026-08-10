@@ -11,3 +11,4 @@ export * from './notificationPrefsStore';
 export * from './catalogMetaStore';
 export * from './governanceStore';
 export * from './bomWorkflowStore';
+export * from './currencyStore';

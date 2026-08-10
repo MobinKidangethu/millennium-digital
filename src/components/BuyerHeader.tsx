@@ -14,6 +14,7 @@ import {
 } from '@/design-system';
 import { useCartStore, selectCartCount, useWishlistStore, useCompareStore, useAuthStore } from '@/state';
 import { GlobalSearchBar } from '@/components/GlobalSearchBar';
+import { CurrencySwitcher } from '@/components/CurrencySwitcher';
 
 interface SubNavItem {
   key: string;
@@ -203,6 +204,7 @@ export function BuyerHeader() {
           />
         </FadePressable>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <CurrencySwitcher compact />
           <HeaderIconLink
             icon="sparkles-outline"
             label="Engineering Workspace"
@@ -244,6 +246,7 @@ export function BuyerHeader() {
           <GlobalSearchBar style={{ flex: 1 }} />
 
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <CurrencySwitcher />
             <HeaderIconLink
               icon="git-compare-outline"
               label="Compare products"

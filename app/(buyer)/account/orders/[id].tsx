@@ -7,7 +7,8 @@ import { MDOrderStatus } from '@/components/MDOrderStatus';
 import { MDProductImage } from '@/components/MDProductImage';
 import { LogisticsTracker } from '@/components/LogisticsTracker';
 import { ProtoBadge } from '@/components/ProtoBadge';
-import { formatPrice } from '@/utils';
+import { formatDisplayPrice } from '@/utils';
+import { useCurrencyStore } from '@/state';
 
 export default function OrderDetail() {
   const router = useRouter();
@@ -16,6 +17,7 @@ export default function OrderDetail() {
   const { data: order, isLoading } = useOrder(id);
   const cancelOrder = useCancelOrder();
   const reorder = useReorder();
+  const displayCurrency = useCurrencyStore((s) => s.currency);
 
   if (isLoading) {
     return (
@@ -108,7 +110,7 @@ export default function OrderDetail() {
                 </MDText>
               </View>
               <MDText variant="bodySm" weight="600">
-                {formatPrice(item.price * item.quantity, order.currency)}
+                {formatDisplayPrice(item.price * item.quantity, order.currency, displayCurrency)}
               </MDText>
             </View>
           ))}
@@ -151,11 +153,11 @@ export default function OrderDetail() {
             marginBottom: spacing.xl,
           }}
         >
-          <SummaryRow label="Subtotal" value={formatPrice(order.subtotal, order.currency)} />
-          <SummaryRow label="Shipping" value={order.shippingCost === 0 ? 'Free' : formatPrice(order.shippingCost, order.currency)} />
-          <SummaryRow label="Tax" value={formatPrice(order.tax, order.currency)} />
+          <SummaryRow label="Subtotal" value={formatDisplayPrice(order.subtotal, order.currency, displayCurrency)} />
+          <SummaryRow label="Shipping" value={order.shippingCost === 0 ? 'Free' : formatDisplayPrice(order.shippingCost, order.currency, displayCurrency)} />
+          <SummaryRow label="Tax" value={formatDisplayPrice(order.tax, order.currency, displayCurrency)} />
           <View style={{ borderTopWidth: 1, borderTopColor: colors.border, paddingTop: spacing.sm }}>
-            <SummaryRow label="Total" value={formatPrice(order.total, order.currency)} bold />
+            <SummaryRow label="Total" value={formatDisplayPrice(order.total, order.currency, displayCurrency)} bold />
           </View>
         </View>
 

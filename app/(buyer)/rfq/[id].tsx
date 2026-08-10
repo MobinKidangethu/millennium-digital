@@ -15,11 +15,11 @@ import {
   MDText,
 } from '@/design-system';
 import { rfqService } from '@/features/rfq';
-import { useBomWorkflowStore, useCartStore } from '@/state';
+import { useBomWorkflowStore, useCartStore, useCurrencyStore } from '@/state';
 import { ProtoBadge } from '@/components/ProtoBadge';
 import { PricingBreakdownTable } from '@/components/PricingBreakdownTable';
 import { MDManufacturerLogo } from '@/components/MDManufacturerLogo';
-import { formatPrice } from '@/utils';
+import { formatDisplayPrice } from '@/utils';
 
 const SOURCE_LABEL: Record<string, string> = {
   bom: 'BOM Component Matching',
@@ -38,6 +38,7 @@ export default function RfqDetail() {
   const quote = useBomWorkflowStore((s) => s.quote);
   const setQuote = useBomWorkflowStore((s) => s.setQuote);
   const addToCart = useCartStore((s) => s.addItem);
+  const displayCurrency = useCurrencyStore((s) => s.currency);
   const [generating, setGenerating] = useState(false);
   const [approved, setApproved] = useState(false);
 
@@ -135,7 +136,7 @@ export default function RfqDetail() {
                       Qty {line.quantity} · {line.product.productType}
                     </MDText>
                   </View>
-                  <MDText variant="h4">{formatPrice(line.pricing.approvedLineTotal, quote.currency)}</MDText>
+                  <MDText variant="h4">{formatDisplayPrice(line.pricing.approvedLineTotal, quote.currency, displayCurrency)}</MDText>
                 </View>
                 <PricingBreakdownTable pricing={line.pricing} showBadge={false} />
               </MDCard>
@@ -152,7 +153,7 @@ export default function RfqDetail() {
                   </MDText>
                 </View>
                 <MDText variant="h2" style={{ color: colors.gray[0] }}>
-                  {formatPrice(quote.subtotal, quote.currency)}
+                  {formatDisplayPrice(quote.subtotal, quote.currency, displayCurrency)}
                 </MDText>
               </View>
             </MDCard>

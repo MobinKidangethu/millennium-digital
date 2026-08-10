@@ -18,7 +18,8 @@ import {
 } from '@/design-system';
 import { useDeleteProduct, useProductsAdmin, useSetProductPublished } from '@/features/products';
 import { resolveProductImage } from '@/utils';
-import { formatPrice } from '@/utils';
+import { formatDisplayPrice } from '@/utils';
+import { useCurrencyStore } from '@/state';
 import type { Product } from '@/types';
 
 const PAGE_SIZE = 12;
@@ -33,6 +34,7 @@ export default function AdminProducts() {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [selected, setSelected] = useState<Set<number>>(new Set());
+  const displayCurrency = useCurrencyStore((s) => s.currency);
 
   const filtered = useMemo(() => {
     if (!products) return [];
@@ -119,7 +121,7 @@ export default function AdminProducts() {
       ),
     },
     { key: 'category', label: 'Category', width: 140, render: (p) => <MDText variant="bodySm">{p.category}</MDText> },
-    { key: 'price', label: 'Price', width: 100, render: (p) => <MDText variant="bodySm">{formatPrice(p.price, p.currency)}</MDText> },
+    { key: 'price', label: 'Price', width: 100, render: (p) => <MDText variant="bodySm">{formatDisplayPrice(p.price, p.currency, displayCurrency)}</MDText> },
     {
       key: 'stock',
       label: 'Stock',

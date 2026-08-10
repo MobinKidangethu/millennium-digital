@@ -3,11 +3,13 @@ import { ScrollView, View } from 'react-native';
 import { colors, radius, spacing, MDBadge, MDInput, MDSkeleton, MDTable, MDText, type MDTableColumn } from '@/design-system';
 import { useCustomers, type CustomerWithStats } from '@/features/customers';
 import { MDStatsCard } from '@/components/MDStatsCard';
-import { formatPrice } from '@/utils';
+import { formatDisplayPrice } from '@/utils';
+import { useCurrencyStore } from '@/state';
 
 export default function CustomerManagement() {
   const { data: customers, isLoading } = useCustomers();
   const [search, setSearch] = useState('');
+  const displayCurrency = useCurrencyStore((s) => s.currency);
 
   const filtered = useMemo(() => {
     if (!customers) return [];
@@ -40,7 +42,7 @@ export default function CustomerManagement() {
       key: 'spent',
       label: 'Total Spent',
       width: 140,
-      render: (c) => <MDText variant="bodySm">{formatPrice(c.totalSpent, 'INR')}</MDText>,
+      render: (c) => <MDText variant="bodySm">{formatDisplayPrice(c.totalSpent, 'INR', displayCurrency)}</MDText>,
     },
     {
       key: 'joined',
@@ -64,7 +66,7 @@ export default function CustomerManagement() {
           <>
             <View style={{ flexDirection: 'row', gap: spacing.lg, marginBottom: spacing.xl, flexWrap: 'wrap' }}>
               <MDStatsCard label="Total Customers" value={String(customers?.length ?? 0)} icon="people-outline" />
-              <MDStatsCard label="Total Revenue" value={formatPrice(totalRevenue, 'INR')} icon="cash-outline" tone="success" />
+              <MDStatsCard label="Total Revenue" value={formatDisplayPrice(totalRevenue, 'INR', displayCurrency)} icon="cash-outline" tone="success" />
             </View>
 
             <MDInput

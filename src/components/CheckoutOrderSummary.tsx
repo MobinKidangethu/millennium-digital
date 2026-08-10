@@ -3,10 +3,10 @@ import { View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, radius, spacing, MDText } from '@/design-system';
 import { useCartLines } from '@/features/cart';
-import { useCheckoutStore } from '@/state';
+import { useCheckoutStore, useCurrencyStore } from '@/state';
 import { TAX_RATE } from '@/features/checkout';
 import { TRUST_ICONS } from '@/constants/trustIcons';
-import { formatPrice } from '@/utils';
+import { formatDisplayPrice } from '@/utils';
 import { MDProductImage } from './MDProductImage';
 
 /**
@@ -19,6 +19,7 @@ import { MDProductImage } from './MDProductImage';
 export function CheckoutOrderSummary({ compact = false }: { compact?: boolean }) {
   const { lines, subtotal } = useCartLines();
   const shippingMethod = useCheckoutStore((s) => s.shippingMethod);
+  const displayCurrency = useCurrencyStore((s) => s.currency);
   const currency = lines[0]?.product.currency ?? 'INR';
   const tax = Math.round(subtotal * TAX_RATE * 100) / 100;
   const shippingCost = shippingMethod?.cost ?? null;
@@ -59,7 +60,7 @@ export function CheckoutOrderSummary({ compact = false }: { compact?: boolean })
                 </MDText>
               </View>
               <MDText variant="bodySm" weight="600">
-                {formatPrice(line.lineTotal, line.product.currency)}
+                {formatDisplayPrice(line.lineTotal, line.product.currency, displayCurrency)}
               </MDText>
             </View>
           ))}
@@ -67,15 +68,15 @@ export function CheckoutOrderSummary({ compact = false }: { compact?: boolean })
       ) : null}
 
       <View style={{ borderTopWidth: 1, borderTopColor: colors.border, paddingTop: spacing.sm, gap: 6 }}>
-        <SummaryRow label="Subtotal" value={formatPrice(subtotal, currency)} />
+        <SummaryRow label="Subtotal" value={formatDisplayPrice(subtotal, currency, displayCurrency)} />
         <SummaryRow
           label="Shipping"
-          value={shippingCost == null ? 'Calculated at next step' : shippingCost === 0 ? 'Free' : formatPrice(shippingCost, currency)}
+          value={shippingCost == null ? 'Calculated at next step' : shippingCost === 0 ? 'Free' : formatDisplayPrice(shippingCost, currency, displayCurrency)}
           muted={shippingCost == null}
         />
-        <SummaryRow label="Tax (GST)" value={formatPrice(tax, currency)} />
+        <SummaryRow label="Tax (GST)" value={formatDisplayPrice(tax, currency, displayCurrency)} />
         <View style={{ borderTopWidth: 1, borderTopColor: colors.border, paddingTop: spacing.sm, marginTop: 2 }}>
-          <SummaryRow label="Total" value={formatPrice(total, currency)} bold />
+          <SummaryRow label="Total" value={formatDisplayPrice(total, currency, displayCurrency)} bold />
         </View>
       </View>
 

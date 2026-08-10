@@ -18,8 +18,8 @@ import {
 } from '@/design-system';
 import { useCartLines } from '@/features/cart';
 import { rfqService } from '@/features/rfq';
-import { useBomWorkflowStore, useCartStore, useWishlistStore } from '@/state';
-import { formatPrice } from '@/utils';
+import { useBomWorkflowStore, useCartStore, useCurrencyStore, useWishlistStore } from '@/state';
+import { formatDisplayPrice } from '@/utils';
 import { MDProductImage } from '@/components/MDProductImage';
 import { MDManufacturerLogo } from '@/components/MDManufacturerLogo';
 import { MDStockStatus } from '@/components/MDStockStatus';
@@ -42,6 +42,7 @@ export default function Cart() {
   const toggleWishlist = useWishlistStore((s) => s.toggle);
   const setRfq = useBomWorkflowStore((s) => s.setRfq);
   const setQuote = useBomWorkflowStore((s) => s.setQuote);
+  const displayCurrency = useCurrencyStore((s) => s.currency);
   const [requestingQuote, setRequestingQuote] = useState(false);
 
   const currency = lines[0]?.product.currency ?? 'INR';
@@ -207,7 +208,7 @@ export default function Cart() {
                             size="sm"
                           />
                           <MDText variant="bodyMedium" weight="700">
-                            {formatPrice(line.lineTotal, line.product.currency)}
+                            {formatDisplayPrice(line.lineTotal, line.product.currency, displayCurrency)}
                           </MDText>
                         </View>
                       ) : null}
@@ -239,7 +240,7 @@ export default function Cart() {
                   {isDesktopUp ? (
                     <>
                       <MDText variant="bodySm" style={{ width: 110, textAlign: 'right' }}>
-                        {formatPrice(line.product.price, line.product.currency)}
+                        {formatDisplayPrice(line.product.price, line.product.currency, displayCurrency)}
                       </MDText>
                       <View style={{ width: 140, alignItems: 'center' }}>
                         <MDQuantitySelector
@@ -250,7 +251,7 @@ export default function Cart() {
                         />
                       </View>
                       <MDText variant="bodyMedium" weight="700" style={{ width: 110, textAlign: 'right' }}>
-                        {formatPrice(line.lineTotal, line.product.currency)}
+                        {formatDisplayPrice(line.lineTotal, line.product.currency, displayCurrency)}
                       </MDText>
                       <View style={{ width: 28, alignItems: 'flex-end' }}>
                         <Ionicons
@@ -306,7 +307,7 @@ export default function Cart() {
                 <MDText variant="bodySm" tone="secondary">
                   Subtotal
                 </MDText>
-                <MDText variant="bodySm">{formatPrice(subtotal, currency)}</MDText>
+                <MDText variant="bodySm">{formatDisplayPrice(subtotal, currency, displayCurrency)}</MDText>
               </View>
               <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                 <MDText variant="bodySm" tone="secondary">
@@ -333,7 +334,7 @@ export default function Cart() {
               >
                 <MDText variant="bodyMedium">Total</MDText>
                 <MDText variant="bodyMedium" weight="700">
-                  {formatPrice(total, currency)}
+                  {formatDisplayPrice(total, currency, displayCurrency)}
                 </MDText>
               </View>
 

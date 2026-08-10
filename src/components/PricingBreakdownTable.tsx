@@ -1,10 +1,12 @@
 import { View } from 'react-native';
 import { colors, radius, spacing, MDText } from '@/design-system';
-import { formatPrice } from '@/utils';
+import { formatDisplayPrice } from '@/utils';
+import { useCurrencyStore } from '@/state';
 import { ProtoBadge } from './ProtoBadge';
 import type { PricingBreakdown } from '@/types';
 
 export function PricingBreakdownTable({ pricing, showBadge = true }: { pricing: PricingBreakdown; showBadge?: boolean }) {
+  const displayCurrency = useCurrencyStore((s) => s.currency);
   return (
     <View>
       {showBadge ? <ProtoBadge label="Demo pricing rules — not official commercial terms" /> : null}
@@ -48,7 +50,7 @@ export function PricingBreakdownTable({ pricing, showBadge = true }: { pricing: 
               </MDText>
             ) : null}
             <MDText variant="bodySm" weight="700" style={{ minWidth: 84, textAlign: 'right' }}>
-              {formatPrice(step.unitPriceAfter, pricing.currency)}
+              {formatDisplayPrice(step.unitPriceAfter, pricing.currency, displayCurrency)}
             </MDText>
           </View>
         ))}
@@ -74,7 +76,7 @@ export function PricingBreakdownTable({ pricing, showBadge = true }: { pricing: 
           </MDText>
         </View>
         <MDText variant="h4" style={{ color: colors.brand.primary }}>
-          {formatPrice(pricing.approvedLineTotal, pricing.currency)}
+          {formatDisplayPrice(pricing.approvedLineTotal, pricing.currency, displayCurrency)}
         </MDText>
       </View>
     </View>

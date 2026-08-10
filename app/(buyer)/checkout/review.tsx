@@ -3,11 +3,11 @@ import { Pressable, View } from 'react-native';
 import { Redirect, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, radius, spacing, MDButton, MDText, useToast } from '@/design-system';
-import { useAuthStore, useCheckoutStore } from '@/state';
+import { useAuthStore, useCheckoutStore, useCurrencyStore } from '@/state';
 import { useCartLines } from '@/features/cart';
 import { useCreateOrder } from '@/features/orders';
 import { CheckoutStepper } from '@/components/CheckoutStepper';
-import { formatPrice } from '@/utils';
+import { formatDisplayPrice } from '@/utils';
 
 export default function CheckoutReview() {
   const router = useRouter();
@@ -18,6 +18,7 @@ export default function CheckoutReview() {
   const createOrder = useCreateOrder();
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const displayCurrency = useCurrencyStore((s) => s.currency);
 
   if (!shippingAddress || !shippingMethod || !paymentMethod) {
     return <Redirect href="/(buyer)/checkout/address" />;
@@ -68,7 +69,7 @@ export default function CheckoutReview() {
 
       <ReviewSection icon="cube-outline" title="Shipping Method" onEdit={() => router.push('/(buyer)/checkout/shipping')}>
         <MDText variant="bodySm">
-          {shippingMethod.label} · {shippingMethod.cost === 0 ? 'Free' : formatPrice(shippingMethod.cost, currency)}
+          {shippingMethod.label} · {shippingMethod.cost === 0 ? 'Free' : formatDisplayPrice(shippingMethod.cost, currency, displayCurrency)}
         </MDText>
       </ReviewSection>
 

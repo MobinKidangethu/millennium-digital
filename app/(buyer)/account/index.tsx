@@ -3,11 +3,11 @@ import { Pressable, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, radius, shadow, spacing, useResponsive, useToast, MDButton, MDInput, MDText } from '@/design-system';
-import { useAddressStore, useAuthStore } from '@/state';
+import { useAddressStore, useAuthStore, useCurrencyStore } from '@/state';
 import { useLogout } from '@/features/auth';
 import { useOrders } from '@/features/orders';
 import { ACCOUNT_NAV_GROUPS } from '@/constants/accountNav';
-import { formatPrice } from '@/utils';
+import { formatDisplayPrice } from '@/utils';
 
 function initialsFor(fullName: string): string {
   const parts = fullName.trim().split(/\s+/).filter(Boolean);
@@ -24,6 +24,7 @@ export default function AccountProfile() {
   const logout = useLogout();
   const addresses = useAddressStore((s) => s.addresses);
   const { data: orders } = useOrders(session?.user.id);
+  const displayCurrency = useCurrencyStore((s) => s.currency);
 
   const [editing, setEditing] = useState(false);
   const [fullName, setFullName] = useState(session?.user.fullName ?? '');
@@ -177,7 +178,7 @@ export default function AccountProfile() {
                 {orders.length} order{orders.length === 1 ? '' : 's'} placed
               </MDText>
               <MDText variant="caption" tone="secondary">
-                Most recent: #{orders[0].orderNumber} · {formatPrice(orders[0].total, orders[0].currency)}
+                Most recent: #{orders[0].orderNumber} · {formatDisplayPrice(orders[0].total, orders[0].currency, displayCurrency)}
               </MDText>
             </View>
           )}
