@@ -29,4 +29,5 @@ export const PRODUCT_IMAGES: Record<string, number> = {
   'assets/images/products/SE50124-M3I.webp': require('../../assets/images/products/SE50124-M3I.webp'),
   'assets/images/products/SS8PH102-M3I.webp': require('../../assets/images/products/SS8PH102-M3I.webp'),
   'assets/images/products/VS-4C20ET07S2L-M3.webp': require('../../assets/images/products/VS-4C20ET07S2L-M3.webp'),
+  'assets/images/products/PS67K-3S-24L-250.png': require('../../assets/images/products/PS67K-3S-24L-250.png'),
 };
