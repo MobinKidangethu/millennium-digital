@@ -87,6 +87,59 @@ function ViewModeToggle({ value, onChange }: { value: ViewMode; onChange: (v: Vi
   );
 }
 
+const GRID_COLUMN_OPTIONS = [3, 4, 5] as const;
+
+function GridColumnsSegment({ count, active, isFirst, onPress }: { count: number; active: boolean; isFirst: boolean; onPress: () => void }) {
+  const { hovered, hoverHandlers } = useHoverPress();
+
+  return (
+    <Pressable
+      onPress={onPress}
+      accessibilityLabel={`${count} tiles per row`}
+      accessibilityState={{ selected: active }}
+      {...hoverHandlers}
+      style={[
+        webTransition,
+        {
+          width: 28,
+          alignItems: 'center',
+          paddingVertical: spacing.sm - 1,
+          backgroundColor: active ? colors.brand.primary : hovered ? colors.surface : 'transparent',
+          borderLeftWidth: isFirst ? 0 : 1,
+          borderLeftColor: colors.border,
+        },
+      ]}
+    >
+      <MDText variant="caption" weight="700" style={{ color: active ? colors.gray[0] : hovered ? colors.brand.primary : colors.text.secondary }}>
+        {count}
+      </MDText>
+    </Pressable>
+  );
+}
+
+/** Lets the buyer choose how many product tiles fit per row on desktop grid/paginated views. */
+function GridColumnsToggle({ value, onChange }: { value: number; onChange: (v: number) => void }) {
+  return (
+    <View
+      style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        borderWidth: 1,
+        borderColor: colors.border,
+        borderRadius: radius.md,
+        overflow: 'hidden',
+      }}
+    >
+      <View style={{ paddingHorizontal: spacing.sm }}>
+        <Ionicons name="apps-outline" size={13} color={colors.text.tertiary} />
+      </View>
+      {GRID_COLUMN_OPTIONS.map((count, i) => (
+        <GridColumnsSegment key={count} count={count} active={value === count} isFirst={i === 0} onPress={() => onChange(count)} />
+      ))}
+    </View>
+  );
+}
+
 function PageArrowButton({
   icon,
   disabled,
@@ -246,6 +299,7 @@ export function ProductCatalogView({
   const { isDesktopUp, isTabletUp } = useResponsive();
   const [filterSheetOpen, setFilterSheetOpen] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
+  const [gridColumns, setGridColumns] = useState(4);
   const [page, setPage] = useState(1);
   const { filters, setSort, toggleValue, setRohsOnly, setPriceRange, setMinAvailability, clearAll, activeFilterCount } =
     useCatalogFilters(initialFilters);
@@ -259,7 +313,7 @@ export function ProductCatalogView({
     setPage(1);
   }, [filters, viewMode]);
 
-  const numColumns = isDesktopUp ? 3 : isTabletUp ? 3 : 2;
+  const numColumns = isDesktopUp ? gridColumns : isTabletUp ? 3 : 2;
   const totalPages = Math.max(1, Math.ceil((results?.length ?? 0) / PAGE_SIZE));
   const pagedResults = results?.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE) ?? [];
 
@@ -351,6 +405,7 @@ export function ProductCatalogView({
                 </MDText>
               </Pressable>
             ) : null}
+            {isDesktopUp && viewMode !== 'table' ? <GridColumnsToggle value={gridColumns} onChange={setGridColumns} /> : null}
             {isDesktopUp ? <ViewModeToggle value={viewMode} onChange={setViewMode} /> : null}
             <ProductSortMenu value={filters.sort ?? 'relevance'} onChange={setSort} />
           </View>

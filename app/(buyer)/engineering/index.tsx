@@ -1,4 +1,5 @@
-import { ScrollView, View } from 'react-native';
+import { useState } from 'react';
+import { Image, ScrollView, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, layout, radius, shadow, spacing, useResponsive, MDButton, MDText } from '@/design-system';
@@ -25,6 +26,9 @@ interface WorkspaceCard {
   actionLabel: string;
   href: string;
   tone: 'brand' | 'neutral';
+  /** Real photo (Unsplash, free license) representing the tool concept — same sourcing pattern as SegmentCarousel/CategoryImages. */
+  imageUrl: string;
+  accent: string;
 }
 
 const CARDS: WorkspaceCard[] = [
@@ -35,6 +39,8 @@ const CARDS: WorkspaceCard[] = [
     actionLabel: 'Search with AI',
     href: '/(buyer)/ai-search',
     tone: 'brand',
+    imageUrl: 'https://images.unsplash.com/photo-1743796055664-3473eedab36e?auto=format&fit=crop&w=800&q=80',
+    accent: colors.brand.primary,
   },
   {
     icon: 'document-attach-outline',
@@ -43,6 +49,8 @@ const CARDS: WorkspaceCard[] = [
     actionLabel: 'Start BOM Matching',
     href: '/(buyer)/bom',
     tone: 'brand',
+    imageUrl: 'https://images.unsplash.com/photo-1739025530417-3d57a2e685f2?auto=format&fit=crop&w=800&q=80',
+    accent: colors.teal[500],
   },
   {
     icon: 'construct-outline',
@@ -51,6 +59,8 @@ const CARDS: WorkspaceCard[] = [
     actionLabel: 'Submit a Design Request',
     href: '/(buyer)/design-request',
     tone: 'neutral',
+    imageUrl: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=800&q=80',
+    accent: colors.plum[400],
   },
   {
     icon: 'options-outline',
@@ -59,6 +69,8 @@ const CARDS: WorkspaceCard[] = [
     actionLabel: 'Browse Categories',
     href: '/(buyer)/category',
     tone: 'neutral',
+    imageUrl: 'https://images.unsplash.com/photo-1586256053828-a36b572ab01d?auto=format&fit=crop&w=800&q=80',
+    accent: colors.status.success,
   },
   {
     icon: 'business-outline',
@@ -67,6 +79,8 @@ const CARDS: WorkspaceCard[] = [
     actionLabel: 'View Manufacturers',
     href: '/(buyer)/manufacturers',
     tone: 'neutral',
+    imageUrl: 'https://images.unsplash.com/photo-1685483749753-0dab7e144794?auto=format&fit=crop&w=800&q=80',
+    accent: colors.amber[600],
   },
   {
     icon: 'cube-outline',
@@ -75,8 +89,75 @@ const CARDS: WorkspaceCard[] = [
     actionLabel: 'Preview Concept',
     href: '/(buyer)/engineering/innovation-lab',
     tone: 'neutral',
+    imageUrl: 'https://images.unsplash.com/photo-1758523670487-fe71f10c1080?auto=format&fit=crop&w=800&q=80',
+    accent: colors.teal[700],
   },
 ];
+
+function WorkspaceCardTile({ card, columns, onPress }: { card: WorkspaceCard; columns: number; onPress: () => void }) {
+  const [imageFailed, setImageFailed] = useState(false);
+
+  return (
+    <View
+      style={[
+        {
+          width: columns === 1 ? '100%' : columns === 2 ? '47.5%' : '31.5%',
+          backgroundColor: colors.surfaceRaised,
+          borderRadius: radius.lg,
+          borderWidth: 1,
+          borderColor: card.tone === 'brand' ? colors.brand.primarySoftBorder : colors.border,
+          overflow: 'hidden',
+          gap: spacing.sm,
+        },
+        shadow.sm,
+      ]}
+    >
+      <View style={{ height: 110, backgroundColor: `${card.accent}1A` }}>
+        {!imageFailed ? (
+          <Image
+            source={{ uri: card.imageUrl }}
+            style={{ width: '100%', height: '100%' }}
+            resizeMode="cover"
+            onError={() => setImageFailed(true)}
+            accessibilityLabel={card.title}
+          />
+        ) : null}
+        <View style={{ position: 'absolute', bottom: -18, left: spacing.lg }}>
+          <View
+            style={[
+              {
+                width: 40,
+                height: 40,
+                borderRadius: radius.md,
+                backgroundColor: colors.gray[0],
+                borderWidth: 1,
+                borderColor: card.accent,
+                alignItems: 'center',
+                justifyContent: 'center',
+              },
+              shadow.sm,
+            ]}
+          >
+            <Ionicons name={card.icon} size={19} color={card.accent} />
+          </View>
+        </View>
+      </View>
+      <View style={{ padding: spacing.lg, paddingTop: spacing.lg + 18, gap: spacing.sm }}>
+        <MDText variant="h4">{card.title}</MDText>
+        <MDText variant="bodySm" tone="secondary" style={{ minHeight: 40 }}>
+          {card.description}
+        </MDText>
+        <MDButton
+          label={card.actionLabel}
+          variant={card.tone === 'brand' ? 'primary' : 'outline'}
+          size="sm"
+          style={{ alignSelf: 'flex-start', marginTop: spacing.xs }}
+          onPress={onPress}
+        />
+      </View>
+    </View>
+  );
+}
 
 export default function EngineeringWorkspace() {
   const router = useRouter();
@@ -143,45 +224,7 @@ export default function EngineeringWorkspace() {
 
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.lg }}>
           {CARDS.map((card) => (
-            <View
-              key={card.title}
-              style={[
-                {
-                  width: columns === 1 ? '100%' : columns === 2 ? '47.5%' : '31.5%',
-                  backgroundColor: colors.surfaceRaised,
-                  borderRadius: radius.lg,
-                  borderWidth: 1,
-                  borderColor: card.tone === 'brand' ? colors.brand.primarySoftBorder : colors.border,
-                  padding: spacing.lg,
-                  gap: spacing.sm,
-                },
-                shadow.sm,
-              ]}
-            >
-              <View
-                style={{
-                  width: 40,
-                  height: 40,
-                  borderRadius: radius.md,
-                  backgroundColor: card.tone === 'brand' ? colors.brand.primarySoft : colors.gray[100],
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                <Ionicons name={card.icon} size={20} color={card.tone === 'brand' ? colors.brand.primary : colors.text.secondary} />
-              </View>
-              <MDText variant="h4">{card.title}</MDText>
-              <MDText variant="bodySm" tone="secondary" style={{ minHeight: 40 }}>
-                {card.description}
-              </MDText>
-              <MDButton
-                label={card.actionLabel}
-                variant={card.tone === 'brand' ? 'primary' : 'outline'}
-                size="sm"
-                style={{ alignSelf: 'flex-start', marginTop: spacing.xs }}
-                onPress={() => router.push(card.href as never)}
-              />
-            </View>
+            <WorkspaceCardTile key={card.title} card={card} columns={columns} onPress={() => router.push(card.href as never)} />
           ))}
         </View>
 

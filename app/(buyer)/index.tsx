@@ -145,6 +145,50 @@ export default function Home() {
                 Bringing genuine components from verified manufacturers and authorized distributors
                 together on a single B2B platform.
               </MDText>
+
+              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md, marginBottom: spacing.lg }}>
+                {[
+                  { icon: 'business-outline' as const, value: `${manufacturers.length}+`, label: 'Manufacturers', accent: colors.brand.primary },
+                  { icon: 'cube-outline' as const, value: `${allProducts?.length ?? 0}+`, label: 'Parts Sourced', accent: colors.teal[500] },
+                  { icon: 'leaf-outline' as const, value: `${rohsPct}%`, label: 'RoHS Compliant', accent: colors.status.success },
+                ].map((stat) => (
+                  <View
+                    key={stat.label}
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      gap: spacing.sm,
+                      borderWidth: 1,
+                      borderColor: colors.border,
+                      borderRadius: radius.lg,
+                      paddingVertical: spacing.sm,
+                      paddingHorizontal: spacing.md,
+                    }}
+                  >
+                    <View
+                      style={{
+                        width: 34,
+                        height: 34,
+                        borderRadius: radius.pill,
+                        backgroundColor: `${stat.accent}1A`,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <Ionicons name={stat.icon} size={16} color={stat.accent} />
+                    </View>
+                    <View>
+                      <MDText variant="bodyMedium" style={{ color: stat.accent }}>
+                        {stat.value}
+                      </MDText>
+                      <MDText variant="caption" tone="tertiary">
+                        {stat.label}
+                      </MDText>
+                    </View>
+                  </View>
+                ))}
+              </View>
+
               <MDButton label="View All Manufacturers" variant="outline" onPress={() => router.push('/(buyer)/manufacturers')} />
             </View>
             <View style={{ flex: 1 }}>
@@ -230,15 +274,21 @@ export default function Home() {
           <MDText variant="bodySm" tone="secondary" style={{ marginBottom: spacing.lg }}>
             Jump straight to a category to filter, compare, and source parts.
           </MDText>
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.lg }}>
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginHorizontal: -spacing.sm }}>
             {categoriesLoading
               ? Array.from({ length: 8 }).map((_, i) => (
-                  <View key={i} style={{ width: isDesktopUp ? '22.3%' : '47%' }}>
+                  <View
+                    key={i}
+                    style={{ width: isDesktopUp ? '25%' : '50%', paddingHorizontal: spacing.sm, marginBottom: spacing.lg }}
+                  >
                     <MDSkeleton height={168} />
                   </View>
                 ))
               : categories?.map((category) => (
-                  <View key={category.slug} style={{ width: isDesktopUp ? '22.3%' : '47%' }}>
+                  <View
+                    key={category.slug}
+                    style={{ width: isDesktopUp ? '25%' : '50%', paddingHorizontal: spacing.sm, marginBottom: spacing.lg }}
+                  >
                     <MDCategoryCard category={category} />
                   </View>
                 ))}

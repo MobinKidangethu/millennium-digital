@@ -120,7 +120,7 @@ export function MDProductCard({ product, layout = 'grid' }: MDProductCardProps) 
 
       <View style={{ flex: 1, padding: spacing.md, gap: 6 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs }}>
-          <MDManufacturerLogo manufacturer={product.manufacturer} width={60} height={14} />
+          <MDManufacturerLogo manufacturer={product.manufacturer} width={84} height={22} />
         </View>
 
         <MDText variant="bodyMedium" numberOfLines={1}>

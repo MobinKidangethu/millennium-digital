@@ -5,7 +5,7 @@ import { colors, radius, shadow, spacing } from '@/design-system';
 import type { Manufacturer } from '@/types';
 import { MDManufacturerLogo } from './MDManufacturerLogo';
 
-const CARD_HEIGHT = 96;
+const CARD_HEIGHT = 124;
 const CARD_GAP = spacing.lg;
 const VISIBLE_HEIGHT = CARD_HEIGHT * 3.4;
 
@@ -84,7 +84,7 @@ function AutoScrollColumn({
               shadow.sm,
             ]}
           >
-            <MDManufacturerLogo manufacturer={manufacturer.name} width={104} height={30} />
+            <MDManufacturerLogo manufacturer={manufacturer.name} width={148} height={44} />
           </Pressable>
         ))}
       </Animated.View>
