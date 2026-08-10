@@ -46,23 +46,27 @@ function LineCardTile({ brand, logoUrl, match }: { brand: string; logoUrl: strin
       style={[
         webTransition,
         {
-          width: 148,
+          width: 172,
           borderWidth: 1,
-          borderColor: clickable && hovered ? colors.brand.primary : colors.border,
+          borderColor: hovered ? colors.brand.primary : colors.border,
           borderRadius: radius.lg,
           backgroundColor: colors.surfaceRaised,
-          padding: spacing.md,
+          padding: spacing.lg,
           alignItems: 'center',
           justifyContent: 'center',
           gap: spacing.sm,
-          minHeight: 108,
-          position: 'relative',
+          minHeight: 132,
+          // Hovering a tile lifts and scales it above its neighbors —
+          // zIndex/elevation keeps it from being visually clipped by
+          // the tiles it now overlaps at the enlarged scale.
+          zIndex: hovered ? 10 : 1,
+          elevation: hovered ? 10 : 1,
           transform: [
-            { translateY: clickable && hovered && !pressed ? -3 : 0 },
-            { scale: pressed && clickable ? 0.98 : 1 },
+            { translateY: hovered && !pressed ? -4 : 0 },
+            { scale: pressed && clickable ? 0.98 : hovered ? 1.08 : 1 },
           ],
         },
-        clickable && hovered ? shadow.hover : shadow.sm,
+        hovered ? shadow.hover : shadow.sm,
       ]}
     >
       {clickable ? (
@@ -74,15 +78,15 @@ function LineCardTile({ brand, logoUrl, match }: { brand: string; logoUrl: strin
       {!failed ? (
         <Image
           source={{ uri: logoUrl }}
-          style={{ width: '100%', height: 36 }}
+          style={{ width: '100%', height: 48 }}
           resizeMode="contain"
           onError={() => setFailed(true)}
         />
       ) : (
         <View
           style={{
-            width: 36,
-            height: 36,
+            width: 48,
+            height: 48,
             borderRadius: radius.pill,
             backgroundColor: colors.brand.primarySoft,
             alignItems: 'center',
@@ -138,14 +142,14 @@ export default function ManufacturerListing() {
         </MDText>
 
         {isLoading ? (
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md, marginBottom: spacing['2xl'] }}>
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.lg, marginBottom: spacing['2xl'] }}>
             {Array.from({ length: 12 }).map((_, i) => (
-              <MDSkeleton key={i} width={148} height={108} />
+              <MDSkeleton key={i} width={172} height={132} />
             ))}
           </View>
         ) : (
           <>
-            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md, marginBottom: spacing.lg }}>
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.lg, marginBottom: spacing.lg }}>
               {visibleLineCard.map((entry) => (
                 <LineCardTile key={entry.name} brand={entry.name} logoUrl={entry.logoUrl} match={entry.match} />
               ))}

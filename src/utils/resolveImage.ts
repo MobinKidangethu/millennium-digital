@@ -3,6 +3,7 @@ import type { ImageSourcePropType } from 'react-native';
 import type { SvgProps } from 'react-native-svg';
 import { PRODUCT_IMAGES } from '@/constants/productImages';
 import { MANUFACTURER_LOGO_RASTER, MANUFACTURER_LOGO_SVG } from '@/constants/manufacturerLogos';
+import { LINE_CARD_BRANDS } from '@/constants/lineCardBrands';
 import { CATEGORY_ICONS } from '@/constants/categoryIcons';
 
 /** Returns the require()'d image source for a product, or null if unmapped. */
@@ -22,6 +23,11 @@ export function resolveManufacturerLogo(manufacturerName: string): ManufacturerL
   if (raster) return { kind: 'raster', source: raster };
   const Svg = MANUFACTURER_LOGO_SVG[key];
   if (Svg) return { kind: 'svg', Component: Svg };
+  // Fall back to the real hotlinked logo from Millennium's published line
+  // card (src/constants/lineCardBrands.ts) for brands that don't have a
+  // locally bundled asset yet — same source used on the Manufacturers page.
+  const lineCardBrand = LINE_CARD_BRANDS.find((b) => b.name.trim().toLowerCase() === key);
+  if (lineCardBrand) return { kind: 'raster', source: { uri: lineCardBrand.logoUrl } };
   return null;
 }
 

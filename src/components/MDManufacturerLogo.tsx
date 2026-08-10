@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { View } from 'react-native';
 import { Image } from 'expo-image';
 import { colors, radius } from '@/design-system';
@@ -10,28 +11,36 @@ interface MDManufacturerLogoProps {
   height?: number;
 }
 
+function InitialsBadge({ manufacturer, height }: { manufacturer: string; height: number }) {
+  const size = height;
+  return (
+    <View
+      style={{
+        width: size,
+        height: size,
+        borderRadius: radius.pill,
+        backgroundColor: colors.brand.primarySoft,
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+      accessibilityLabel={manufacturer}
+    >
+      <MDText variant="caption" weight="700" style={{ color: colors.brand.primary }}>
+        {manufacturerInitials(manufacturer)}
+      </MDText>
+    </View>
+  );
+}
+
 export function MDManufacturerLogo({ manufacturer, width = 96, height = 28 }: MDManufacturerLogoProps) {
   const logo = resolveManufacturerLogo(manufacturer);
+  // Remote (hotlinked) logos can fail to load — fall back to the initials
+  // badge rather than showing a broken image, same pattern used across
+  // the app's other image components (MDProductImage, LineCardTile).
+  const [failed, setFailed] = useState(false);
 
-  if (!logo) {
-    const size = height;
-    return (
-      <View
-        style={{
-          width: size,
-          height: size,
-          borderRadius: radius.pill,
-          backgroundColor: colors.brand.primarySoft,
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-        accessibilityLabel={manufacturer}
-      >
-        <MDText variant="caption" weight="700" style={{ color: colors.brand.primary }}>
-          {manufacturerInitials(manufacturer)}
-        </MDText>
-      </View>
-    );
+  if (!logo || failed) {
+    return <InitialsBadge manufacturer={manufacturer} height={height} />;
   }
 
   if (logo.kind === 'raster') {
@@ -41,6 +50,7 @@ export function MDManufacturerLogo({ manufacturer, width = 96, height = 28 }: MD
         style={{ width, height }}
         contentFit="contain"
         accessibilityLabel={manufacturer}
+        onError={() => setFailed(true)}
       />
     );
   }
