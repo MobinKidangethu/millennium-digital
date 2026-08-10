@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Animated, Image, Pressable, View } from 'react-native';
+import { Animated, Image, Pressable, View, type ImageSourcePropType } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, radius, spacing, useResponsive, MDText } from '@/design-system';
@@ -13,7 +13,8 @@ interface Segment {
   eyebrow: string;
   title: string;
   description: string;
-  image: string;
+  /** Either a remote URL (string) or a bundled local asset (require()'d). */
+  image: string | ImageSourcePropType;
   chips: SegmentChip[];
   ctaLabel: string;
   ctaSlug: string;
@@ -23,8 +24,9 @@ interface Segment {
  * Industry segments Millennium Digital serves, each mapped to real
  * category slugs from the live catalog (products.json / useCategories) —
  * no fabricated categories or counts. Imagery is sourced from Unsplash
- * (free license) to represent each segment; not photography of actual
- * client inventory. See project rule: never invent product/category data.
+ * (free license) or a client-supplied local asset to represent each
+ * segment; not photography of actual client inventory. See project rule:
+ * never invent product/category data.
  */
 const SEGMENTS: Segment[] = [
   {
@@ -32,8 +34,7 @@ const SEGMENTS: Segment[] = [
     title: 'Automotive & EV Electronics',
     description:
       'Semiconductors, sensors, and power connectors sourced for automotive-grade reliability and traceability.',
-    image:
-      'https://images.unsplash.com/photo-1777642328916-d96fc156f32b?auto=format&fit=crop&w=1600&q=80',
+    image: require('../../assets/images/segments/automotive-ev-electronics.png'),
     chips: [
       { label: 'Semiconductors', slug: 'semiconductors' },
       { label: 'Sensors', slug: 'sensors' },
@@ -123,7 +124,7 @@ export function SegmentCarousel() {
     >
       <Animated.View style={{ flex: 1, opacity }}>
         <Image
-          source={{ uri: segment.image }}
+          source={typeof segment.image === 'string' ? { uri: segment.image } : segment.image}
           style={{ width: '100%', height: '100%' }}
           resizeMode="cover"
           accessibilityLabel={segment.title}
