@@ -30,4 +30,6 @@ export const PRODUCT_IMAGES: Record<string, number> = {
   'assets/images/products/SS8PH102-M3I.webp': require('../../assets/images/products/SS8PH102-M3I.webp'),
   'assets/images/products/VS-4C20ET07S2L-M3.webp': require('../../assets/images/products/VS-4C20ET07S2L-M3.webp'),
   'assets/images/products/PS67K-3S-24L-250.png': require('../../assets/images/products/PS67K-3S-24L-250.png'),
+  'assets/images/products/DQD6N-24-D15-T.png': require('../../assets/images/products/DQD6N-24-D15-T.png'),
+  'assets/images/products/S8NR-S36024-A0L2-IL3.png': require('../../assets/images/products/S8NR-S36024-A0L2-IL3.png'),
 };
