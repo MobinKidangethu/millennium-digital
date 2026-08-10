@@ -1,0 +1,70 @@
+/**
+ * Product-type -> representative photo, keyed by normalized (lowercased)
+ * `productType` as it appears in products.json.
+ *
+ * WHY THIS EXISTS: only 23 of the catalog's real per-part product photos
+ * are bundled locally (src/constants/productImages.ts) — the rest of the
+ * 163 SKUs either have a blank `image` field or point at a file that
+ * doesn't exist. Rather than leave those products with a bare icon
+ * placeholder, or fabricate fake part photography, every product falls
+ * back to a real, verified, free-license photo that honestly represents
+ * its *type* of component (e.g. every MOSFET/IGBT/SiC part shows a real
+ * discrete-power-semiconductor photo, every diode/rectifier shows a real
+ * macro of a populated board, etc). This is clearly NOT the exact part —
+ * see the "Representative image" tag rendered alongside it in
+ * MDProductImage / MDProductImageGallery — and is intended to be replaced
+ * by real per-part Mouser/manufacturer photography once that sourcing
+ * pass is completed (tracked separately; requires browser access this
+ * environment doesn't currently have).
+ *
+ * Grouped into a small number of visually-distinct "families" rather than
+ * one photo per productType, so the catalog doesn't need ~30 unique
+ * sourced images to avoid a single flat lookalike photo everywhere. Every
+ * URL below was fetched and verified "Free to use under the Unsplash
+ * License" (not Unsplash+) before being added.
+ *
+ * Falls back further to the category-level photo (categoryImages.ts) for
+ * any productType not listed here — every category already has a verified
+ * photo, so category coverage is 100%.
+ */
+export const PRODUCT_TYPE_IMAGES: Record<string, string> = {
+  // Discrete power semiconductors — MOSFETs, IGBTs, GaN/SiC power devices.
+  // Photo: Michael Dziedzic, "a close up of a computer circuit board" (Unsplash, free license).
+  mosfets: 'https://images.unsplash.com/photo-1645395758741-c23bb12d9d6b?auto=format&fit=crop&w=800&q=80',
+  igbts: 'https://images.unsplash.com/photo-1645395758741-c23bb12d9d6b?auto=format&fit=crop&w=800&q=80',
+  'gan fets': 'https://images.unsplash.com/photo-1645395758741-c23bb12d9d6b?auto=format&fit=crop&w=800&q=80',
+  'sic mosfets': 'https://images.unsplash.com/photo-1645395758741-c23bb12d9d6b?auto=format&fit=crop&w=800&q=80',
+  'discrete semiconductor modules': 'https://images.unsplash.com/photo-1645395758741-c23bb12d9d6b?auto=format&fit=crop&w=800&q=80',
+
+  // Diodes & rectifiers.
+  // Photo: Bermix Studio, "integrated circuit close up" (Unsplash, free license).
+  rectifiers: 'https://images.unsplash.com/photo-1675602488453-c3897a475af5?auto=format&fit=crop&w=800&q=80',
+  'schottky diodes & rectifiers': 'https://images.unsplash.com/photo-1675602488453-c3897a475af5?auto=format&fit=crop&w=800&q=80',
+  'sic schottky diodes': 'https://images.unsplash.com/photo-1675602488453-c3897a475af5?auto=format&fit=crop&w=800&q=80',
+  'bridge rectifiers': 'https://images.unsplash.com/photo-1675602488453-c3897a475af5?auto=format&fit=crop&w=800&q=80',
+  'zener diodes': 'https://images.unsplash.com/photo-1675602488453-c3897a475af5?auto=format&fit=crop&w=800&q=80',
+
+  // Development / evaluation / reference-design boards.
+  // Photo: Jainath Ponnala, "Raspberry Pi" board (Unsplash, free license).
+  'evaluation boards': 'https://images.unsplash.com/photo-1631553126875-88a6f19b90c2?auto=format&fit=crop&w=800&q=80',
+  'programming & evaluation tools': 'https://images.unsplash.com/photo-1631553126875-88a6f19b90c2?auto=format&fit=crop&w=800&q=80',
+  'reference design modules': 'https://images.unsplash.com/photo-1631553126875-88a6f19b90c2?auto=format&fit=crop&w=800&q=80',
+
+  // Cables & connectors.
+  // Photo: Remi Godet, "black electric plug on white socket" (Unsplash, free license).
+  'interface cables': 'https://images.unsplash.com/photo-1586943029669-98ae685c5c4c?auto=format&fit=crop&w=800&q=80',
+  'ac power cords': 'https://images.unsplash.com/photo-1586943029669-98ae685c5c4c?auto=format&fit=crop&w=800&q=80',
+  'connector housings': 'https://images.unsplash.com/photo-1586943029669-98ae685c5c4c?auto=format&fit=crop&w=800&q=80',
+  'ac power entry modules': 'https://images.unsplash.com/photo-1586943029669-98ae685c5c4c?auto=format&fit=crop&w=800&q=80',
+
+  // Regulator / controller ICs.
+  // Photo: Albert Stoynov, "close-up view of a complex electronic circuit board" (Unsplash, free license).
+  'switching voltage regulators': 'https://images.unsplash.com/photo-1765256931845-56da0f7db9cb?auto=format&fit=crop&w=800&q=80',
+  'current & power monitors & regulators': 'https://images.unsplash.com/photo-1765256931845-56da0f7db9cb?auto=format&fit=crop&w=800&q=80',
+  'motor / motion / ignition controllers & drivers': 'https://images.unsplash.com/photo-1765256931845-56da0f7db9cb?auto=format&fit=crop&w=800&q=80',
+};
+
+/** Returns the representative photo URL for a productType, or null if not covered (caller should fall back to the category photo). */
+export function resolveProductTypeImage(productType: string): string | null {
+  return PRODUCT_TYPE_IMAGES[productType.trim().toLowerCase()] ?? null;
+}
