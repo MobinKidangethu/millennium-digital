@@ -46,7 +46,7 @@ function LineCardTile({ brand, logoUrl, match }: { brand: string; logoUrl: strin
       style={[
         webTransition,
         {
-          width: 172,
+          width: 216,
           borderWidth: 1,
           borderColor: hovered ? colors.brand.primary : colors.border,
           borderRadius: radius.lg,
@@ -55,7 +55,7 @@ function LineCardTile({ brand, logoUrl, match }: { brand: string; logoUrl: strin
           alignItems: 'center',
           justifyContent: 'center',
           gap: spacing.sm,
-          minHeight: 132,
+          minHeight: 168,
           // Hovering a tile lifts and scales it above its neighbors —
           // zIndex/elevation keeps it from being visually clipped by
           // the tiles it now overlaps at the enlarged scale.
@@ -78,22 +78,22 @@ function LineCardTile({ brand, logoUrl, match }: { brand: string; logoUrl: strin
       {!failed ? (
         <Image
           source={{ uri: logoUrl }}
-          style={{ width: '100%', height: 48 }}
+          style={{ width: '100%', height: 80 }}
           resizeMode="contain"
           onError={() => setFailed(true)}
         />
       ) : (
         <View
           style={{
-            width: 48,
-            height: 48,
+            width: 64,
+            height: 64,
             borderRadius: radius.pill,
             backgroundColor: colors.brand.primarySoft,
             alignItems: 'center',
             justifyContent: 'center',
           }}
         >
-          <MDText variant="caption" weight="700" style={{ color: colors.brand.primary }}>
+          <MDText variant="h4" weight="700" style={{ color: colors.brand.primary }}>
             {manufacturerInitials(brand)}
           </MDText>
         </View>
@@ -144,7 +144,7 @@ export default function ManufacturerListing() {
         {isLoading ? (
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.lg, marginBottom: spacing['2xl'] }}>
             {Array.from({ length: 12 }).map((_, i) => (
-              <MDSkeleton key={i} width={172} height={132} />
+              <MDSkeleton key={i} width={216} height={168} />
             ))}
           </View>
         ) : (
