@@ -149,7 +149,10 @@ function scoreProduct(product: Product, criteria: AiCriteria): number {
   return score;
 }
 
-function buildExplanation(query: string, criteria: AiCriteria, matchCount: number): string {
+/** Display cap so a very loose query doesn't dump the whole catalog into the list — the count shown is always the real total, not this cap. */
+const MAX_DISPLAYED_MATCHES = 40;
+
+function buildExplanation(query: string, criteria: AiCriteria, totalMatches: number, shown: number): string {
   const parts: string[] = [];
   if (criteria.productType) parts.push(`product type "${criteria.productType}"`);
   if (criteria.technology) parts.push(`"${criteria.technology}" technology`);
@@ -159,16 +162,21 @@ function buildExplanation(query: string, criteria: AiCriteria, matchCount: numbe
   if (criteria.minAvailability != null) parts.push(`availability above ${criteria.minAvailability} units`);
   if (criteria.maxPrice != null) parts.push(`price under ${criteria.maxPrice}`);
 
+  const countText =
+    totalMatches > shown
+      ? `Found ${totalMatches} matches — showing top ${shown}, ranked by relevance.`
+      : `Found ${totalMatches} matching product${totalMatches === 1 ? '' : 's'}, ranked by relevance.`;
+
   let text =
     parts.length > 0
-      ? `Interpreted "${query}" as: ${parts.join(', ')}. Found ${matchCount} matching product${matchCount === 1 ? '' : 's'} in the current catalog, ranked by relevance.`
-      : `Couldn't map "${query}" to a structured catalog attribute — showing the closest keyword matches instead.`;
+      ? `Interpreted as: ${parts.join(', ')}. ${countText}`
+      : `Couldn't map this to a structured attribute — showing closest keyword matches.`;
 
   if (criteria.applicationHint) {
-    text += ` Note: "${criteria.applicationHint}" application context was noted but isn't a filterable catalog attribute in this prototype — a production catalog with qualification/certification metadata could filter on it directly.`;
+    text += ` "${criteria.applicationHint}" noted, but not yet a filterable attribute.`;
   }
   if (criteria.unsupported.length) {
-    text += ` Requirement(s) not yet structured in the product data: ${criteria.unsupported.join(', ')} — these would come from parametric datasheet attributes in a production catalog.`;
+    text += ` Not yet in catalog data: ${criteria.unsupported.join(', ')}.`;
   }
   return text;
 }
@@ -183,12 +191,14 @@ export async function runAiSearch(query: string): Promise<AiSearchResult> {
     .filter((s) => s.score > 0 || (!criteria.productType && !criteria.technology && !criteria.manufacturer))
     .sort((a, b) => b.score - a.score || b.product.availability - a.product.availability);
 
-  const matches = scored.slice(0, 12).map((s) => s.product);
+  const totalMatches = scored.length;
+  const matches = scored.slice(0, MAX_DISPLAYED_MATCHES).map((s) => s.product);
 
   return {
     query,
     criteria,
     matches,
-    explanation: buildExplanation(query, criteria, matches.length),
+    totalMatches,
+    explanation: buildExplanation(query, criteria, totalMatches, matches.length),
   };
 }

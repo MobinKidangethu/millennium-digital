@@ -75,7 +75,7 @@ function StepIndicator({ step }: { step: Step }) {
 
 const MATCH_CONFIG: Record<BomMatchResult['matchType'], { label: string; tone: 'success' | 'warning' | 'error' }> = {
   exact: { label: 'Exact Match', tone: 'success' },
-  alternative: { label: 'Alternative Suggested', tone: 'warning' },
+  alternative: { label: 'AI Recommended Alternative', tone: 'warning' },
   unmatched: { label: 'No Catalog Match', tone: 'error' },
 };
 
@@ -264,7 +264,7 @@ export function BomWorkflowContent() {
                 onPress={downloadSample}
               />
               <MDButton label="Load Sample BOM" variant="ghost" onPress={loadSample} />
-              <MDButton label="Process BOM" onPress={processBom} />
+              {text.trim().length > 0 ? <MDButton label="Process BOM" onPress={processBom} /> : null}
             </View>
           </MDCard>
         ) : null}
@@ -286,7 +286,7 @@ export function BomWorkflowContent() {
             <View style={{ flexDirection: 'row', gap: spacing.md, marginBottom: spacing.xl, flexWrap: 'wrap' }}>
               <SummaryPill label="Total Lines" value={summary.total} tone="neutral" />
               <SummaryPill label="Exact Matches" value={summary.exact} tone="success" />
-              <SummaryPill label="Alternatives Suggested" value={summary.alternative} tone="warning" />
+              <SummaryPill label="AI Recommended Alternatives" value={summary.alternative} tone="warning" />
               <SummaryPill label="No Match" value={summary.unmatched} tone="error" />
             </View>
 
@@ -343,8 +343,14 @@ export function BomWorkflowContent() {
 
                   {result.matchType === 'alternative' ? (
                     <View style={{ gap: spacing.sm }}>
+                      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                        <Ionicons name="sparkles" size={12} color={colors.brand.teal} />
+                        <MDText variant="caption" weight="600" style={{ color: colors.brand.teal }}>
+                          Our AI Recommended Alternatives
+                        </MDText>
+                      </View>
                       <MDText variant="caption" tone="secondary">
-                        Not found exactly — same part family suggested (choose one):
+                        Not found exactly — same part family, choose one:
                       </MDText>
                       {result.alternatives.map((alt) => {
                         const selected = chosenAlternative[result.line.id] === alt.id;

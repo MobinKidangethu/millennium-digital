@@ -4,7 +4,7 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, radius, spacing, useResponsive, MDBadge, MDText, MDIconButton } from '@/design-system';
 
-type PanelTone = 'brand' | 'graphite';
+type PanelTone = 'brand' | 'graphite' | 'teal';
 
 interface AuthPanelConfig {
   tone?: PanelTone;
@@ -13,6 +13,8 @@ interface AuthPanelConfig {
   description?: string;
   slides?: string[];
   badge?: string;
+  /** Optional mascot illustration (require()'d PNG) shown on the brand panel. */
+  character?: number;
 }
 
 interface AuthScreenShellProps {
@@ -33,6 +35,7 @@ const DEFAULT_SLIDES = [
 const TONE_STYLES: Record<PanelTone, { bg: string; accent: string; textSoft: string; chipBg: string }> = {
   brand: { bg: colors.brand.primary, accent: colors.plum[200], textSoft: colors.plum[100], chipBg: colors.gray[0] },
   graphite: { bg: colors.gray[900], accent: colors.gray[400], textSoft: colors.gray[400], chipBg: colors.gray[0] },
+  teal: { bg: colors.teal[700], accent: colors.teal[200], textSoft: colors.teal[100], chipBg: colors.gray[0] },
 };
 
 function PanelSlides({ slides, tone }: { slides: string[]; tone: PanelTone }) {
@@ -78,7 +81,7 @@ function PanelSlides({ slides, tone }: { slides: string[]; tone: PanelTone }) {
   );
 }
 
-function BrandPanel({ panel }: { panel: Required<Omit<AuthPanelConfig, 'badge'>> & { badge?: string } }) {
+function BrandPanel({ panel }: { panel: Required<Omit<AuthPanelConfig, 'badge' | 'character'>> & { badge?: string; character?: number } }) {
   const palette = TONE_STYLES[panel.tone];
 
   return (
@@ -114,7 +117,7 @@ function BrandPanel({ panel }: { panel: Required<Omit<AuthPanelConfig, 'badge'>>
           <View style={{ backgroundColor: palette.chipBg, borderRadius: radius.sm, paddingVertical: spacing.xs, paddingHorizontal: spacing.md }}>
             <Image
               source={require('../../assets/Millenium_Logo_new.png')}
-              style={{ width: 140, height: 25 }}
+              style={{ width: 170, height: 62 }}
               resizeMode="contain"
               accessibilityLabel="Millennium Digital"
             />
@@ -133,29 +136,53 @@ function BrandPanel({ panel }: { panel: Required<Omit<AuthPanelConfig, 'badge'>>
         </MDText>
       </View>
 
-      <PanelSlides slides={panel.slides} tone={panel.tone} />
+      <View style={{ flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', gap: spacing.md }}>
+        <View style={{ flex: 1, maxWidth: panel.character ? 190 : undefined }}>
+          <PanelSlides slides={panel.slides} tone={panel.tone} />
+        </View>
+        {panel.character ? (
+          <Image
+            source={panel.character}
+            accessibilityLabel=""
+            style={{ width: 176, height: 328, marginBottom: -8 }}
+            resizeMode="contain"
+          />
+        ) : null}
+      </View>
     </View>
   );
 }
 
-function CompactPanelBand({ panel }: { panel: Required<Omit<AuthPanelConfig, 'badge'>> & { badge?: string } }) {
+function CompactPanelBand({ panel }: { panel: Required<Omit<AuthPanelConfig, 'badge' | 'character'>> & { badge?: string; character?: number } }) {
   const palette = TONE_STYLES[panel.tone];
   return (
-    <View style={{ backgroundColor: palette.bg, paddingHorizontal: spacing.xl, paddingVertical: spacing.xl }}>
-      <View style={{ backgroundColor: palette.chipBg, borderRadius: radius.sm, paddingVertical: 6, paddingHorizontal: spacing.md, alignSelf: 'flex-start', marginBottom: spacing.md }}>
-        <Image
-          source={require('../../assets/Millenium_Logo_new.png')}
-          style={{ width: 130, height: 23 }}
-          resizeMode="contain"
-          accessibilityLabel="Millennium Digital"
-        />
+    <View style={{ backgroundColor: palette.bg, paddingHorizontal: spacing.xl, paddingVertical: spacing.xl, overflow: 'hidden' }}>
+      <View style={{ flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', gap: spacing.md }}>
+        <View style={{ flex: 1 }}>
+          <View style={{ backgroundColor: palette.chipBg, borderRadius: radius.sm, paddingVertical: 6, paddingHorizontal: spacing.md, alignSelf: 'flex-start', marginBottom: spacing.md }}>
+            <Image
+              source={require('../../assets/Millenium_Logo_new.png')}
+              style={{ width: 150, height: 55 }}
+              resizeMode="contain"
+              accessibilityLabel="Millennium Digital"
+            />
+          </View>
+          <MDText variant="overline" style={{ color: palette.accent, marginBottom: 4 }}>
+            {panel.eyebrow}
+          </MDText>
+          <MDText variant="h3" style={{ color: colors.gray[0] }}>
+            {panel.headline}
+          </MDText>
+        </View>
+        {panel.character ? (
+          <Image
+            source={panel.character}
+            accessibilityLabel=""
+            style={{ width: 88, height: 164, marginBottom: -spacing.xl }}
+            resizeMode="contain"
+          />
+        ) : null}
       </View>
-      <MDText variant="overline" style={{ color: palette.accent, marginBottom: 4 }}>
-        {panel.eyebrow}
-      </MDText>
-      <MDText variant="h3" style={{ color: colors.gray[0] }}>
-        {panel.headline}
-      </MDText>
     </View>
   );
 }
@@ -173,7 +200,8 @@ export function AuthScreenShell({ title, subtitle, children, footer, showBack, p
       'A connected digital commerce platform for electronics and semiconductor procurement.',
     slides: panel?.slides ?? DEFAULT_SLIDES,
     badge: panel?.badge,
-  } satisfies Required<Omit<AuthPanelConfig, 'badge'>> & { badge?: string };
+    character: panel?.character,
+  } satisfies Required<Omit<AuthPanelConfig, 'badge' | 'character'>> & { badge?: string; character?: number };
 
   return (
     <View style={{ flex: 1, flexDirection: isDesktopUp ? 'row' : 'column', backgroundColor: colors.background }}>
@@ -205,7 +233,15 @@ export function AuthScreenShell({ title, subtitle, children, footer, showBack, p
             </MDIconButton>
           ) : null}
 
-          <MDText variant="h2">{title}</MDText>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, marginBottom: 2 }}>
+            <Image
+              source={require('../../assets/millennium-icon-mark.png')}
+              style={{ width: 32, height: 20 }}
+              resizeMode="contain"
+              accessibilityLabel="Millennium Digital"
+            />
+            <MDText variant="h2">{title}</MDText>
+          </View>
           {subtitle ? (
             <MDText variant="body" tone="secondary" style={{ marginTop: spacing.xs, marginBottom: spacing.xl }}>
               {subtitle}

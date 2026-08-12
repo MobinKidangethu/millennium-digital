@@ -4,6 +4,7 @@ import { colors, radius, spacing, useToast, MDEmptyState, MDText } from '@/desig
 import { useOrder, useUpdateOrderStatus } from '@/features/orders';
 import { MDOrderStatus } from '@/components/MDOrderStatus';
 import { MDProductImage } from '@/components/MDProductImage';
+import { OrderLineBackorderNote } from '@/components/OrderLineBackorderNote';
 import { LogisticsTracker } from '@/components/LogisticsTracker';
 import { formatDisplayPrice } from '@/utils';
 import { useCurrencyStore } from '@/state';
@@ -111,6 +112,7 @@ export default function AdminOrderDetail() {
                 <MDText variant="caption" tone="tertiary">
                   {item.manufacturer} · Qty {item.quantity}
                 </MDText>
+                <OrderLineBackorderNote productId={item.productId} quantity={item.quantity} />
               </View>
               <MDText variant="bodySm" weight="600">
                 {formatDisplayPrice(item.price * item.quantity, order.currency, displayCurrency)}

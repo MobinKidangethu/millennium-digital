@@ -12,6 +12,15 @@ import type { PricingBreakdown, PricingRuleStep, Product } from '@/types';
  * this same function signature.
  */
 
+/**
+ * Minimum quantity (per line) that qualifies for governed volume pricing —
+ * shared across the Cart page (applies the discount), the RFQ/Quote flow
+ * (already uses this engine), and the checkout Payment step (100+ unit
+ * lines route through Purchase Order only). Keep in sync with the lowest
+ * non-zero VOLUME_BREAKS tier below.
+ */
+export const GOVERNED_PRICING_MIN_QTY = 100;
+
 const VOLUME_BREAKS: { minQty: number; deltaPct: number; label: string }[] = [
   { minQty: 1000, deltaPct: -12, label: '1,000+ units' },
   { minQty: 500, deltaPct: -8, label: '500–999 units' },

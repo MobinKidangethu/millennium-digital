@@ -2,9 +2,10 @@ import { useState } from 'react';
 import { Pressable, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, radius, spacing, MDButton, MDInput, MDText } from '@/design-system';
-import { useAddressStore, useCheckoutStore } from '@/state';
+import { colors, radius, spacing, MDButton, MDInput, MDSelectField, MDSelectModal, MDText } from '@/design-system';
+import { useAddressStore, useCheckoutStore, useCurrencyStore } from '@/state';
 import { CheckoutStepper } from '@/components/CheckoutStepper';
+import { COUNTRIES, getCountryByName, isIndia } from '@/constants/countries';
 import type { Address } from '@/types';
 
 const EMPTY_FORM = {
@@ -19,6 +20,8 @@ const EMPTY_FORM = {
   phone: '',
 };
 
+const COUNTRY_NAMES = COUNTRIES.map((c) => c.name);
+
 export default function CheckoutAddress() {
   const router = useRouter();
   const addresses = useAddressStore((s) => s.addresses);
@@ -27,6 +30,7 @@ export default function CheckoutAddress() {
   const setBillingAddress = useCheckoutStore((s) => s.setBillingAddress);
   const billingSameAsShipping = useCheckoutStore((s) => s.billingSameAsShipping);
   const setBillingSameAsShipping = useCheckoutStore((s) => s.setBillingSameAsShipping);
+  const setCurrency = useCurrencyStore((s) => s.setCurrency);
 
   const [selectedId, setSelectedId] = useState<string | null>(
     addresses.find((a) => a.isDefault)?.id ?? addresses[0]?.id ?? null,
@@ -34,8 +38,26 @@ export default function CheckoutAddress() {
   const [showForm, setShowForm] = useState(addresses.length === 0);
   const [form, setForm] = useState(EMPTY_FORM);
   const [error, setError] = useState<string | null>(null);
+  const [countryModalOpen, setCountryModalOpen] = useState(false);
+  const [stateModalOpen, setStateModalOpen] = useState(false);
 
   const updateField = (key: keyof typeof form, value: string) => setForm((f) => ({ ...f, [key]: value }));
+  const selectedCountryOption = getCountryByName(form.country);
+
+  /**
+   * Storefront display currency follows the shipping destination: an
+   * international (non-India) address switches pricing to USD so the
+   * buyer isn't reviewing an INR total against a foreign billing address;
+   * an India address switches back to INR. This only changes the *display*
+   * currency (see currencyStore) — it does not re-price anything.
+   */
+  const applyCurrencyForCountry = (country: string) => {
+    setCurrency(isIndia(country) ? 'INR' : 'USD');
+  };
+
+  const handleCountryChange = (country: string) => {
+    setForm((f) => ({ ...f, country, state: '' }));
+  };
 
   const handleAddAddress = () => {
     if (!form.fullName || !form.line1 || !form.city || !form.state || !form.postalCode || !form.phone) {
@@ -47,6 +69,7 @@ export default function CheckoutAddress() {
     setShowForm(false);
     setForm(EMPTY_FORM);
     setError(null);
+    applyCurrencyForCountry(created.country);
   };
 
   const handleContinue = () => {
@@ -55,6 +78,7 @@ export default function CheckoutAddress() {
       setError('Please select or add a shipping address.');
       return;
     }
+    applyCurrencyForCountry(selected.country);
     setShippingAddress(selected);
     setBillingAddress(billingSameAsShipping ? selected : null);
     router.push('/(buyer)/checkout/shipping');
@@ -74,7 +98,10 @@ export default function CheckoutAddress() {
               key={address.id}
               address={address}
               selected={selectedId === address.id}
-              onSelect={() => setSelectedId(address.id)}
+              onSelect={() => {
+                setSelectedId(address.id);
+                applyCurrencyForCountry(address.country);
+              }}
             />
           ))}
           <MDButton
@@ -92,12 +119,29 @@ export default function CheckoutAddress() {
           </View>
           <MDInput label="Address Line 1" value={form.line1} onChangeText={(v) => updateField('line1', v)} />
           <MDInput label="Address Line 2 (optional)" value={form.line2} onChangeText={(v) => updateField('line2', v)} />
+
+          <MDSelectField
+            label="Country"
+            value={form.country}
+            placeholder="Select country"
+            onPress={() => setCountryModalOpen(true)}
+          />
+
           <View style={{ flexDirection: 'row', gap: spacing.md }}>
             <MDInput label="City" value={form.city} onChangeText={(v) => updateField('city', v)} style={{ flex: 1 }} />
-            <MDInput label="State" value={form.state} onChangeText={(v) => updateField('state', v)} style={{ flex: 1 }} />
+            {selectedCountryOption?.states ? (
+              <MDSelectField
+                label="State / Province"
+                value={form.state}
+                placeholder="Select state"
+                onPress={() => setStateModalOpen(true)}
+                style={{ flex: 1 }}
+              />
+            ) : (
+              <MDInput label="State / Province" value={form.state} onChangeText={(v) => updateField('state', v)} style={{ flex: 1 }} />
+            )}
             <MDInput label="Postal Code" value={form.postalCode} onChangeText={(v) => updateField('postalCode', v)} style={{ flex: 1 }} keyboardType="numeric" />
           </View>
-          <MDInput label="Country" value={form.country} onChangeText={(v) => updateField('country', v)} />
 
           <View style={{ flexDirection: 'row', gap: spacing.sm }}>
             <MDButton label="Save Address" onPress={handleAddAddress} />
@@ -136,6 +180,25 @@ export default function CheckoutAddress() {
       ) : null}
 
       <MDButton label="Continue to Shipping" size="lg" fullWidth onPress={handleContinue} />
+
+      <MDSelectModal
+        visible={countryModalOpen}
+        onClose={() => setCountryModalOpen(false)}
+        title="Select Country"
+        options={COUNTRY_NAMES}
+        value={form.country}
+        onChange={handleCountryChange}
+        searchPlaceholder="Search countries…"
+      />
+      <MDSelectModal
+        visible={stateModalOpen}
+        onClose={() => setStateModalOpen(false)}
+        title="Select State / Province"
+        options={selectedCountryOption?.states ?? []}
+        value={form.state}
+        onChange={(v) => updateField('state', v)}
+        searchPlaceholder="Search states…"
+      />
     </View>
   );
 }
@@ -177,7 +240,8 @@ function AddressCard({ address, selected, onSelect }: { address: Address; select
           {address.line2 ? `, ${address.line2}` : ''}, {address.city}, {address.state} {address.postalCode}
         </MDText>
         <MDText variant="bodySm" tone="tertiary">
-          {address.phone}
+          {address.country}
+          {address.phone ? ` · ${address.phone}` : ''}
         </MDText>
       </View>
     </Pressable>

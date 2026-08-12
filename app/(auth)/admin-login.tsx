@@ -21,17 +21,18 @@ export default function AdminLogin() {
 
   return (
     <AuthScreenShell
-      title="Seller / Admin Console"
-      subtitle="Restricted access for authorized Millennium Digital staff and onboarded suppliers."
+      title="Admin Console"
+      subtitle="Restricted access for authorized Millennium Digital staff."
       panel={{
         tone: 'graphite',
+        character: require('../../assets/character-admin.png'),
         badge: 'ENTERPRISE',
-        eyebrow: 'SELLER & OPERATIONS CONSOLE',
-        headline: 'Run your business inside the marketplace.',
-        description: 'Products, inventory, pricing, RFQs, orders, and Maker-Checker governance — in one console.',
+        eyebrow: 'OPERATIONS CONSOLE',
+        headline: 'Run the marketplace end to end.',
+        description: 'Catalog, inventory, pricing, orders, seller onboarding, and Maker-Checker governance — in one console.',
         slides: [
           'Maker-Checker governed product publishing',
-          'RFQ and quote management with pricing governance',
+          'Seller onboarding and console access approval',
           'Order fulfillment, inventory, and analytics',
         ],
       }}
@@ -86,15 +87,15 @@ export default function AdminLogin() {
         }}
       >
         <MDText variant="bodySm" tone="secondary">
-          New supplier?
+          Looking for the seller console?
         </MDText>
         <MDText
           variant="bodySm"
           weight="600"
           style={{ color: colors.brand.primary }}
-          onPress={() => router.push('/(auth)/seller-register')}
+          onPress={() => router.push('/(auth)/seller-login')}
         >
-          Apply to sell on Millennium Digital
+          Sign in here
         </MDText>
       </View>
 

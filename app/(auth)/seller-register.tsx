@@ -102,7 +102,8 @@ export default function SellerRegister() {
   };
 
   const sellerPanel = {
-    tone: 'graphite' as const,
+    tone: 'teal' as const,
+    character: require('../../assets/character-seller.png') as number,
     eyebrow: 'SUPPLIER NETWORK',
     headline: 'Reach engineers actively sourcing.',
     description: 'List genuine components where procurement teams and engineers already search by part, spec, and AI-assisted requirement.',
@@ -164,9 +165,14 @@ export default function SellerRegister() {
 
           <ProtoBadge label="Seller onboarding — prototype simulation; production routes through KYB/GST verification" />
 
-          <View style={{ flexDirection: 'row', gap: spacing.md, flexWrap: 'wrap', marginTop: spacing.xl }}>
-            <MDButton label="Go to Seller Console" onPress={() => router.push('/(auth)/admin-login')} />
-            <MDButton label="Back to Home" variant="outline" onPress={() => router.push('/(buyer)')} />
+          <MDText variant="bodySm" tone="secondary" style={{ marginTop: spacing.lg, marginBottom: spacing.xs }}>
+            Console access is granted once Millennium Digital reviews and approves your application — you'll
+            receive sign-in details at {submitted.email}.
+          </MDText>
+
+          <View style={{ flexDirection: 'row', gap: spacing.md, flexWrap: 'wrap', marginTop: spacing.md }}>
+            <MDButton label="Already approved? Sign In" variant="outline" onPress={() => router.push('/(auth)/seller-login')} />
+            <MDButton label="Back to Home" variant="ghost" onPress={() => router.push('/(buyer)')} />
           </View>
         </View>
       </AuthScreenShell>
@@ -332,7 +338,7 @@ export default function SellerRegister() {
           <MDText variant="bodySm" tone="secondary">
             Already an approved seller?
           </MDText>
-          <MDText variant="bodySm" weight="600" style={{ color: colors.brand.primary }} onPress={() => router.push('/(auth)/admin-login')}>
+          <MDText variant="bodySm" weight="600" style={{ color: colors.brand.primary }} onPress={() => router.push('/(auth)/seller-login')}>
             Sign in to console
           </MDText>
         </View>

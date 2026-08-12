@@ -1,6 +1,10 @@
-import { Image, Pressable, View } from 'react-native';
+import { Image, Linking, Pressable, View } from 'react-native';
 import { useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 import { colors, layout, spacing, useResponsive, useHoverPress, webTransition, MDText } from '@/design-system';
+
+const CONTACT_PHONE = '+91 8411005847';
+const CONTACT_EMAIL = 'info@millenniumsemi.com';
 
 interface FooterLink {
   label: string;
@@ -42,7 +46,8 @@ const COLUMNS: FooterColumn[] = [
     links: [
       { label: 'Privacy Policy', href: '/(buyer)/legal/privacy' },
       { label: 'Terms of Service', href: '/(buyer)/legal/terms' },
-      { label: 'Seller / Admin', href: '/(auth)/admin-login' },
+      { label: 'Seller Sign In', href: '/(auth)/seller-login' },
+      { label: 'Admin', href: '/(auth)/admin-login' },
     ],
   },
 ];
@@ -54,6 +59,31 @@ function FooterLinkItem({ link, onPress }: { link: FooterLink; onPress: () => vo
     <Pressable onPress={onPress} {...hoverHandlers} style={webTransition}>
       <MDText variant="bodySm" style={{ color: hovered ? colors.gray[0] : colors.gray[400] }}>
         {link.label}
+      </MDText>
+    </Pressable>
+  );
+}
+
+function FooterContactItem({
+  icon,
+  label,
+  onPress,
+}: {
+  icon: keyof typeof Ionicons.glyphMap;
+  label: string;
+  onPress: () => void;
+}) {
+  const { hovered, hoverHandlers } = useHoverPress();
+
+  return (
+    <Pressable
+      onPress={onPress}
+      {...hoverHandlers}
+      style={[webTransition, { flexDirection: 'row', alignItems: 'center', gap: spacing.xs }]}
+    >
+      <Ionicons name={icon} size={14} color={hovered ? colors.gray[0] : colors.gray[400]} />
+      <MDText variant="bodySm" style={{ color: hovered ? colors.gray[0] : colors.gray[400] }}>
+        {label}
       </MDText>
     </Pressable>
   );
@@ -85,7 +115,7 @@ export function Footer() {
             <View style={{ backgroundColor: colors.gray[0], borderRadius: 8, padding: spacing.sm, alignSelf: 'flex-start' }}>
               <Image
                 source={require('../../assets/Millenium_Logo_new.png')}
-                style={{ width: 150, height: 26 }}
+                style={{ width: 168, height: 61 }}
                 resizeMode="contain"
               />
             </View>
@@ -93,6 +123,18 @@ export function Footer() {
               Genuine electronic components, verified manufacturers, and technical clarity for
               engineers and procurement teams.
             </MDText>
+            <View style={{ gap: spacing.xs, marginTop: spacing.xs }}>
+              <FooterContactItem
+                icon="call-outline"
+                label={CONTACT_PHONE}
+                onPress={() => Linking.openURL(`tel:${CONTACT_PHONE.replace(/\s+/g, '')}`)}
+              />
+              <FooterContactItem
+                icon="mail-outline"
+                label={CONTACT_EMAIL}
+                onPress={() => Linking.openURL(`mailto:${CONTACT_EMAIL}`)}
+              />
+            </View>
           </View>
 
           <View

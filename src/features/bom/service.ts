@@ -1,6 +1,7 @@
 import { delay } from '@/utils';
 import { getProducts } from '@/features/products/service';
-import type { BomLineItem, BomMatchResult, Product } from '@/types';
+import rawCatalog from '../../../assets/data/products.json';
+import type { BomLineItem, BomMatchResult, Product, RawProduct } from '@/types';
 
 /**
  * PROTOTYPE / DEMO BOM intake + component matching.
@@ -56,14 +57,95 @@ export function parseBomText(raw: string): BomLineItem[] {
   });
 }
 
-/** A curated real-catalog sample BOM used by the "Load Sample BOM" demo action. */
+/**
+ * Reference-designator prefix by rough component family, so the generated
+ * sample BOM reads like a real engineering BOM export rather than a flat
+ * list — matched loosely against each product's productType/category.
+ */
+function designatorPrefix(product: RawProduct): string {
+  const t = `${product.productType} ${product.category}`.toLowerCase();
+  if (t.includes('mosfet') || t.includes('igbt') || t.includes('transistor')) return 'Q';
+  if (t.includes('diode') || t.includes('rectifier')) return 'D';
+  if (t.includes('capacitor')) return 'C';
+  if (t.includes('resistor')) return 'R';
+  if (t.includes('inductor') || t.includes('wire') || t.includes('cable')) return 'L';
+  if (t.includes('connector')) return 'J';
+  if (t.includes('sensor')) return 'SEN';
+  if (t.includes('tool') || t.includes('supplies')) return 'TL';
+  return 'U';
+}
+
+/** Small deterministic (non-Math.random) pseudo-variety generator so the sample stays stable across reloads. */
+function pseudoQty(seed: number, min: number, max: number): number {
+  const span = max - min;
+  return min + ((seed * 2654435761) % (span + 1) + (span + 1)) % (span + 1);
+}
+
+interface SampleLine {
+  designator: string;
+  partNumber: string;
+  qty: number;
+}
+
+/**
+ * Builds a large, realistic sample BOM straight from the live product
+ * catalog (assets/data/products.json) — real manufacturer part numbers,
+ * spread across categories/manufacturers rather than invented data. Sized
+ * to demonstrate BOM → component-matching at real procurement scale
+ * (100+ line items), not a 5-line toy example.
+ *
+ * A handful of lines are deliberately mutated (family-prefix match only)
+ * or fully custom part numbers, so the matching demo also shows the
+ * "alternative suggested" and "needs engineering review" states a real
+ * BOM run would surface — not just 100% exact matches.
+ */
+function buildSampleBomLines(): SampleLine[] {
+  const catalog = rawCatalog as RawProduct[];
+  const sampleSize = Math.min(120, catalog.length);
+
+  const exactLines: SampleLine[] = Array.from({ length: sampleSize }, (_, i) => {
+    const product = catalog[Math.floor((i * catalog.length) / sampleSize)];
+    const dCounts = designatorCounters;
+    const prefix = designatorPrefix(product);
+    dCounts[prefix] = (dCounts[prefix] ?? 0) + 1;
+    return {
+      designator: `${prefix}${dCounts[prefix]}`,
+      partNumber: product.manufacturerPartNumber,
+      qty: pseudoQty(product.id, 25, 1000),
+    };
+  });
+
+  // Same-family fuzzy matches: real part numbers with a mutated suffix, so
+  // matchBomItems() falls through to the alternative-match path.
+  const alternativeSeeds = [catalog[3], catalog[41], catalog[88], catalog[130]].filter(Boolean);
+  const alternativeLines: SampleLine[] = alternativeSeeds.map((product, i) => ({
+    designator: `${designatorPrefix(product)}ALT${i + 1}`,
+    partNumber: `${product.manufacturerPartNumber.slice(0, -2)}XX`,
+    qty: pseudoQty(product.id + 7, 25, 500),
+  }));
+
+  // Fully custom part numbers with no catalog match — surfaces the
+  // "needs engineering review / RFQ" path for a non-stock/custom component.
+  const unmatchedLines: SampleLine[] = [
+    { designator: 'U-NEW1', partNumber: 'MDX-CUSTOM-2201', qty: 75 },
+    { designator: 'U-NEW2', partNumber: 'MDX-CUSTOM-3407', qty: 40 },
+    { designator: 'U-NEW3', partNumber: 'MDX-CUSTOM-5190', qty: 120 },
+  ];
+
+  return [...exactLines, ...alternativeLines, ...unmatchedLines];
+}
+
+const designatorCounters: Record<string, number> = {};
+const SAMPLE_LINES: SampleLine[] = buildSampleBomLines();
+
+/**
+ * A large, curated real-catalog sample BOM used by the "Load Sample BOM"
+ * demo action — 100+ line items spanning the catalog, so the BOM →
+ * component-matching → RFQ workflow demonstrates real procurement scale.
+ */
 export const SAMPLE_BOM_TEXT = [
-  '# Designator, Part Number, Qty',
-  'Q1, IQE036N08NM6SCATMA1, 250',
-  'Q2, SQJ461EP-T1_NE3, 500',
-  'Q3, SQJ460EP-T1_NE3, 150',
-  'D1, S07M-M3/H, 1000',
-  'U1, MDX-CUSTOM-2201, 75',
+  `# Designator, Part Number, Qty — ${SAMPLE_LINES.length} line items`,
+  ...SAMPLE_LINES.map((l) => `${l.designator}, ${l.partNumber}, ${l.qty}`),
 ].join('\n');
 
 /**
@@ -73,11 +155,7 @@ export const SAMPLE_BOM_TEXT = [
  */
 export const SAMPLE_BOM_CSV = [
   'Designator,Part Number,Quantity',
-  'Q1,IQE036N08NM6SCATMA1,250',
-  'Q2,SQJ461EP-T1_NE3,500',
-  'Q3,SQJ460EP-T1_NE3,150',
-  'D1,S07M-M3/H,1000',
-  'U1,MDX-CUSTOM-2201,75',
+  ...SAMPLE_LINES.map((l) => `${l.designator},${l.partNumber},${l.qty}`),
 ].join('\n');
 
 function normalize(s: string): string {
@@ -96,7 +174,7 @@ export async function matchBomItems(lines: BomLineItem[]): Promise<BomMatchResul
     const requestedNorm = normalize(line.requestedPartNumber);
 
     const exact = catalog.find(
-      (p) => normalize(p.manufacturerPartNumber) === requestedNorm || normalize(p.mouserPartNumber) === requestedNorm,
+      (p) => normalize(p.manufacturerPartNumber) === requestedNorm || normalize(p.mdPartNumber) === requestedNorm,
     );
     if (exact) {
       return { line, matchType: 'exact', product: exact, alternatives: [], confidence: 1 };

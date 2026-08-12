@@ -5,6 +5,7 @@ import { colors, radius, spacing, MDButton, MDEmptyState, MDText, useToast } fro
 import { useCancelOrder, useOrder, useReorder } from '@/features/orders';
 import { MDOrderStatus } from '@/components/MDOrderStatus';
 import { MDProductImage } from '@/components/MDProductImage';
+import { OrderLineBackorderNote } from '@/components/OrderLineBackorderNote';
 import { LogisticsTracker } from '@/components/LogisticsTracker';
 import { ProtoBadge } from '@/components/ProtoBadge';
 import { formatDisplayPrice } from '@/utils';
@@ -108,6 +109,7 @@ export default function OrderDetail() {
                 <MDText variant="caption" tone="tertiary">
                   {item.manufacturer} · Qty {item.quantity}
                 </MDText>
+                <OrderLineBackorderNote productId={item.productId} quantity={item.quantity} />
               </View>
               <MDText variant="bodySm" weight="600">
                 {formatDisplayPrice(item.price * item.quantity, order.currency, displayCurrency)}
@@ -154,6 +156,13 @@ export default function OrderDetail() {
           }}
         >
           <SummaryRow label="Subtotal" value={formatDisplayPrice(order.subtotal, order.currency, displayCurrency)} />
+          {order.discountTotal ? (
+            <SummaryRow
+              label={`Promo Discount (${order.promoCode})`}
+              value={`−${formatDisplayPrice(order.discountTotal, order.currency, displayCurrency)}`}
+              tone="success"
+            />
+          ) : null}
           <SummaryRow label="Shipping" value={order.shippingCost === 0 ? 'Free' : formatDisplayPrice(order.shippingCost, order.currency, displayCurrency)} />
           <SummaryRow label="Tax" value={formatDisplayPrice(order.tax, order.currency, displayCurrency)} />
           <View style={{ borderTopWidth: 1, borderTopColor: colors.border, paddingTop: spacing.sm }}>
@@ -191,13 +200,32 @@ export default function OrderDetail() {
 }
 
 
-function SummaryRow({ label, value, bold }: { label: string; value: string; bold?: boolean }) {
+function SummaryRow({
+  label,
+  value,
+  bold,
+  tone,
+}: {
+  label: string;
+  value: string;
+  bold?: boolean;
+  tone?: 'success';
+}) {
+  const successColor = tone === 'success' ? colors.status.successStrong : undefined;
   return (
     <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-      <MDText variant={bold ? 'bodyMedium' : 'bodySm'} tone={bold ? 'primary' : 'secondary'}>
+      <MDText
+        variant={bold ? 'bodyMedium' : 'bodySm'}
+        tone={bold ? 'primary' : 'secondary'}
+        style={successColor ? { color: successColor } : undefined}
+      >
         {label}
       </MDText>
-      <MDText variant={bold ? 'bodyMedium' : 'bodySm'} weight={bold ? '700' : '400'}>
+      <MDText
+        variant={bold ? 'bodyMedium' : 'bodySm'}
+        weight={bold ? '700' : '400'}
+        style={successColor ? { color: successColor } : undefined}
+      >
         {value}
       </MDText>
     </View>

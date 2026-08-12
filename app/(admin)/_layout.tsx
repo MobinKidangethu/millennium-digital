@@ -23,7 +23,7 @@ function AdminMobileHeader({ onOpenMenu }: { onOpenMenu: () => void }) {
       </Pressable>
       <Image
         source={require('../../assets/Millenium_Logo_new.png')}
-        style={{ width: 130, height: 23 }}
+        style={{ width: 92, height: 34 }}
         resizeMode="contain"
       />
       <View style={{ width: 24 }} />

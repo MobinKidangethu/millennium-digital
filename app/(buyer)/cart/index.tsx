@@ -13,23 +13,26 @@ import {
   MDButton,
   MDEmptyState,
   MDIconButton,
+  MDModal,
   MDSkeleton,
   MDText,
 } from '@/design-system';
 import { useCartLines } from '@/features/cart';
 import { rfqService } from '@/features/rfq';
-import { useBomWorkflowStore, useCartStore, useCurrencyStore, useWishlistStore } from '@/state';
+import { useBomWorkflowStore, useCartStore, useCurrencyStore, usePromoStore, useWishlistStore } from '@/state';
 import { formatDisplayPrice } from '@/utils';
 import { MDProductImage } from '@/components/MDProductImage';
 import { MDManufacturerLogo } from '@/components/MDManufacturerLogo';
 import { MDStockStatus } from '@/components/MDStockStatus';
 import { MDRohsBadge } from '@/components/MDRohsBadge';
 import { MDQuantitySelector } from '@/components/MDQuantitySelector';
+import { BackorderNote } from '@/components/BackorderNote';
 import { CheckoutStepper } from '@/components/CheckoutStepper';
+import { PromoCodeField } from '@/components/PromoCodeField';
+import { PricingBreakdownTable } from '@/components/PricingBreakdownTable';
 import { TRUST_ICONS } from '@/constants/trustIcons';
 import { PAYMENT_METHOD_OPTIONS } from '@/features/checkout';
-
-const VOLUME_THRESHOLD = 100;
+import type { CartLineView } from '@/types';
 
 export default function Cart() {
   const router = useRouter();
@@ -39,23 +42,32 @@ export default function Cart() {
   const setQuantity = useCartStore((s) => s.setQuantity);
   const removeItem = useCartStore((s) => s.removeItem);
   const clearCart = useCartStore((s) => s.clear);
+  const clearPromo = usePromoStore((s) => s.clear);
   const toggleWishlist = useWishlistStore((s) => s.toggle);
   const setRfq = useBomWorkflowStore((s) => s.setRfq);
   const setQuote = useBomWorkflowStore((s) => s.setQuote);
   const displayCurrency = useCurrencyStore((s) => s.currency);
   const [requestingQuote, setRequestingQuote] = useState(false);
+  const [discount, setDiscount] = useState(0);
+  const [pricingModalLine, setPricingModalLine] = useState<CartLineView | null>(null);
 
   const currency = lines[0]?.product.currency ?? 'INR';
   const estimatedShipping = subtotal > 0 ? 0 : 0;
-  const total = subtotal + estimatedShipping;
+  const total = Math.max(0, subtotal + estimatedShipping - discount);
   const itemCount = lines.reduce((sum, l) => sum + l.quantity, 0);
-  const eligibleForVolumePricing = lines.some((l) => l.quantity >= VOLUME_THRESHOLD);
+  const governedLines = lines.filter((l) => l.governedPricing);
+  const eligibleForVolumePricing = governedLines.length > 0;
+  const volumeSavings = governedLines.reduce(
+    (sum, l) => sum + (l.product.price * l.quantity - l.lineTotal),
+    0,
+  );
 
   const handleClearCart = () => {
     if (Platform.OS === 'web' && typeof window !== 'undefined') {
       if (!window.confirm('Remove all items from your cart?')) return;
     }
     clearCart();
+    clearPromo();
     toast.show('Cart cleared.', 'neutral');
   };
 
@@ -191,6 +203,18 @@ export default function Cart() {
                       </View>
 
                       <MDStockStatus stockStatus={line.product.stockStatus} availability={line.product.availability} />
+                      <BackorderNote product={line.product} quantity={line.quantity} />
+                      {line.governedPricing ? (
+                        <Pressable
+                          onPress={() => setPricingModalLine(line)}
+                          style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 2 }}
+                        >
+                          <Ionicons name="pricetag" size={12} color={colors.status.successStrong} />
+                          <MDText variant="caption" weight="600" style={{ color: colors.status.successStrong }}>
+                            Volume pricing applied — view breakdown
+                          </MDText>
+                        </Pressable>
+                      ) : null}
 
                       {!isDesktopUp ? (
                         <View
@@ -204,7 +228,7 @@ export default function Cart() {
                           <MDQuantitySelector
                             value={line.quantity}
                             onChange={(q) => setQuantity(line.product.id, q)}
-                            max={line.product.availability || undefined}
+                            max={99999}
                             size="sm"
                           />
                           <MDText variant="bodyMedium" weight="700">
@@ -239,14 +263,24 @@ export default function Cart() {
 
                   {isDesktopUp ? (
                     <>
-                      <MDText variant="bodySm" style={{ width: 110, textAlign: 'right' }}>
-                        {formatDisplayPrice(line.product.price, line.product.currency, displayCurrency)}
-                      </MDText>
+                      <View style={{ width: 110, alignItems: 'flex-end' }}>
+                        {line.governedPricing ? (
+                          <MDText variant="caption" tone="tertiary" style={{ textDecorationLine: 'line-through' }}>
+                            {formatDisplayPrice(line.product.price, line.product.currency, displayCurrency)}
+                          </MDText>
+                        ) : null}
+                        <MDText
+                          variant="bodySm"
+                          style={line.governedPricing ? { color: colors.status.successStrong } : undefined}
+                        >
+                          {formatDisplayPrice(line.unitPrice, line.product.currency, displayCurrency)}
+                        </MDText>
+                      </View>
                       <View style={{ width: 140, alignItems: 'center' }}>
                         <MDQuantitySelector
                           value={line.quantity}
                           onChange={(q) => setQuantity(line.product.id, q)}
-                          max={line.product.availability || undefined}
+                          max={99999}
                           size="sm"
                         />
                       </View>
@@ -309,6 +343,16 @@ export default function Cart() {
                 </MDText>
                 <MDText variant="bodySm">{formatDisplayPrice(subtotal, currency, displayCurrency)}</MDText>
               </View>
+              {discount > 0 ? (
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                  <MDText variant="bodySm" style={{ color: colors.status.successStrong }}>
+                    Promo Discount
+                  </MDText>
+                  <MDText variant="bodySm" style={{ color: colors.status.successStrong }}>
+                    −{formatDisplayPrice(discount, currency, displayCurrency)}
+                  </MDText>
+                </View>
+              ) : null}
               <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                 <MDText variant="bodySm" tone="secondary">
                   Estimated Shipping
@@ -320,6 +364,15 @@ export default function Cart() {
                   Tax
                 </MDText>
                 <MDText variant="bodySm">Calculated at checkout</MDText>
+              </View>
+
+              <View style={{ marginTop: spacing.xs }}>
+                <PromoCodeField
+                  subtotal={subtotal}
+                  currency={currency}
+                  displayCurrency={displayCurrency}
+                  onAppliedChange={setDiscount}
+                />
               </View>
 
               <View
@@ -343,15 +396,16 @@ export default function Cart() {
                   style={{
                     flexDirection: 'row',
                     gap: spacing.xs,
-                    backgroundColor: colors.brand.primarySoft,
+                    backgroundColor: colors.status.successSoft,
                     borderRadius: radius.md,
                     padding: spacing.sm,
                     marginTop: spacing.xs,
                   }}
                 >
-                  <Ionicons name="pricetags-outline" size={14} color={colors.brand.primary} style={{ marginTop: 1 }} />
-                  <MDText variant="caption" style={{ color: colors.brand.primary, flex: 1 }}>
-                    Order quantities may qualify for volume pricing — request a quote to see governed pricing.
+                  <Ionicons name="pricetags-outline" size={14} color={colors.status.successStrong} style={{ marginTop: 1 }} />
+                  <MDText variant="caption" style={{ color: colors.status.successStrong, flex: 1 }}>
+                    Governed volume pricing applied to {governedLines.length} line{governedLines.length === 1 ? '' : 's'}{' '}
+                    (100+ units) — saving {formatDisplayPrice(volumeSavings, currency, displayCurrency)} vs. list price.
                   </MDText>
                 </View>
               ) : null}
@@ -416,6 +470,22 @@ export default function Cart() {
           </View>
         </View>
       </View>
+
+      <MDModal
+        visible={!!pricingModalLine}
+        onClose={() => setPricingModalLine(null)}
+        title="Governed Pricing Breakdown"
+        maxWidth={520}
+      >
+        {pricingModalLine?.governedPricing ? (
+          <View style={{ gap: spacing.sm }}>
+            <MDText variant="bodySm" tone="secondary">
+              {pricingModalLine.product.manufacturerPartNumber} — {pricingModalLine.quantity.toLocaleString()} units
+            </MDText>
+            <PricingBreakdownTable pricing={pricingModalLine.governedPricing} />
+          </View>
+        ) : null}
+      </MDModal>
     </ScrollView>
   );
 }

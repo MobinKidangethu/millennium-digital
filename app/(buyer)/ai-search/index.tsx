@@ -8,7 +8,6 @@ import {
   radius,
   spacing,
   useResponsive,
-  useToast,
   MDBadge,
   MDButton,
   MDCard,
@@ -18,7 +17,7 @@ import {
 } from '@/design-system';
 import { aiService } from '@/features/ai';
 import { rfqService } from '@/features/rfq';
-import { useBomWorkflowStore, useCartStore, useCompareStore, useCurrencyStore } from '@/state';
+import { useBomWorkflowStore, useCartFeedbackStore, useCartStore, useCompareStore, useCurrencyStore } from '@/state';
 import { ProtoBadge } from '@/components/ProtoBadge';
 import { MDProductImage } from '@/components/MDProductImage';
 import { MDManufacturerLogo } from '@/components/MDManufacturerLogo';
@@ -36,9 +35,9 @@ const EXAMPLE_QUERIES = [
 
 function ResultRow({ product, onRequestQuote, requestingId }: { product: Product; onRequestQuote: (p: Product) => void; requestingId: number | null }) {
   const { isDesktopUp } = useResponsive();
-  const toast = useToast();
   const router = useRouter();
   const addToCart = useCartStore((s) => s.addItem);
+  const notifyAdded = useCartFeedbackStore((s) => s.notifyAdded);
   const compareIds = useCompareStore((s) => s.productIds);
   const addToCompare = useCompareStore((s) => s.add);
   const removeFromCompare = useCompareStore((s) => s.remove);
@@ -79,7 +78,7 @@ function ResultRow({ product, onRequestQuote, requestingId }: { product: Product
             variant="outline"
             onPress={() => {
               addToCart(product.id, 1);
-              toast.show(`Added ${product.manufacturerPartNumber} to cart`, 'success');
+              notifyAdded(product, 1);
             }}
           />
           <MDButton
@@ -148,9 +147,7 @@ export default function AiEngineeringSearch() {
           <ProtoBadge />
         </View>
         <MDText variant="body" tone="secondary" style={{ marginBottom: spacing.xl, maxWidth: 720 }}>
-          Describe what you're designing in plain language. The assistant converts your requirement into
-          structured catalog criteria — manufacturer, product type, technology, mounting, RoHS, availability,
-          price — and explains exactly how it interpreted your request.
+          Describe what you're designing — the assistant maps it to real catalog criteria and explains its match.
         </MDText>
 
         <MDCard padding="lg" style={{ marginBottom: spacing.xl }}>
@@ -227,7 +224,10 @@ export default function AiEngineeringSearch() {
             </View>
 
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: spacing.md }}>
-              <MDText variant="h4">{result.matches.length} Recommended Component{result.matches.length === 1 ? '' : 's'}</MDText>
+              <MDText variant="h4">
+                {result.totalMatches} Recommended Component{result.totalMatches === 1 ? '' : 's'}
+                {result.totalMatches > result.matches.length ? ` (showing top ${result.matches.length})` : ''}
+              </MDText>
               {result.matches.length > 1 ? (
                 <MDButton label="Compare Results" variant="outline" size="sm" onPress={() => router.push('/(buyer)/compare')} />
               ) : null}

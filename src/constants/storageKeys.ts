@@ -8,9 +8,11 @@ export const STORAGE_KEYS = {
   productOverrides: 'md.products.overrides',
   orders: 'md.orders',
   addresses: 'md.addresses',
+  savedCards: 'md.savedCards',
   hasSeenWelcome: 'md.hasSeenWelcome',
   governance: 'md.governance',
   designRequests: 'md.designRequests',
   sellerApplications: 'md.sellerApplications',
   rfqs: 'md.rfqs',
+  promoCode: 'md.promoCode',
 } as const;

@@ -3,7 +3,6 @@ export type PaymentMethodType =
   | 'debit-card'
   | 'upi'
   | 'net-banking'
-  | 'wallet'
   | 'purchase-order';
 
 export interface PaymentMethodSelection {
@@ -53,6 +52,9 @@ export interface Order {
   subtotal: number;
   shippingCost: number;
   tax: number;
+  /** Promo code discount applied at checkout, if any — see PROJECT section 15 (Pricing Governance): a prototype/demo discount, not a live promotions platform. */
+  discountTotal?: number;
+  promoCode?: string;
   total: number;
   currency: string;
   shippingAddress: import('./user').Address;

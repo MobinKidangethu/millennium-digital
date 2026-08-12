@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { delay } from '@/utils';
 import { STORAGE_KEYS } from '@/constants/storageKeys';
+import { authService } from '@/features/auth';
 import type { SellerApplication, SellerApplicationInput } from '@/types';
 
 /**
@@ -51,4 +52,36 @@ export async function submitSellerApplication(input: SellerApplicationInput): Pr
 export async function getSellerApplications(): Promise<SellerApplication[]> {
   await delay(300);
   return load();
+}
+
+export interface ApproveSellerApplicationResult {
+  application: SellerApplication;
+  temporaryPassword: string;
+}
+
+/**
+ * Admin-only action: grants console access by provisioning a real seller
+ * account (see authService.createSellerAccount) and advancing the
+ * application straight to 'console_access'. A seller can never self-grant
+ * this — it only runs from the admin Seller Applications review queue.
+ */
+export async function approveSellerApplication(application: SellerApplication): Promise<ApproveSellerApplicationResult> {
+  const list = await load();
+  const idx = list.findIndex((a) => a.id === application.id);
+  if (idx < 0) throw new Error('Application not found.');
+
+  const { temporaryPassword } = await authService.createSellerAccount({
+    companyName: application.companyName,
+    contactName: application.contactName,
+    email: application.email,
+    phone: application.phone,
+    manufacturerName: application.companyName,
+  });
+
+  const updated: SellerApplication = { ...list[idx], status: 'console_access' };
+  const next = [...list];
+  next[idx] = updated;
+  await save(next);
+
+  return { application: updated, temporaryPassword };
 }

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Pressable, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, radius, shadow, spacing, useHoverPress, webTransition, MDText } from '@/design-system';
+import { colors, radius, spacing, useHoverPress, webTransition, MDModal, MDText } from '@/design-system';
 import { useCurrencyStore, type DisplayCurrency } from '@/state';
 
 const OPTIONS: { value: DisplayCurrency; label: string; symbol: string }[] = [
@@ -67,9 +67,9 @@ export function CurrencySwitcher({ compact }: { compact?: boolean }) {
   const activeOption = OPTIONS.find((o) => o.value === currency) ?? OPTIONS[0];
 
   return (
-    <View style={{ position: 'relative' }}>
+    <>
       <Pressable
-        onPress={() => setOpen((o) => !o)}
+        onPress={() => setOpen(true)}
         accessibilityRole="button"
         accessibilityLabel={`Display currency: ${activeOption.label}. Change currency`}
         {...hoverHandlers}
@@ -94,45 +94,21 @@ export function CurrencySwitcher({ compact }: { compact?: boolean }) {
         ) : null}
       </Pressable>
 
-      {open ? (
-        <>
-          <Pressable
-            onPress={() => setOpen(false)}
-            accessibilityLabel="Close currency menu"
-            style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 40 } as any}
-          />
-          <View
-            style={[
-              {
-                position: 'absolute',
-                top: 40,
-                right: 0,
-                minWidth: 190,
-                backgroundColor: colors.surfaceRaised,
-                borderRadius: radius.md,
-                borderWidth: 1,
-                borderColor: colors.border,
-                paddingVertical: spacing.xs,
-                overflow: 'hidden',
-                zIndex: 50,
-              },
-              shadow.lg,
-            ]}
-          >
-            {OPTIONS.map((option) => (
-              <CurrencyOption
-                key={option.value}
-                option={option}
-                active={option.value === currency}
-                onPress={() => {
-                  setCurrency(option.value);
-                  setOpen(false);
-                }}
-              />
-            ))}
-          </View>
-        </>
-      ) : null}
-    </View>
+      <MDModal visible={open} onClose={() => setOpen(false)} title="Display Currency" maxWidth={280}>
+        <View style={{ gap: spacing.xs }}>
+          {OPTIONS.map((option) => (
+            <CurrencyOption
+              key={option.value}
+              option={option}
+              active={option.value === currency}
+              onPress={() => {
+                setCurrency(option.value);
+                setOpen(false);
+              }}
+            />
+          ))}
+        </View>
+      </MDModal>
+    </>
   );
 }

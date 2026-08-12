@@ -4,6 +4,7 @@ import { colors, useResponsive } from '@/design-system';
 import { BuyerHeader } from '@/components/BuyerHeader';
 import { MobileBottomNav } from '@/components/MobileBottomNav';
 import { AIAssistantWidget } from '@/components/AIAssistantWidget';
+import { AddedToCartPopup } from '@/components/AddedToCartPopup';
 
 export default function BuyerLayout() {
   const { isDesktopUp } = useResponsive();
@@ -16,6 +17,7 @@ export default function BuyerLayout() {
         <AIAssistantWidget />
       </View>
       {!isDesktopUp ? <MobileBottomNav /> : null}
+      <AddedToCartPopup />
     </View>
   );
 }

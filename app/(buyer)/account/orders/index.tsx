@@ -1,11 +1,14 @@
+import { useEffect, useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, radius, spacing, MDButton, MDEmptyState, MDSkeleton, MDText, useToast } from '@/design-system';
+import { colors, radius, spacing, MDButton, MDEmptyState, MDPagination, MDSkeleton, MDText, useToast } from '@/design-system';
 import { useAuthStore, useCurrencyStore } from '@/state';
 import { useOrders, useReorder } from '@/features/orders';
 import { MDOrderStatus } from '@/components/MDOrderStatus';
 import { formatDisplayPrice } from '@/utils';
+
+const PAGE_SIZE = 10;
 
 export default function OrderHistory() {
   const router = useRouter();
@@ -14,6 +17,16 @@ export default function OrderHistory() {
   const { data: orders, isLoading } = useOrders(session?.user.id);
   const reorder = useReorder();
   const displayCurrency = useCurrencyStore((s) => s.currency);
+  const [page, setPage] = useState(1);
+  const totalPages = Math.max(1, Math.ceil((orders?.length ?? 0) / PAGE_SIZE));
+  const pagedOrders = useMemo(
+    () => (orders ?? []).slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE),
+    [orders, page],
+  );
+
+  useEffect(() => {
+    setPage(1);
+  }, [orders?.length]);
 
   return (
     <View>
@@ -37,7 +50,7 @@ export default function OrderHistory() {
         />
       ) : (
         <View style={{ gap: spacing.sm }}>
-          {orders.map((order) => (
+          {pagedOrders.map((order) => (
             <View
               key={order.id}
               style={{
@@ -89,6 +102,7 @@ export default function OrderHistory() {
               </View>
             </View>
           ))}
+          <MDPagination page={page} totalPages={totalPages} onChange={setPage} />
         </View>
       )}
     </View>

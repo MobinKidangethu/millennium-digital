@@ -1,5 +1,5 @@
-import { useState, type ReactNode } from 'react';
-import { Image, Pressable, ScrollView, View } from 'react-native';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { Animated, Image, Pressable, ScrollView, View } from 'react-native';
 import { useRouter, usePathname } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import {
@@ -12,7 +12,14 @@ import {
   MDText,
   MDButton,
 } from '@/design-system';
-import { useCartStore, selectCartCount, useWishlistStore, useCompareStore, useAuthStore } from '@/state';
+import {
+  useCartStore,
+  selectCartCount,
+  useWishlistStore,
+  useCompareStore,
+  useAuthStore,
+  useCartFeedbackStore,
+} from '@/state';
 import { GlobalSearchBar } from '@/components/GlobalSearchBar';
 import { CurrencySwitcher } from '@/components/CurrencySwitcher';
 
@@ -50,15 +57,33 @@ function HeaderIconLink({
   icon,
   label,
   count,
+  bumpToken,
   onPress,
 }: {
   icon: keyof typeof Ionicons.glyphMap;
   label: string;
   count?: number;
+  /** Increments each time the underlying collection gains an item — triggers a bounce. */
+  bumpToken?: number;
   onPress: () => void;
 }) {
   const [hovered, setHovered] = useState(false);
   const [pressed, setPressed] = useState(false);
+  const bumpScale = useRef(new Animated.Value(1)).current;
+  const isFirstRender = useRef(true);
+
+  useEffect(() => {
+    if (bumpToken === undefined) return;
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    bumpScale.setValue(1);
+    Animated.sequence([
+      Animated.timing(bumpScale, { toValue: 1.35, duration: 130, useNativeDriver: true }),
+      Animated.spring(bumpScale, { toValue: 1, friction: 3.5, tension: 160, useNativeDriver: true }),
+    ]).start();
+  }, [bumpToken, bumpScale]);
 
   return (
     <Pressable
@@ -83,7 +108,9 @@ function HeaderIconLink({
         },
       ]}
     >
-      <Ionicons name={icon} size={22} color={hovered ? colors.brand.primary : colors.text.primary} />
+      <Animated.View style={{ transform: [{ scale: bumpScale }] }}>
+        <Ionicons name={icon} size={22} color={hovered ? colors.brand.primary : colors.text.primary} />
+      </Animated.View>
       {count ? (
         <View
           style={{
@@ -178,6 +205,7 @@ export function BuyerHeader() {
   const pathname = usePathname();
   const { isDesktopUp } = useResponsive();
   const cartCount = useCartStore(selectCartCount);
+  const cartBumpToken = useCartFeedbackStore((s) => s.bumpToken);
   const wishlistCount = useWishlistStore((s) => s.productIds.length);
   const compareCount = useCompareStore((s) => s.productIds.length);
   const session = useAuthStore((s) => s.session);
@@ -199,7 +227,7 @@ export function BuyerHeader() {
         <FadePressable onPress={() => router.push('/(buyer)')} accessibilityLabel="Millennium Digital home">
           <Image
             source={require('../../assets/Millenium_Logo_new.png')}
-            style={{ width: 132, height: 23 }}
+            style={{ width: 92, height: 34 }}
             resizeMode="contain"
           />
         </FadePressable>
@@ -214,6 +242,7 @@ export function BuyerHeader() {
             icon="cart-outline"
             label="Cart"
             count={cartCount}
+            bumpToken={cartBumpToken}
             onPress={() => router.push('/(buyer)/cart')}
           />
         </View>
@@ -238,7 +267,7 @@ export function BuyerHeader() {
           <FadePressable onPress={() => router.push('/(buyer)')} accessibilityLabel="Millennium Digital home">
             <Image
               source={require('../../assets/Millenium_Logo_new.png')}
-              style={{ width: 176, height: 31 }}
+              style={{ width: 160, height: 58 }}
               resizeMode="contain"
             />
           </FadePressable>
@@ -263,6 +292,7 @@ export function BuyerHeader() {
               icon="cart-outline"
               label="Cart"
               count={cartCount}
+              bumpToken={cartBumpToken}
               onPress={() => router.push('/(buyer)/cart')}
             />
             {session ? (

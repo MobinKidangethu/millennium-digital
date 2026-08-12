@@ -6,7 +6,6 @@ import {
   layout,
   spacing,
   useResponsive,
-  useToast,
   MDButton,
   MDEmptyState,
   MDIconButton,
@@ -14,25 +13,26 @@ import {
   MDText,
 } from '@/design-system';
 import { useProductsByIds } from '@/features/products';
-import { useCartStore, useWishlistStore } from '@/state';
+import { useCartFeedbackStore, useCartStore, useWishlistStore } from '@/state';
 import { MDProductImage } from '@/components/MDProductImage';
 import { MDManufacturerLogo } from '@/components/MDManufacturerLogo';
 import { MDPrice } from '@/components/MDPrice';
 import { MDStockStatus } from '@/components/MDStockStatus';
+import type { Product } from '@/types';
 
 export function WishlistContent() {
   const router = useRouter();
   const { isDesktopUp } = useResponsive();
-  const toast = useToast();
   const productIds = useWishlistStore((s) => s.productIds);
   const removeFromWishlist = useWishlistStore((s) => s.remove);
   const addToCart = useCartStore((s) => s.addItem);
+  const notifyAdded = useCartFeedbackStore((s) => s.notifyAdded);
   const { data: products, isLoading } = useProductsByIds(productIds);
 
-  const moveToCart = (productId: number, partNumber: string) => {
-    addToCart(productId, 1);
-    removeFromWishlist(productId);
-    toast.show(`Moved ${partNumber} to cart`, 'success');
+  const moveToCart = (product: Product) => {
+    addToCart(product.id, 1);
+    removeFromWishlist(product.id);
+    notifyAdded(product, 1);
   };
 
   return (
@@ -97,13 +97,13 @@ export function WishlistContent() {
                     <MDButton
                       label="Move to Cart"
                       size="sm"
-                      onPress={() => moveToCart(product.id, product.manufacturerPartNumber)}
+                      onPress={() => moveToCart(product)}
                     />
                   ) : (
                     <MDIconButton
                       accessibilityLabel="Move to cart"
                       variant="outline"
-                      onPress={() => moveToCart(product.id, product.manufacturerPartNumber)}
+                      onPress={() => moveToCart(product)}
                     >
                       <Ionicons name="cart-outline" size={18} color={colors.text.primary} />
                     </MDIconButton>

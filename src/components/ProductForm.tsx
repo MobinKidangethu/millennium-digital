@@ -8,7 +8,7 @@ import type { ProductTag } from '@/types';
 export interface ProductFormValues {
   manufacturer: string;
   manufacturerPartNumber: string;
-  mouserPartNumber: string;
+  mdPartNumber: string;
   title: string;
   description: string;
   category: string;
@@ -35,7 +35,7 @@ export interface ProductFormValues {
 export const EMPTY_PRODUCT_FORM: ProductFormValues = {
   manufacturer: '',
   manufacturerPartNumber: '',
-  mouserPartNumber: '',
+  mdPartNumber: '',
   title: '',
   description: '',
   category: 'Semiconductors',
@@ -85,9 +85,32 @@ interface ProductFormProps {
   onPreview?: () => void;
   submitLabel: string;
   submitting?: boolean;
+  /**
+   * Restrict the Manufacturer field to a fixed set of brands (rendered as
+   * selectable chips instead of free text) — used by the seller console so
+   * a seller can only create/edit listings under their own authorized
+   * brand(s), never someone else's manufacturer name.
+   */
+  manufacturerOptions?: string[];
+  /**
+   * Hide the raw isPublished switch — used by the seller console, where
+   * going live is a Maker-Checker governance decision (see
+   * GovernanceTracker), not a toggle the seller controls directly.
+   */
+  hidePublishToggle?: boolean;
 }
 
-export function ProductForm({ values, onChange, onSubmit, onSaveDraft, onPreview, submitLabel, submitting }: ProductFormProps) {
+export function ProductForm({
+  values,
+  onChange,
+  onSubmit,
+  onSaveDraft,
+  onPreview,
+  submitLabel,
+  submitting,
+  manufacturerOptions,
+  hidePublishToggle,
+}: ProductFormProps) {
   const [imagePickerOpen, setImagePickerOpen] = useState(false);
   const set = <K extends keyof ProductFormValues>(key: K, value: ProductFormValues[K]) =>
     onChange({ ...values, [key]: value });
@@ -106,12 +129,43 @@ export function ProductForm({ values, onChange, onSubmit, onSaveDraft, onPreview
       <Section title="Product Identification">
         <View style={{ flexDirection: 'row', gap: spacing.md }}>
           <MDInput label="Manufacturer Part Number" value={values.manufacturerPartNumber} onChangeText={(v) => set('manufacturerPartNumber', v)} style={{ flex: 1 }} />
-          <MDInput label="Mouser Part Number" value={values.mouserPartNumber} onChangeText={(v) => set('mouserPartNumber', v)} style={{ flex: 1 }} />
+          <MDInput label="MD Part Number" value={values.mdPartNumber} onChangeText={(v) => set('mdPartNumber', v)} style={{ flex: 1 }} />
         </View>
       </Section>
 
       <Section title="Manufacturer & Classification">
-        <MDInput label="Manufacturer" value={values.manufacturer} onChangeText={(v) => set('manufacturer', v)} placeholder="e.g. Infineon Technologies" />
+        {manufacturerOptions ? (
+          <View>
+            <MDText variant="bodySm" weight="600" style={{ marginBottom: spacing.xs }}>
+              Manufacturer
+            </MDText>
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm }}>
+              {manufacturerOptions.map((option) => {
+                const selected = values.manufacturer === option;
+                return (
+                  <Pressable
+                    key={option}
+                    onPress={() => set('manufacturer', option)}
+                    style={{
+                      paddingHorizontal: spacing.md,
+                      paddingVertical: spacing.sm,
+                      borderRadius: radius.pill,
+                      borderWidth: 1,
+                      borderColor: selected ? colors.brand.primary : colors.border,
+                      backgroundColor: selected ? colors.brand.primarySoft : 'transparent',
+                    }}
+                  >
+                    <MDText variant="bodySm" weight={selected ? '700' : '400'} style={{ color: selected ? colors.brand.primary : colors.text.secondary }}>
+                      {option}
+                    </MDText>
+                  </Pressable>
+                );
+              })}
+            </View>
+          </View>
+        ) : (
+          <MDInput label="Manufacturer" value={values.manufacturer} onChangeText={(v) => set('manufacturer', v)} placeholder="e.g. Infineon Technologies" />
+        )}
         <View style={{ flexDirection: 'row', gap: spacing.md }}>
           <MDInput label="Category" value={values.category} onChangeText={(v) => set('category', v)} style={{ flex: 1 }} />
           <MDInput label="Product Type" value={values.productType} onChangeText={(v) => set('productType', v)} style={{ flex: 1 }} />
@@ -215,10 +269,16 @@ export function ProductForm({ values, onChange, onSubmit, onSaveDraft, onPreview
           })}
         </View>
 
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
-          <MDSwitch value={values.isPublished} onValueChange={(v) => set('isPublished', v)} accessibilityLabel="Published" />
-          <MDText variant="bodySm">{values.isPublished ? 'Published — visible to buyers' : 'Unpublished — hidden from buyers'}</MDText>
-        </View>
+        {!hidePublishToggle ? (
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
+            <MDSwitch value={values.isPublished} onValueChange={(v) => set('isPublished', v)} accessibilityLabel="Published" />
+            <MDText variant="bodySm">{values.isPublished ? 'Published — visible to buyers' : 'Unpublished — hidden from buyers'}</MDText>
+          </View>
+        ) : (
+          <MDText variant="bodySm" tone="secondary">
+            Going live requires Maker-Checker review — submit this listing for review from My Products once saved.
+          </MDText>
+        )}
       </Section>
 
       <View style={{ flexDirection: 'row', gap: spacing.sm, marginBottom: spacing['3xl'] }}>

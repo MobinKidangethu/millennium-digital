@@ -54,6 +54,7 @@ export const ACCOUNT_NAV_GROUPS: AccountNavGroup[] = [
       { label: 'Wishlist', href: '/(buyer)/account/wishlist', icon: 'heart-outline', match: (p) => p.includes('/account/wishlist') },
       { label: 'Compare', href: '/(buyer)/account/compare', icon: 'git-compare-outline', match: (p) => p.includes('/account/compare') },
       { label: 'Recently Viewed', href: '/(buyer)/account/recently-viewed', icon: 'time-outline', match: (p) => p.includes('/recently-viewed') },
+      { label: 'Promotions', href: '/(buyer)/account/promotions', icon: 'pricetags-outline', match: (p) => p.includes('/account/promotions') },
     ],
   },
   {

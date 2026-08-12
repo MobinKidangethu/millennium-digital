@@ -8,7 +8,7 @@ function matchesSearch(product: Product, query: string): boolean {
   if (!q) return true;
   return [
     product.manufacturerPartNumber,
-    product.mouserPartNumber,
+    product.mdPartNumber,
     product.title,
     product.manufacturer,
     product.productType,

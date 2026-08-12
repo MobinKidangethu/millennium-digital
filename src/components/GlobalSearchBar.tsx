@@ -144,7 +144,7 @@ export function GlobalSearchBar({ style }: { style?: object }) {
         <View style={{ width: 1, height: 22, backgroundColor: colors.border }} />
 
         <Pressable
-          accessibilityLabel="Upload a BOM"
+          accessibilityLabel="Upload a BOM to request a quote"
           onPress={() => goTo('/(buyer)/bom')}
           {...bomHover.hoverHandlers}
           style={[
@@ -159,7 +159,7 @@ export function GlobalSearchBar({ style }: { style?: object }) {
         >
           <Ionicons name="document-attach-outline" size={16} color={colors.brand.primary} />
           <MDText variant="caption" weight="700" style={{ color: colors.brand.primary }}>
-            Upload BOM
+            Upload BOM / RFQ
           </MDText>
         </Pressable>
       </View>

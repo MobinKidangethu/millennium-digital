@@ -22,6 +22,7 @@ export default function ForgotPassword() {
       title="Forgot your password?"
       subtitle="Enter your account email and we'll help you reset it."
       showBack
+      panel={{ character: require('../../assets/character-buyer.png') }}
     >
       <View style={{ gap: spacing.lg }}>
         <MDInput

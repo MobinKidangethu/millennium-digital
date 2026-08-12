@@ -51,11 +51,12 @@ function LineCardTile({ brand, logoUrl, match }: { brand: string; logoUrl: strin
           borderColor: hovered ? colors.brand.primary : colors.border,
           borderRadius: radius.lg,
           backgroundColor: colors.surfaceRaised,
-          padding: spacing.lg,
+          paddingHorizontal: spacing.sm,
+          paddingVertical: spacing.lg,
           alignItems: 'center',
           justifyContent: 'center',
           gap: spacing.sm,
-          minHeight: 168,
+          minHeight: 184,
           // Hovering a tile lifts and scales it above its neighbors —
           // zIndex/elevation keeps it from being visually clipped by
           // the tiles it now overlaps at the enlarged scale.
@@ -78,15 +79,15 @@ function LineCardTile({ brand, logoUrl, match }: { brand: string; logoUrl: strin
       {!failed ? (
         <Image
           source={{ uri: logoUrl }}
-          style={{ width: '100%', height: 80 }}
+          style={{ width: '100%', height: 112 }}
           resizeMode="contain"
           onError={() => setFailed(true)}
         />
       ) : (
         <View
           style={{
-            width: 64,
-            height: 64,
+            width: 80,
+            height: 80,
             borderRadius: radius.pill,
             backgroundColor: colors.brand.primarySoft,
             alignItems: 'center',

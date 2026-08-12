@@ -1,4 +1,4 @@
-export type UserRole = 'buyer' | 'admin';
+export type UserRole = 'buyer' | 'admin' | 'seller';
 
 export interface Address {
   id: string;
@@ -22,6 +22,12 @@ export interface User {
   company?: string;
   phone?: string;
   createdAt: string;
+  /**
+   * Seller accounts only — real manufacturer/brand names (matching
+   * Product.manufacturer values) this seller account is authorized to
+   * manage. A seller's product/order/RFQ views are scoped to this list.
+   */
+  sellerManufacturers?: string[];
 }
 
 export interface Session {

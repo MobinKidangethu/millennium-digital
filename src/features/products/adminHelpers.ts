@@ -5,7 +5,7 @@ export function productToFormValues(product: Product): ProductFormValues {
   return {
     manufacturer: product.manufacturer,
     manufacturerPartNumber: product.manufacturerPartNumber,
-    mouserPartNumber: product.mouserPartNumber,
+    mdPartNumber: product.mdPartNumber,
     title: product.title,
     description: product.description,
     category: product.category,
@@ -35,7 +35,7 @@ export function formValuesToProduct(values: ProductFormValues, id?: number): Omi
     id,
     manufacturer: values.manufacturer,
     manufacturerPartNumber: values.manufacturerPartNumber,
-    mouserPartNumber: values.mouserPartNumber,
+    mdPartNumber: values.mdPartNumber,
     manufacturerLogo: '',
     title: values.title || values.manufacturerPartNumber,
     description: values.description,

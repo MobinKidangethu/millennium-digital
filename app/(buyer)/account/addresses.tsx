@@ -1,8 +1,11 @@
 import { useState } from 'react';
 import { Pressable, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, radius, spacing, useToast, MDButton, MDEmptyState, MDInput, MDText } from '@/design-system';
+import { colors, radius, spacing, useToast, MDButton, MDEmptyState, MDInput, MDSelectField, MDSelectModal, MDText } from '@/design-system';
 import { useAddressStore } from '@/state';
+import { COUNTRIES, getCountryByName } from '@/constants/countries';
+
+const COUNTRY_NAMES = COUNTRIES.map((c) => c.name);
 
 const EMPTY_FORM = {
   label: 'Home',
@@ -29,8 +32,11 @@ export default function Addresses() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState(EMPTY_FORM);
   const [error, setError] = useState<string | null>(null);
+  const [countryModalOpen, setCountryModalOpen] = useState(false);
+  const [stateModalOpen, setStateModalOpen] = useState(false);
 
   const updateField = (key: keyof typeof form, value: string) => setForm((f) => ({ ...f, [key]: value }));
+  const selectedCountryOption = getCountryByName(form.country);
 
   const startAdd = () => {
     setForm(EMPTY_FORM);
@@ -79,12 +85,29 @@ export default function Addresses() {
           <MDInput label="Phone" value={form.phone} onChangeText={(v) => updateField('phone', v)} keyboardType="phone-pad" />
           <MDInput label="Address Line 1" value={form.line1} onChangeText={(v) => updateField('line1', v)} />
           <MDInput label="Address Line 2 (optional)" value={form.line2} onChangeText={(v) => updateField('line2', v)} />
+
+          <MDSelectField
+            label="Country"
+            value={form.country}
+            placeholder="Select country"
+            onPress={() => setCountryModalOpen(true)}
+          />
+
           <View style={{ flexDirection: 'row', gap: spacing.md }}>
             <MDInput label="City" value={form.city} onChangeText={(v) => updateField('city', v)} style={{ flex: 1 }} />
-            <MDInput label="State" value={form.state} onChangeText={(v) => updateField('state', v)} style={{ flex: 1 }} />
+            {selectedCountryOption?.states ? (
+              <MDSelectField
+                label="State / Province"
+                value={form.state}
+                placeholder="Select state"
+                onPress={() => setStateModalOpen(true)}
+                style={{ flex: 1 }}
+              />
+            ) : (
+              <MDInput label="State / Province" value={form.state} onChangeText={(v) => updateField('state', v)} style={{ flex: 1 }} />
+            )}
             <MDInput label="Postal Code" value={form.postalCode} onChangeText={(v) => updateField('postalCode', v)} style={{ flex: 1 }} keyboardType="numeric" />
           </View>
-          <MDInput label="Country" value={form.country} onChangeText={(v) => updateField('country', v)} />
 
           {error ? (
             <MDText variant="bodySm" style={{ color: colors.status.error }}>

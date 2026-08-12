@@ -7,7 +7,7 @@ export type ProductTag = 'new' | 'featured' | 'best-seller';
  */
 export interface RawProduct {
   id: number;
-  mouserPartNumber: string;
+  mdPartNumber: string;
   manufacturerPartNumber: string;
   manufacturer: string;
   manufacturerLogo: string;

@@ -21,6 +21,15 @@ export function useAdminLogin() {
   });
 }
 
+export function useSellerLogin() {
+  const setSession = useAuthStore((s) => s.setSession);
+  return useMutation({
+    mutationFn: ({ email, password }: { email: string; password: string }) =>
+      service.login(email, password, 'seller'),
+    onSuccess: setSession,
+  });
+}
+
 export function useRegister() {
   const setSession = useAuthStore((s) => s.setSession);
   return useMutation({

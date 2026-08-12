@@ -3,11 +3,13 @@ import { View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, radius, spacing, MDText } from '@/design-system';
 import { useCartLines } from '@/features/cart';
-import { useCheckoutStore, useCurrencyStore } from '@/state';
+import { promotionsService } from '@/features/promotions';
+import { useCheckoutStore, useCurrencyStore, usePromoStore } from '@/state';
 import { TAX_RATE } from '@/features/checkout';
 import { TRUST_ICONS } from '@/constants/trustIcons';
 import { formatDisplayPrice } from '@/utils';
 import { MDProductImage } from './MDProductImage';
+import { PromoCodeField } from './PromoCodeField';
 
 /**
  * Persistent order-summary panel shown alongside every checkout step
@@ -20,10 +22,17 @@ export function CheckoutOrderSummary({ compact = false }: { compact?: boolean })
   const { lines, subtotal } = useCartLines();
   const shippingMethod = useCheckoutStore((s) => s.shippingMethod);
   const displayCurrency = useCurrencyStore((s) => s.currency);
+  const appliedCode = usePromoStore((s) => s.appliedCode);
   const currency = lines[0]?.product.currency ?? 'INR';
   const tax = Math.round(subtotal * TAX_RATE * 100) / 100;
   const shippingCost = shippingMethod?.cost ?? null;
-  const total = subtotal + tax + (shippingCost ?? 0);
+
+  // Same evaluatePromoCode call the Cart page and PromoCodeField use, so a
+  // code applied on the Cart page carries through checkout with an
+  // identical discount — not a separately-computed number.
+  const promoEvaluation = appliedCode ? promotionsService.evaluatePromoCode(appliedCode, subtotal) : null;
+  const discount = promoEvaluation?.ok ? promoEvaluation.applied!.discountAmount : 0;
+  const total = Math.max(0, subtotal + tax + (shippingCost ?? 0) - discount);
 
   return (
     <View
@@ -69,6 +78,13 @@ export function CheckoutOrderSummary({ compact = false }: { compact?: boolean })
 
       <View style={{ borderTopWidth: 1, borderTopColor: colors.border, paddingTop: spacing.sm, gap: 6 }}>
         <SummaryRow label="Subtotal" value={formatDisplayPrice(subtotal, currency, displayCurrency)} />
+        {discount > 0 ? (
+          <SummaryRow
+            label="Promo Discount"
+            value={`−${formatDisplayPrice(discount, currency, displayCurrency)}`}
+            tone="success"
+          />
+        ) : null}
         <SummaryRow
           label="Shipping"
           value={shippingCost == null ? 'Calculated at next step' : shippingCost === 0 ? 'Free' : formatDisplayPrice(shippingCost, currency, displayCurrency)}
@@ -80,6 +96,10 @@ export function CheckoutOrderSummary({ compact = false }: { compact?: boolean })
         </View>
       </View>
 
+      <View style={{ borderTopWidth: 1, borderTopColor: colors.border, paddingTop: spacing.sm }}>
+        <PromoCodeField subtotal={subtotal} currency={currency} displayCurrency={displayCurrency} />
+      </View>
+
       <View style={{ gap: spacing.xs, borderTopWidth: 1, borderTopColor: colors.border, paddingTop: spacing.sm }}>
         <TrustRow icon={TRUST_ICONS.shippingAvailable} label="Secure checkout — SSL encrypted" />
         <TrustRow icon={TRUST_ICONS.volumePricing} label="Volume & contract pricing via RFQ" />
@@ -89,16 +109,34 @@ export function CheckoutOrderSummary({ compact = false }: { compact?: boolean })
   );
 }
 
-function SummaryRow({ label, value, bold, muted }: { label: string; value: string; bold?: boolean; muted?: boolean }) {
+function SummaryRow({
+  label,
+  value,
+  bold,
+  muted,
+  tone,
+}: {
+  label: string;
+  value: string;
+  bold?: boolean;
+  muted?: boolean;
+  tone?: 'success';
+}) {
+  const successColor = tone === 'success' ? colors.status.successStrong : undefined;
   return (
     <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-      <MDText variant={bold ? 'bodyMedium' : 'bodySm'} tone={bold ? 'primary' : 'secondary'}>
+      <MDText
+        variant={bold ? 'bodyMedium' : 'bodySm'}
+        tone={bold ? 'primary' : 'secondary'}
+        style={successColor ? { color: successColor } : undefined}
+      >
         {label}
       </MDText>
       <MDText
         variant={bold ? 'bodyMedium' : 'bodySm'}
         weight={bold ? '700' : '400'}
         tone={muted ? 'tertiary' : 'primary'}
+        style={successColor ? { color: successColor } : undefined}
       >
         {value}
       </MDText>

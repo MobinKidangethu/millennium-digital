@@ -19,7 +19,11 @@ export default function Login() {
   };
 
   return (
-    <AuthScreenShell title="Welcome back" subtitle="Log in to your Millennium Digital account.">
+    <AuthScreenShell
+      title="Welcome back"
+      subtitle="Log in to your Millennium Digital account."
+      panel={{ character: require('../../assets/character-buyer.png') }}
+    >
       <View style={{ gap: spacing.lg }}>
         <MDInput
           label="Email address"

@@ -16,7 +16,7 @@ import {
 } from '@/design-system';
 import { useProductBySlug, useRelatedProducts } from '@/features/products';
 import { rfqService } from '@/features/rfq';
-import { useBomWorkflowStore, useCartStore, useCompareStore, useRecentlyViewedStore, useWishlistStore } from '@/state';
+import { useBomWorkflowStore, useCartFeedbackStore, useCartStore, useCompareStore, useRecentlyViewedStore, useWishlistStore } from '@/state';
 import { MDProductImageGallery } from '@/components/MDProductImageGallery';
 import { MDManufacturerLogo } from '@/components/MDManufacturerLogo';
 import { MDRohsBadge } from '@/components/MDRohsBadge';
@@ -27,6 +27,8 @@ import { MDBreadcrumb } from '@/components/MDBreadcrumb';
 import { MDQuantitySelector } from '@/components/MDQuantitySelector';
 import { MDSpecTable } from '@/components/MDSpecTable';
 import { MDProductCard } from '@/components/MDProductCard';
+import { MDOnOrderModal } from '@/components/MDOnOrderModal';
+import { computeBackorderSplit } from '@/utils';
 
 const TAG_LABEL: Record<string, string> = {
   new: 'New',
@@ -48,6 +50,7 @@ export default function ProductDetail() {
   const [quantity, setQuantity] = useState(1);
 
   const addToCart = useCartStore((s) => s.addItem);
+  const notifyAdded = useCartFeedbackStore((s) => s.notifyAdded);
   const isWishlisted = useWishlistStore((s) => s.productIds.includes(product?.id ?? -1));
   const toggleWishlist = useWishlistStore((s) => s.toggle);
   const compareIds = useCompareStore((s) => s.productIds);
@@ -57,6 +60,7 @@ export default function ProductDetail() {
   const setRfq = useBomWorkflowStore((s) => s.setRfq);
   const setQuote = useBomWorkflowStore((s) => s.setQuote);
   const [requestingQuote, setRequestingQuote] = useState(false);
+  const [onOrderModalOpen, setOnOrderModalOpen] = useState(false);
 
   useEffect(() => {
     if (product) recordView(product.id);
@@ -85,10 +89,11 @@ export default function ProductDetail() {
   }
 
   const isComparing = compareIds.includes(product.id);
+  const backorderSplit = computeBackorderSplit(quantity, product.availability ?? 0);
 
   const handleAddToCart = () => {
     addToCart(product.id, quantity);
-    toast.show(`Added ${quantity} × ${product.manufacturerPartNumber} to cart`, 'success');
+    notifyAdded(product, quantity);
   };
 
   const handleBuyNow = () => {
@@ -161,7 +166,7 @@ export default function ProductDetail() {
               </MDText>
             ) : null}
             <MDText variant="bodySm" tone="tertiary">
-              Mouser Part # {product.mouserPartNumber}
+              MD Part # {product.mdPartNumber}
             </MDText>
 
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.md, marginTop: spacing.sm }}>
@@ -190,7 +195,7 @@ export default function ProductDetail() {
                   <MDText variant="caption" tone="tertiary">
                     Quantity
                   </MDText>
-                  <MDQuantitySelector value={quantity} onChange={setQuantity} min={1} max={product.availability || undefined} />
+                  <MDQuantitySelector value={quantity} onChange={setQuantity} min={1} max={99999} />
                 </View>
 
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
@@ -218,6 +223,33 @@ export default function ProductDetail() {
                   </MDIconButton>
                 </View>
               </View>
+
+              {backorderSplit.hasBackorder ? (
+                <Pressable
+                  onPress={() => setOnOrderModalOpen(true)}
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    flexWrap: 'wrap',
+                    gap: spacing.xs,
+                    backgroundColor: colors.status.warningSoft,
+                    borderRadius: 8,
+                    paddingVertical: spacing.sm,
+                    paddingHorizontal: spacing.md,
+                  }}
+                >
+                  <Ionicons name="warning-outline" size={14} color={colors.status.warningStrong} />
+                  <MDText variant="bodySm" weight="600" style={{ color: colors.status.warningStrong }}>
+                    {backorderSplit.shipNow.toLocaleString()} ship now · {backorderSplit.backordered.toLocaleString()} back-ordered
+                  </MDText>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 2, marginLeft: 'auto' }}>
+                    <MDText variant="bodySm" weight="700" style={{ color: colors.status.warningStrong }}>
+                      Details
+                    </MDText>
+                    <Ionicons name="information-circle-outline" size={14} color={colors.status.warningStrong} />
+                  </View>
+                </Pressable>
+              ) : null}
 
               <MDButton label="Add to Cart" onPress={handleAddToCart} fullWidth />
               <MDButton label="Buy Now" variant="secondary" onPress={handleBuyNow} fullWidth />
@@ -251,7 +283,7 @@ export default function ProductDetail() {
             rows={[
               { label: 'Manufacturer', value: product.manufacturer },
               { label: 'Manufacturer Part Number', value: product.manufacturerPartNumber },
-              { label: 'Mouser Part Number', value: product.mouserPartNumber },
+              { label: 'MD Part Number', value: product.mdPartNumber },
               { label: 'Product Type', value: product.productType },
               { label: 'Technology', value: product.technology },
               { label: 'Package', value: product.package },
@@ -296,6 +328,14 @@ export default function ProductDetail() {
           </View>
         ) : null}
       </View>
+
+      <MDOnOrderModal
+        visible={onOrderModalOpen}
+        onClose={() => setOnOrderModalOpen(false)}
+        product={product}
+        shipNow={backorderSplit.shipNow}
+        backordered={backorderSplit.backordered}
+      />
     </ScrollView>
   );
 }

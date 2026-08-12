@@ -9,6 +9,7 @@ import {
   useToast,
   MDButton,
   MDCard,
+  MDDatePicker,
   MDInput,
   MDText,
 } from '@/design-system';
@@ -198,7 +199,12 @@ export default function DesignRequestScreen() {
           </View>
 
           <Field label="Required Date">
-            <MDInput value={requiredDate} onChangeText={setRequiredDate} placeholder="e.g. 2026-11-01" />
+            <MDDatePicker
+              value={requiredDate}
+              onChange={setRequiredDate}
+              placeholder="Select a required date"
+              minDate={new Date().toISOString().slice(0, 10)}
+            />
           </Field>
 
           <Field label="BOM Upload">

@@ -33,6 +33,8 @@ export interface AiSearchResult {
   query: string;
   criteria: AiCriteria;
   matches: Product[];
+  /** True count of catalog products that qualified, before any display cap is applied. */
+  totalMatches: number;
   /** Human-readable summary of how the query was interpreted. */
   explanation: string;
 }

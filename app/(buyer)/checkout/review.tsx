@@ -3,9 +3,10 @@ import { Pressable, View } from 'react-native';
 import { Redirect, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, radius, spacing, MDButton, MDText, useToast } from '@/design-system';
-import { useAuthStore, useCheckoutStore, useCurrencyStore } from '@/state';
+import { useAuthStore, useCheckoutStore, useCurrencyStore, usePromoStore } from '@/state';
 import { useCartLines } from '@/features/cart';
 import { useCreateOrder } from '@/features/orders';
+import { promotionsService } from '@/features/promotions';
 import { CheckoutStepper } from '@/components/CheckoutStepper';
 import { formatDisplayPrice } from '@/utils';
 
@@ -14,11 +15,13 @@ export default function CheckoutReview() {
   const toast = useToast();
   const session = useAuthStore((s) => s.session);
   const { shippingAddress, billingAddress, shippingMethod, paymentMethod, reset } = useCheckoutStore();
-  const { lines } = useCartLines();
+  const { lines, subtotal } = useCartLines();
   const createOrder = useCreateOrder();
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const displayCurrency = useCurrencyStore((s) => s.currency);
+  const appliedPromoCode = usePromoStore((s) => s.appliedCode);
+  const clearPromo = usePromoStore((s) => s.clear);
 
   if (!shippingAddress || !shippingMethod || !paymentMethod) {
     return <Redirect href="/(buyer)/checkout/address" />;
@@ -33,6 +36,9 @@ export default function CheckoutReview() {
     }
     if (lines.length === 0 || !session) return;
 
+    const promoEvaluation = appliedPromoCode ? promotionsService.evaluatePromoCode(appliedPromoCode, subtotal) : null;
+    const discountTotal = promoEvaluation?.ok ? promoEvaluation.applied!.discountAmount : 0;
+
     createOrder.mutate(
       {
         userId: session.user.id,
@@ -42,10 +48,13 @@ export default function CheckoutReview() {
         shippingMethod,
         paymentMethod,
         currency,
+        discountTotal,
+        promoCode: promoEvaluation?.ok ? promoEvaluation.applied!.code : undefined,
       },
       {
         onSuccess: (order) => {
           reset();
+          clearPromo();
           router.replace({ pathname: '/(buyer)/order-success/[orderId]', params: { orderId: order.id } });
         },
         onError: () => toast.show('Something went wrong placing your order. Please try again.', 'error'),

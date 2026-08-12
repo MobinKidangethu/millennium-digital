@@ -17,6 +17,7 @@ export const ADMIN_NAV_ITEMS: NavItem[] = [
   { label: 'Inventory', href: '/(admin)/inventory', icon: 'file-tray-stacked-outline' },
   { label: 'Categories', href: '/(admin)/categories', icon: 'pricetags-outline' },
   { label: 'Manufacturers', href: '/(admin)/manufacturers', icon: 'business-outline' },
+  { label: 'Seller Applications', href: '/(admin)/seller-applications', icon: 'person-add-outline' },
   { label: 'Customers', href: '/(admin)/customers', icon: 'people-outline' },
   { label: 'Orders', href: '/(admin)/orders', icon: 'receipt-outline' },
   { label: 'Analytics', href: '/(admin)/analytics', icon: 'stats-chart-outline' },
@@ -117,7 +118,7 @@ export function AdminSidebar() {
           >
             <Image
               source={require('../../assets/Millenium_Logo_new.png')}
-              style={{ width: 140, height: 25 }}
+              style={{ width: 170, height: 62 }}
               resizeMode="contain"
             />
           </View>

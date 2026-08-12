@@ -1,4 +1,5 @@
 import { Image, ScrollView, View } from 'react-native';
+import { Image as ExpoImage } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { colors, spacing, radius, useResponsive, MDText, MDButton } from '@/design-system';
 import { useWelcomeStore } from '@/state';
@@ -42,7 +43,7 @@ export default function Welcome() {
         <View style={{ width: '100%', maxWidth: 440, alignItems: 'center' }}>
           <Image
             source={require('../../assets/Millenium_Logo_new.png')}
-            style={{ width: 240, height: 42, marginBottom: spacing['2xl'] }}
+            style={{ width: 280, height: 102, marginBottom: spacing['2xl'] }}
             resizeMode="contain"
             accessibilityLabel="Millennium Digital"
           />
@@ -59,6 +60,13 @@ export default function Welcome() {
             Genuine parts, verified manufacturers, and technical clarity for engineers and
             procurement teams.
           </MDText>
+
+          <ExpoImage
+            source={require('../../assets/buyer-seller-connection.gif')}
+            style={{ width: 220, height: 147, marginBottom: spacing['2xl'] }}
+            contentFit="contain"
+            accessibilityLabel="Millennium Digital connecting buyers and sellers"
+          />
 
           <View style={{ width: '100%', gap: spacing.md }}>
             <MDButton label="Continue as Guest" size="lg" fullWidth onPress={continueAsGuest} />
@@ -122,10 +130,24 @@ export default function Welcome() {
               align="center"
               onPress={() => {
                 markSeen();
+                router.push('/(auth)/seller-login');
+              }}
+            >
+              Seller sign in
+            </MDText>
+            <MDText variant="caption" tone="tertiary">
+              ·
+            </MDText>
+            <MDText
+              variant="caption"
+              tone="tertiary"
+              align="center"
+              onPress={() => {
+                markSeen();
                 router.push('/(auth)/admin-login');
               }}
             >
-              Seller / Admin sign in
+              Admin
             </MDText>
             <MDText variant="caption" tone="tertiary">
               ·

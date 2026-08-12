@@ -30,6 +30,20 @@ const DEMO_USERS: RegisteredUser[] = [
     password: 'admin123',
     createdAt: new Date('2025-01-01').toISOString(),
   },
+  {
+    id: 'demo-seller-1',
+    role: 'seller',
+    fullName: 'Priya Nair',
+    email: 'seller@millenniumdigital.demo',
+    password: 'seller123',
+    company: 'Orion Components Pvt. Ltd.',
+    phone: '+91 98450 11223',
+    createdAt: new Date('2025-03-01').toISOString(),
+    // Authorized distributor account managing the "Semtech" brand's catalog
+    // on the platform — a real manufacturer already in products.json, so
+    // the seller console has real listings/orders/RFQs to demonstrate.
+    sellerManufacturers: ['Semtech'],
+  },
 ];
 
 let usersCache: RegisteredUser[] | null = null;
@@ -68,13 +82,50 @@ export async function login(
     throw new Error('Incorrect email or password.');
   }
   if (requiredRole && user.role !== requiredRole) {
+    const roleLabel: Record<UserRole, string> = { admin: 'admin', seller: 'seller', buyer: 'buyer' };
     throw new Error(
-      requiredRole === 'admin'
-        ? 'This account does not have seller/admin access.'
-        : 'Please use the seller/admin login for this account.',
+      `This account does not have ${roleLabel[requiredRole]} access. Please use the ${roleLabel[user.role]} sign-in page instead.`,
     );
   }
   return toSession(user);
+}
+
+export interface CreateSellerAccountInput {
+  companyName: string;
+  contactName: string;
+  email: string;
+  phone: string;
+  /** Real catalog manufacturer name this seller will manage, e.g. their own brand name for a new manufacturer seller. */
+  manufacturerName: string;
+}
+
+/**
+ * PROTOTYPE: provisions a real seller account with a generated temporary
+ * password, standing in for a production flow that would send a real
+ * invite email through an identity/KYB-verified provisioning service.
+ * Called by admin's seller-application approval action — a seller can
+ * never grant itself console access.
+ */
+export async function createSellerAccount(input: CreateSellerAccountInput): Promise<{ temporaryPassword: string }> {
+  await delay(500);
+  const users = await loadUsers();
+  if (users.some((u) => u.email.toLowerCase() === input.email.trim().toLowerCase())) {
+    throw new Error('An account with this email already exists.');
+  }
+  const temporaryPassword = `md-${Math.random().toString(36).slice(2, 8)}`;
+  const user: RegisteredUser = {
+    id: `seller-${Date.now()}`,
+    role: 'seller',
+    fullName: input.contactName,
+    email: input.email.trim(),
+    password: temporaryPassword,
+    company: input.companyName,
+    phone: input.phone,
+    createdAt: new Date().toISOString(),
+    sellerManufacturers: [input.manufacturerName],
+  };
+  await saveUsers([...users, user]);
+  return { temporaryPassword };
 }
 
 export interface RegisterInput {
@@ -148,3 +199,4 @@ export async function getAllCustomers(): Promise<User[]> {
 
 export const DEMO_BUYER_CREDENTIALS = { email: DEMO_USERS[0].email, password: DEMO_USERS[0].password };
 export const DEMO_ADMIN_CREDENTIALS = { email: DEMO_USERS[1].email, password: DEMO_USERS[1].password };
+export const DEMO_SELLER_CREDENTIALS = { email: DEMO_USERS[2].email, password: DEMO_USERS[2].password };

@@ -19,8 +19,9 @@ import {
 import { useDeleteProduct, useProductsAdmin, useSetProductPublished } from '@/features/products';
 import { resolveProductImage } from '@/utils';
 import { formatDisplayPrice } from '@/utils';
-import { useCurrencyStore } from '@/state';
-import type { Product } from '@/types';
+import { useCurrencyStore, useGovernanceStore } from '@/state';
+import { GOVERNANCE_STAGE_LABEL } from '@/features/governance/service';
+import type { GovernanceStage, Product } from '@/types';
 
 const PAGE_SIZE = 12;
 
@@ -35,6 +36,7 @@ export default function AdminProducts() {
   const [page, setPage] = useState(1);
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const displayCurrency = useCurrencyStore((s) => s.currency);
+  const getGovernanceRecord = useGovernanceStore((s) => s.getRecord);
 
   const filtered = useMemo(() => {
     if (!products) return [];
@@ -131,8 +133,23 @@ export default function AdminProducts() {
     {
       key: 'status',
       label: 'Status',
-      width: 120,
+      width: 110,
       render: (p) => <MDBadge label={p.isPublished ? 'Published' : 'Draft'} tone={p.isPublished ? 'success' : 'neutral'} />,
+    },
+    {
+      key: 'governance',
+      label: 'Governance',
+      width: 160,
+      render: (p) => {
+        const stage: GovernanceStage = getGovernanceRecord('product', String(p.id)).stage;
+        const needsReview = stage === 'submitted' || stage === 'maker_validated' || stage === 'checker_validated';
+        return (
+          <MDBadge
+            label={GOVERNANCE_STAGE_LABEL[stage]}
+            tone={stage === 'published' ? 'success' : needsReview ? 'warning' : 'neutral'}
+          />
+        );
+      },
     },
     {
       key: 'actions',

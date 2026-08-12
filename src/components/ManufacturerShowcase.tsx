@@ -84,7 +84,7 @@ function AutoScrollColumn({
               shadow.sm,
             ]}
           >
-            <MDManufacturerLogo manufacturer={manufacturer.name} width={148} height={44} />
+            <MDManufacturerLogo manufacturer={manufacturer.name} width={172} height={60} />
           </Pressable>
         ))}
       </Animated.View>

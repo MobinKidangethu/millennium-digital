@@ -42,6 +42,7 @@ export default function Register() {
       title="Create your account"
       subtitle="Set up a Millennium Digital buyer account."
       showBack
+      panel={{ character: require('../../assets/character-buyer.png') }}
     >
       <View style={{ gap: spacing.lg }}>
         <MDInput label="Full name" value={fullName} onChangeText={setFullName} placeholder="Jane Doe" />

@@ -4,7 +4,7 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, radius, shadow, spacing, webTransition, MDBadge, MDButton, MDIconButton, MDText } from '@/design-system';
 import type { Product } from '@/types';
-import { useCartStore, useCompareStore, useWishlistStore } from '@/state';
+import { useCartStore, useCartFeedbackStore, useCompareStore, useWishlistStore } from '@/state';
 import { useToast } from '@/design-system';
 import { MDProductImage } from './MDProductImage';
 import { MDManufacturerLogo } from './MDManufacturerLogo';
@@ -28,6 +28,7 @@ export function MDProductCard({ product, layout = 'grid' }: MDProductCardProps) 
   const toast = useToast();
   const [hovered, setHovered] = useState(false);
   const addToCart = useCartStore((s) => s.addItem);
+  const notifyAdded = useCartFeedbackStore((s) => s.notifyAdded);
   const isWishlisted = useWishlistStore((s) => s.productIds.includes(product.id));
   const toggleWishlist = useWishlistStore((s) => s.toggle);
   const compareIds = useCompareStore((s) => s.productIds);
@@ -46,7 +47,7 @@ export function MDProductCard({ product, layout = 'grid' }: MDProductCardProps) 
 
   const handleAddToCart = () => {
     addToCart(product.id, 1);
-    toast.show(`Added ${product.manufacturerPartNumber} to cart`, 'success');
+    notifyAdded(product, 1);
   };
 
   const handleToggleCompare = () => {

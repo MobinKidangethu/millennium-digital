@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useCartStore } from '@/state';
 import { getProductById } from '@/features/products/service';
+import { computeGovernedPricing, GOVERNED_PRICING_MIN_QTY } from '@/features/pricing/service';
 import { computeSubtotal } from './service';
 import type { CartLineView, Product } from '@/types';
 
@@ -42,7 +43,22 @@ export function useCartLines() {
       .map((item) => {
         const product = productMap.get(item.productId);
         if (!product) return null;
-        return { product, quantity: item.quantity, lineTotal: product.price * item.quantity } satisfies CartLineView;
+        if (item.quantity >= GOVERNED_PRICING_MIN_QTY) {
+          const governedPricing = computeGovernedPricing(product, item.quantity);
+          return {
+            product,
+            quantity: item.quantity,
+            unitPrice: governedPricing.approvedUnitPrice,
+            lineTotal: governedPricing.approvedLineTotal,
+            governedPricing,
+          } satisfies CartLineView;
+        }
+        return {
+          product,
+          quantity: item.quantity,
+          unitPrice: product.price,
+          lineTotal: product.price * item.quantity,
+        } satisfies CartLineView;
       })
       .filter((line): line is CartLineView => line !== null);
   }, [items, productMap]);

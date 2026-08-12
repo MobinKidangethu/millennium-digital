@@ -105,149 +105,113 @@ export function SegmentCarousel() {
   };
 
   useEffect(() => {
-    const timer = setInterval(() => goTo(index + 1), 5500);
+    const timer = setInterval(() => goTo(index + 1), 3000);
     return () => clearInterval(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [index]);
 
   const segment = SEGMENTS[index];
-  const height = isDesktopUp ? 520 : 340;
+  const height = isDesktopUp ? 460 : 320;
+  const panelWidth = 400;
 
   return (
     <View
       style={{
-        borderRadius: radius.xl,
         overflow: 'hidden',
         height,
         backgroundColor: colors.gray[900],
+        flexDirection: isDesktopUp ? 'row' : 'column',
       }}
     >
-      <Animated.View style={{ flex: 1, opacity }}>
+      <Animated.View style={{ flex: 1, opacity, flexDirection: isDesktopUp ? 'row' : 'column' }}>
         <Image
           source={typeof segment.image === 'string' ? { uri: segment.image } : segment.image}
-          style={{ width: '100%', height: '100%' }}
+          style={{ flex: 1, width: '100%', height: '100%' }}
           resizeMode="cover"
           accessibilityLabel={segment.title}
         />
 
-        {/* Bottom scrim + info panel */}
+        {/* Vertical info panel — right side on desktop, bottom bar on mobile */}
         <View
           style={{
-            position: 'absolute',
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: 'rgba(24,23,26,0.90)',
-            paddingHorizontal: isDesktopUp ? spacing['2xl'] : spacing.lg,
+            width: isDesktopUp ? panelWidth : '100%',
+            backgroundColor: 'rgba(24,23,26,0.94)',
+            paddingHorizontal: isDesktopUp ? spacing.xl : spacing.lg,
             paddingVertical: isDesktopUp ? spacing.xl : spacing.lg,
-            gap: spacing.xs,
+            justifyContent: 'center',
+            gap: spacing.sm,
           }}
         >
           <MDText variant="overline" style={{ color: colors.plum[300] }}>
             {segment.eyebrow}
           </MDText>
-          <MDText variant={isDesktopUp ? 'h2' : 'h3'} style={{ color: colors.gray[0] }}>
+          <MDText variant={isDesktopUp ? 'h2' : 'h3'} style={{ color: colors.gray[0] }} numberOfLines={3}>
             {segment.title}
           </MDText>
-          <MDText
-            variant="bodySm"
-            style={{ color: colors.gray[300], maxWidth: 520, marginBottom: spacing.sm }}
-          >
-            {segment.description}
-          </MDText>
 
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs, marginBottom: spacing.sm }}>
-            {segment.chips.map((chip) => (
-              <Pressable
-                key={chip.label}
-                onPress={() =>
-                  router.push({ pathname: '/(buyer)/category/[slug]', params: { slug: chip.slug } })
-                }
-                style={{
-                  borderWidth: 1,
-                  borderColor: 'rgba(255,255,255,0.28)',
-                  backgroundColor: 'rgba(255,255,255,0.10)',
-                  borderRadius: radius.pill,
-                  paddingHorizontal: spacing.sm,
-                  paddingVertical: 5,
-                }}
-              >
-                <MDText variant="caption" weight="600" style={{ color: colors.gray[0] }}>
-                  {chip.label}
-                </MDText>
+          <Pressable
+            onPress={() =>
+              router.push({ pathname: '/(buyer)/category/[slug]', params: { slug: segment.ctaSlug } })
+            }
+            style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: spacing.xs }}
+          >
+            <MDText variant="bodySm" weight="700" style={{ color: colors.gray[0] }}>
+              {segment.ctaLabel}
+            </MDText>
+            <Ionicons name="arrow-forward" size={14} color={colors.gray[0]} />
+          </Pressable>
+
+          <View style={{ flexDirection: 'row', gap: 6, marginTop: spacing.md }}>
+            {SEGMENTS.map((s, i) => (
+              <Pressable key={s.title} onPress={() => goTo(i)} hitSlop={8}>
+                <View
+                  style={{
+                    width: i === index ? 20 : 6,
+                    height: 6,
+                    borderRadius: radius.pill,
+                    backgroundColor: i === index ? colors.gray[0] : 'rgba(255,255,255,0.32)',
+                  }}
+                />
               </Pressable>
             ))}
-          </View>
-
-          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-            <Pressable
-              onPress={() =>
-                router.push({ pathname: '/(buyer)/category/[slug]', params: { slug: segment.ctaSlug } })
-              }
-              style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}
-            >
-              <MDText variant="bodySm" weight="700" style={{ color: colors.gray[0] }}>
-                {segment.ctaLabel}
-              </MDText>
-              <Ionicons name="arrow-forward" size={14} color={colors.gray[0]} />
-            </Pressable>
-
-            <View style={{ flexDirection: 'row', gap: 6 }}>
-              {SEGMENTS.map((s, i) => (
-                <Pressable key={s.title} onPress={() => goTo(i)} hitSlop={8}>
-                  <View
-                    style={{
-                      width: i === index ? 20 : 6,
-                      height: 6,
-                      borderRadius: radius.pill,
-                      backgroundColor: i === index ? colors.gray[0] : 'rgba(255,255,255,0.32)',
-                    }}
-                  />
-                </Pressable>
-              ))}
-            </View>
           </View>
         </View>
       </Animated.View>
 
-      {isDesktopUp ? (
-        <>
-          <Pressable
-            onPress={() => goTo(index - 1)}
-            accessibilityLabel="Previous segment"
-            style={{
-              position: 'absolute',
-              left: spacing.md,
-              top: '42%',
-              width: 34,
-              height: 34,
-              borderRadius: radius.pill,
-              backgroundColor: 'rgba(24,23,26,0.55)',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <Ionicons name="chevron-back" size={18} color={colors.gray[0]} />
-          </Pressable>
-          <Pressable
-            onPress={() => goTo(index + 1)}
-            accessibilityLabel="Next segment"
-            style={{
-              position: 'absolute',
-              right: spacing.md,
-              top: '42%',
-              width: 34,
-              height: 34,
-              borderRadius: radius.pill,
-              backgroundColor: 'rgba(24,23,26,0.55)',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <Ionicons name="chevron-forward" size={18} color={colors.gray[0]} />
-          </Pressable>
-        </>
-      ) : null}
+      <Pressable
+        onPress={() => goTo(index - 1)}
+        accessibilityLabel="Previous segment"
+        style={{
+          position: 'absolute',
+          left: spacing.md,
+          top: '42%',
+          width: 34,
+          height: 34,
+          borderRadius: radius.pill,
+          backgroundColor: 'rgba(24,23,26,0.55)',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <Ionicons name="chevron-back" size={18} color={colors.gray[0]} />
+      </Pressable>
+      <Pressable
+        onPress={() => goTo(index + 1)}
+        accessibilityLabel="Next segment"
+        style={{
+          position: 'absolute',
+          right: isDesktopUp ? panelWidth + spacing.md : spacing.md,
+          top: '42%',
+          width: 34,
+          height: 34,
+          borderRadius: radius.pill,
+          backgroundColor: 'rgba(24,23,26,0.55)',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <Ionicons name="chevron-forward" size={18} color={colors.gray[0]} />
+      </Pressable>
     </View>
   );
 }

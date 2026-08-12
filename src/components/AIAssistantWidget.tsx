@@ -134,7 +134,7 @@ export function AIAssistantWidget() {
           role: 'assistant',
           text: result.explanation,
           matches: result.matches.slice(0, 3),
-          totalMatches: result.matches.length,
+          totalMatches: result.totalMatches,
         },
       ]);
     } finally {

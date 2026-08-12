@@ -1,7 +1,7 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Pressable, ScrollView, View } from 'react-native';
 import { useRouter } from 'expo-router';
-import { colors, radius, spacing, MDInput, MDSkeleton, MDTable, MDText, type MDTableColumn } from '@/design-system';
+import { colors, radius, spacing, MDInput, MDPagination, MDSkeleton, MDTable, MDText, type MDTableColumn } from '@/design-system';
 import { useAllOrders } from '@/features/orders';
 import { useCustomers } from '@/features/customers';
 import { MDOrderStatus } from '@/components/MDOrderStatus';
@@ -10,6 +10,7 @@ import { useCurrencyStore } from '@/state';
 import type { Order, OrderStatus } from '@/types';
 
 const STATUS_TABS: (OrderStatus | 'all')[] = ['all', 'placed', 'processing', 'shipped', 'out-for-delivery', 'delivered', 'cancelled'];
+const PAGE_SIZE = 10;
 
 export default function AdminOrders() {
   const router = useRouter();
@@ -17,6 +18,7 @@ export default function AdminOrders() {
   const { data: customers } = useCustomers();
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<OrderStatus | 'all'>('all');
+  const [page, setPage] = useState(1);
   const displayCurrency = useCurrencyStore((s) => s.currency);
 
   const customerById = useMemo(() => new Map((customers ?? []).map((c) => [c.id, c])), [customers]);
@@ -34,6 +36,13 @@ export default function AdminOrders() {
     }
     return result;
   }, [orders, statusFilter, search, customerById]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const paged = useMemo(() => filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE), [filtered, page]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [statusFilter, search, orders]);
 
   const columns: MDTableColumn<Order>[] = [
     { key: 'order', label: 'Order', width: 160, render: (o) => <MDText variant="bodySm" weight="600">{o.orderNumber}</MDText> },
@@ -99,13 +108,16 @@ export default function AdminOrders() {
         {isLoading ? (
           <MDSkeleton height={400} />
         ) : (
-          <MDTable
-            columns={columns}
-            data={filtered}
-            keyExtractor={(o) => o.id}
-            onRowPress={(o) => router.push({ pathname: '/(admin)/orders/[id]', params: { id: o.id } })}
-            emptyTitle="No orders found"
-          />
+          <>
+            <MDTable
+              columns={columns}
+              data={paged}
+              keyExtractor={(o) => o.id}
+              onRowPress={(o) => router.push({ pathname: '/(admin)/orders/[id]', params: { id: o.id } })}
+              emptyTitle="No orders found"
+            />
+            <MDPagination page={page} totalPages={totalPages} onChange={setPage} />
+          </>
         )}
       </View>
     </ScrollView>

@@ -1,7 +1,7 @@
 [
   {
     "id": 1,
-    "mouserPartNumber": "726-AIGBG15N120S7ATM",
+    "mdPartNumber": "726-AIGBG15N120S7ATM",
     "manufacturerPartNumber": "AIGBG15N120S7ATMA1",
     "manufacturer": "Pulse Electronics",
     "manufacturerLogo": "assets/logos/pulse-electronics.png",
@@ -28,7 +28,7 @@
   },
   {
     "id": 2,
-    "mouserPartNumber": "78-2KDFN27CA-M3/H",
+    "mdPartNumber": "78-2KDFN27CA-M3/H",
     "manufacturerPartNumber": "2KDFN27CA-M3/H",
     "manufacturer": "Melexis",
     "manufacturerLogo": "assets/logos/melexis.png",
@@ -54,7 +54,7 @@
   },
   {
     "id": 3,
-    "mouserPartNumber": "78-2KDFN33CA-M3/H",
+    "mdPartNumber": "78-2KDFN33CA-M3/H",
     "manufacturerPartNumber": "2KDFN33CA-M3/H",
     "manufacturer": "Renesas",
     "manufacturerLogo": "assets/logos/renesas.png",
@@ -80,7 +80,7 @@
   },
   {
     "id": 4,
-    "mouserPartNumber": "78-2KDFN39CA-M3/H",
+    "mdPartNumber": "78-2KDFN39CA-M3/H",
     "manufacturerPartNumber": "2KDFN39CA-M3/H",
     "manufacturer": "Delta",
     "manufacturerLogo": "assets/logos/delta.png",
@@ -106,7 +106,7 @@
   },
   {
     "id": 5,
-    "mouserPartNumber": "78-2KDFN62CA-M3/H",
+    "mdPartNumber": "78-2KDFN62CA-M3/H",
     "manufacturerPartNumber": "2KDFN62CA-M3/H",
     "manufacturer": "Semtech",
     "manufacturerLogo": "assets/logos/semtech.png",
@@ -132,7 +132,7 @@
   },
   {
     "id": 6,
-    "mouserPartNumber": "78-2KDFN91CA-M3/H",
+    "mdPartNumber": "78-2KDFN91CA-M3/H",
     "manufacturerPartNumber": "2KDFN91CA-M3/H",
     "manufacturer": "Rohm",
     "manufacturerLogo": "assets/logos/rohm.png",
@@ -158,7 +158,7 @@
   },
   {
     "id": 7,
-    "mouserPartNumber": "78-3KDFN15CA-M3/H",
+    "mdPartNumber": "78-3KDFN15CA-M3/H",
     "manufacturerPartNumber": "3KDFN15CA-M3/H",
     "manufacturer": "Rohm",
     "manufacturerLogo": "assets/logos/rohm.png",
@@ -184,7 +184,7 @@
   },
   {
     "id": 8,
-    "mouserPartNumber": "78-3KDFN16A-M3/H",
+    "mdPartNumber": "78-3KDFN16A-M3/H",
     "manufacturerPartNumber": "3KDFN16A-M3/H",
     "manufacturer": "Nuvoton",
     "manufacturerLogo": "assets/logos/nuvoton.png",
@@ -210,7 +210,7 @@
   },
   {
     "id": 9,
-    "mouserPartNumber": "78-3KDFN18CA-M3/H",
+    "mdPartNumber": "78-3KDFN18CA-M3/H",
     "manufacturerPartNumber": "3KDFN18CA-M3/H",
     "manufacturer": "Delta",
     "manufacturerLogo": "assets/logos/delta.png",
@@ -237,7 +237,7 @@
   },
   {
     "id": 10,
-    "mouserPartNumber": "78-BZG03C62-HM3_A-08",
+    "mdPartNumber": "78-BZG03C62-HM3_A-08",
     "manufacturerPartNumber": "BZG03C62-HM3_A-08",
     "manufacturer": "Melexis",
     "manufacturerLogo": "assets/logos/melexis.png",
@@ -263,7 +263,7 @@
   },
   {
     "id": 11,
-    "mouserPartNumber": "78-BZG05B4V7-M3_A-08",
+    "mdPartNumber": "78-BZG05B4V7-M3_A-08",
     "manufacturerPartNumber": "BZG05B4V7-M3_A-08",
     "manufacturer": "Vango",
     "manufacturerLogo": "assets/logos/vango.png",
@@ -289,7 +289,7 @@
   },
   {
     "id": 12,
-    "mouserPartNumber": "78-BZG05C9V1-M3_A-08",
+    "mdPartNumber": "78-BZG05C9V1-M3_A-08",
     "manufacturerPartNumber": "BZG05C9V1-M3_A-08",
     "manufacturer": "Delta",
     "manufacturerLogo": "assets/logos/delta.png",
@@ -315,7 +315,7 @@
   },
   {
     "id": 13,
-    "mouserPartNumber": "78-S07M-M3/H",
+    "mdPartNumber": "78-S07M-M3/H",
     "manufacturerPartNumber": "S07M-M3/H",
     "manufacturer": "Digi",
     "manufacturerLogo": "assets/logos/digi.png",
@@ -341,7 +341,7 @@
   },
   {
     "id": 14,
-    "mouserPartNumber": "78-SE40CLJ-M3/I",
+    "mdPartNumber": "78-SE40CLJ-M3/I",
     "manufacturerPartNumber": "SE40CLJ-M3/I",
     "manufacturer": "Kemet",
     "manufacturerLogo": "assets/logos/kemet.png",
@@ -367,7 +367,7 @@
   },
   {
     "id": 15,
-    "mouserPartNumber": "78-SE45124-M3/I",
+    "mdPartNumber": "78-SE45124-M3/I",
     "manufacturerPartNumber": "SE45124-M3/I",
     "manufacturer": "Littelfuse",
     "manufacturerLogo": "assets/logos/littelfuse.png",
@@ -393,7 +393,7 @@
   },
   {
     "id": 16,
-    "mouserPartNumber": "78-SM8S54AHM3/I",
+    "mdPartNumber": "78-SM8S54AHM3/I",
     "manufacturerPartNumber": "SM8S54AHM3/I",
     "manufacturer": "Abracon",
     "manufacturerLogo": "assets/logos/abracon.png",
@@ -419,7 +419,7 @@
   },
   {
     "id": 17,
-    "mouserPartNumber": "78-SM8S64AHM3/I",
+    "mdPartNumber": "78-SM8S64AHM3/I",
     "manufacturerPartNumber": "SM8S64AHM3/I",
     "manufacturer": "Yageo",
     "manufacturerLogo": "assets/logos/yageo.png",
@@ -446,7 +446,7 @@
   },
   {
     "id": 18,
-    "mouserPartNumber": "78-SMB10J11AHE3_B/I",
+    "mdPartNumber": "78-SMB10J11AHE3_B/I",
     "manufacturerPartNumber": "SMB10J11AHE3_B/I",
     "manufacturer": "Infineon",
     "manufacturerLogo": "assets/logos/infineon.png",
@@ -472,7 +472,7 @@
   },
   {
     "id": 19,
-    "mouserPartNumber": "78-SMB10J20AHE3_B/I",
+    "mdPartNumber": "78-SMB10J20AHE3_B/I",
     "manufacturerPartNumber": "SMB10J20AHE3_B/I",
     "manufacturer": "Renesas",
     "manufacturerLogo": "assets/logos/renesas.png",
@@ -498,7 +498,7 @@
   },
   {
     "id": 20,
-    "mouserPartNumber": "78-SS12PH102HM3/I",
+    "mdPartNumber": "78-SS12PH102HM3/I",
     "manufacturerPartNumber": "SS12PH102HM3/I",
     "manufacturer": "Littelfuse",
     "manufacturerLogo": "assets/logos/littelfuse.png",
@@ -524,7 +524,7 @@
   },
   {
     "id": 21,
-    "mouserPartNumber": "78-SS15PH102-M3/I",
+    "mdPartNumber": "78-SS15PH102-M3/I",
     "manufacturerPartNumber": "SS15PH102-M3/I",
     "manufacturer": "MPS",
     "manufacturerLogo": "assets/logos/mps.png",
@@ -550,7 +550,7 @@
   },
   {
     "id": 22,
-    "mouserPartNumber": "78-SS5PH102HM3/I",
+    "mdPartNumber": "78-SS5PH102HM3/I",
     "manufacturerPartNumber": "SS5PH102HM3/I",
     "manufacturer": "Rohm",
     "manufacturerLogo": "assets/logos/rohm.png",
@@ -576,7 +576,7 @@
   },
   {
     "id": 23,
-    "mouserPartNumber": "78-T4F39CAHM3/I",
+    "mdPartNumber": "78-T4F39CAHM3/I",
     "manufacturerPartNumber": "T4F39CAHM3/I",
     "manufacturer": "TE Connectivity",
     "manufacturerLogo": "assets/logos/te-connectivity.png",
@@ -602,7 +602,7 @@
   },
   {
     "id": 24,
-    "mouserPartNumber": "78-VS-E7SX0112-M3V/I",
+    "mdPartNumber": "78-VS-E7SX0112-M3V/I",
     "manufacturerPartNumber": "VS-E7SX0112-M3V/I",
     "manufacturer": "Kyocera AVX",
     "manufacturerLogo": "assets/logos/kyocera-avx.png",
@@ -628,7 +628,7 @@
   },
   {
     "id": 25,
-    "mouserPartNumber": "78-2KDFN12A-M3/H",
+    "mdPartNumber": "78-2KDFN12A-M3/H",
     "manufacturerPartNumber": "2KDFN12A-M3/H",
     "manufacturer": "Renesas",
     "manufacturerLogo": "assets/logos/renesas.png",
@@ -654,7 +654,7 @@
   },
   {
     "id": 26,
-    "mouserPartNumber": "78-2KDFN75CA-M3/H",
+    "mdPartNumber": "78-2KDFN75CA-M3/H",
     "manufacturerPartNumber": "2KDFN75CA-M3/H",
     "manufacturer": "Kemet",
     "manufacturerLogo": "assets/logos/kemet.png",
@@ -681,7 +681,7 @@
   },
   {
     "id": 27,
-    "mouserPartNumber": "78-3KDFN13A-M3/H",
+    "mdPartNumber": "78-3KDFN13A-M3/H",
     "manufacturerPartNumber": "3KDFN13A-M3/H",
     "manufacturer": "MPS",
     "manufacturerLogo": "assets/logos/mps.png",
@@ -707,7 +707,7 @@
   },
   {
     "id": 28,
-    "mouserPartNumber": "78-3KDFN20CA-M3/H",
+    "mdPartNumber": "78-3KDFN20CA-M3/H",
     "manufacturerPartNumber": "3KDFN20CA-M3/H",
     "manufacturer": "Sanken",
     "manufacturerLogo": "assets/logos/sanken.png",
@@ -733,7 +733,7 @@
   },
   {
     "id": 29,
-    "mouserPartNumber": "78-3KDFN24A-M3/H",
+    "mdPartNumber": "78-3KDFN24A-M3/H",
     "manufacturerPartNumber": "3KDFN24A-M3/H",
     "manufacturer": "Pulse Electronics",
     "manufacturerLogo": "assets/logos/pulse-electronics.png",
@@ -759,7 +759,7 @@
   },
   {
     "id": 30,
-    "mouserPartNumber": "78-BZG05C5V6-M3_A-08",
+    "mdPartNumber": "78-BZG05C5V6-M3_A-08",
     "manufacturerPartNumber": "BZG05C5V6-M3_A-08",
     "manufacturer": "Sanken",
     "manufacturerLogo": "assets/logos/sanken.png",
@@ -785,7 +785,7 @@
   },
   {
     "id": 31,
-    "mouserPartNumber": "78-SS8PH102HM3/I",
+    "mdPartNumber": "78-SS8PH102HM3/I",
     "manufacturerPartNumber": "SS8PH102HM3/I",
     "manufacturer": "Kemet",
     "manufacturerLogo": "assets/logos/kemet.png",
@@ -811,7 +811,7 @@
   },
   {
     "id": 32,
-    "mouserPartNumber": "78-T4F18CAHM3/I",
+    "mdPartNumber": "78-T4F18CAHM3/I",
     "manufacturerPartNumber": "T4F18CAHM3/I",
     "manufacturer": "Yageo",
     "manufacturerLogo": "assets/logos/yageo.png",
@@ -837,7 +837,7 @@
   },
   {
     "id": 33,
-    "mouserPartNumber": "78-VS-4C06ET07S2LHM3",
+    "mdPartNumber": "78-VS-4C06ET07S2LHM3",
     "manufacturerPartNumber": "VS-4C06ET07S2LHM3",
     "manufacturer": "Rohm",
     "manufacturerLogo": "assets/logos/rohm.png",
@@ -863,7 +863,7 @@
   },
   {
     "id": 34,
-    "mouserPartNumber": "78-VS-E7SX0112HM3V/I",
+    "mdPartNumber": "78-VS-E7SX0112HM3V/I",
     "manufacturerPartNumber": "VS-E7SX0112HM3V/I",
     "manufacturer": "Chilisin",
     "manufacturerLogo": "assets/logos/chilisin.png",
@@ -890,7 +890,7 @@
   },
   {
     "id": 35,
-    "mouserPartNumber": "78-VS-E7SX0212HM3V/I",
+    "mdPartNumber": "78-VS-E7SX0212HM3V/I",
     "manufacturerPartNumber": "VS-E7SX0212HM3V/I",
     "manufacturer": "Abracon",
     "manufacturerLogo": "assets/logos/abracon.png",
@@ -916,7 +916,7 @@
   },
   {
     "id": 36,
-    "mouserPartNumber": "78-BZX384B33-HE3_A8",
+    "mdPartNumber": "78-BZX384B33-HE3_A8",
     "manufacturerPartNumber": "BZX384B33-HE3_A08",
     "manufacturer": "Semtech",
     "manufacturerLogo": "assets/logos/semtech.png",
@@ -942,7 +942,7 @@
   },
   {
     "id": 37,
-    "mouserPartNumber": "78-2KDFN15CA-M3/H",
+    "mdPartNumber": "78-2KDFN15CA-M3/H",
     "manufacturerPartNumber": "2KDFN15CA-M3/H",
     "manufacturer": "Hongfa",
     "manufacturerLogo": "assets/logos/hongfa.png",
@@ -968,7 +968,7 @@
   },
   {
     "id": 38,
-    "mouserPartNumber": "78-2KDFN20A-M3/H",
+    "mdPartNumber": "78-2KDFN20A-M3/H",
     "manufacturerPartNumber": "2KDFN20A-M3/H",
     "manufacturer": "Quectel",
     "manufacturerLogo": "assets/logos/quectel.png",
@@ -994,7 +994,7 @@
   },
   {
     "id": 39,
-    "mouserPartNumber": "78-2KDFN22A-M3/H",
+    "mdPartNumber": "78-2KDFN22A-M3/H",
     "manufacturerPartNumber": "2KDFN22A-M3/H",
     "manufacturer": "Renesas",
     "manufacturerLogo": "assets/logos/renesas.png",
@@ -1020,7 +1020,7 @@
   },
   {
     "id": 40,
-    "mouserPartNumber": "78-2KDFN22CA-M3/H",
+    "mdPartNumber": "78-2KDFN22CA-M3/H",
     "manufacturerPartNumber": "2KDFN22CA-M3/H",
     "manufacturer": "Rubycon",
     "manufacturerLogo": "assets/logos/rubycon.png",
@@ -1046,7 +1046,7 @@
   },
   {
     "id": 41,
-    "mouserPartNumber": "78-2KDFN51CA-M3/H",
+    "mdPartNumber": "78-2KDFN51CA-M3/H",
     "manufacturerPartNumber": "2KDFN51CA-M3/H",
     "manufacturer": "Hongfa",
     "manufacturerLogo": "assets/logos/hongfa.png",
@@ -1072,7 +1072,7 @@
   },
   {
     "id": 42,
-    "mouserPartNumber": "78-2KDFN56CA-M3/H",
+    "mdPartNumber": "78-2KDFN56CA-M3/H",
     "manufacturerPartNumber": "2KDFN56CA-M3/H",
     "manufacturer": "Nordic",
     "manufacturerLogo": "assets/logos/nordic.png",
@@ -1099,7 +1099,7 @@
   },
   {
     "id": 43,
-    "mouserPartNumber": "78-3KDFN12A-M3/H",
+    "mdPartNumber": "78-3KDFN12A-M3/H",
     "manufacturerPartNumber": "3KDFN12A-M3/H",
     "manufacturer": "Sanken",
     "manufacturerLogo": "assets/logos/sanken.png",
@@ -1125,7 +1125,7 @@
   },
   {
     "id": 44,
-    "mouserPartNumber": "78-3KDFN20A-M3/H",
+    "mdPartNumber": "78-3KDFN20A-M3/H",
     "manufacturerPartNumber": "3KDFN20A-M3/H",
     "manufacturer": "Yageo",
     "manufacturerLogo": "assets/logos/yageo.png",
@@ -1151,7 +1151,7 @@
   },
   {
     "id": 45,
-    "mouserPartNumber": "78-SE30CLJ-M3/I",
+    "mdPartNumber": "78-SE30CLJ-M3/I",
     "manufacturerPartNumber": "SE30CLJ-M3/I",
     "manufacturer": "Winbond",
     "manufacturerLogo": "assets/logos/winbond.png",
@@ -1177,7 +1177,7 @@
   },
   {
     "id": 46,
-    "mouserPartNumber": "78-SMB10J11AHM3_B/I",
+    "mdPartNumber": "78-SMB10J11AHM3_B/I",
     "manufacturerPartNumber": "SMB10J11AHM3_B/I",
     "manufacturer": "Semtech",
     "manufacturerLogo": "assets/logos/semtech.png",
@@ -1203,7 +1203,7 @@
   },
   {
     "id": 47,
-    "mouserPartNumber": "78-SMB10J9.0AHE3_B/I",
+    "mdPartNumber": "78-SMB10J9.0AHE3_B/I",
     "manufacturerPartNumber": "SMB10J9.0AHE3_B/I",
     "manufacturer": "Nuvoton",
     "manufacturerLogo": "assets/logos/nuvoton.png",
@@ -1229,7 +1229,7 @@
   },
   {
     "id": 48,
-    "mouserPartNumber": "78-T4F47CAHM3/I",
+    "mdPartNumber": "78-T4F47CAHM3/I",
     "manufacturerPartNumber": "T4F47CAHM3/I",
     "manufacturer": "MPS",
     "manufacturerLogo": "assets/logos/mps.png",
@@ -1255,7 +1255,7 @@
   },
   {
     "id": 49,
-    "mouserPartNumber": "78-VS-4C20CP07LHM3",
+    "mdPartNumber": "78-VS-4C20CP07LHM3",
     "manufacturerPartNumber": "VS-4C20CP07LHM3",
     "manufacturer": "Rubycon",
     "manufacturerLogo": "assets/logos/rubycon.png",
@@ -1281,7 +1281,7 @@
   },
   {
     "id": 50,
-    "mouserPartNumber": "78-VS-E7SX0212-M3V/I",
+    "mdPartNumber": "78-VS-E7SX0212-M3V/I",
     "manufacturerPartNumber": "VS-E7SX0212-M3V/I",
     "manufacturer": "Winbond",
     "manufacturerLogo": "assets/logos/winbond.png",
@@ -1307,7 +1307,7 @@
   },
   {
     "id": 51,
-    "mouserPartNumber": "78-BZG05C6V8-M3_A-08",
+    "mdPartNumber": "78-BZG05C6V8-M3_A-08",
     "manufacturerPartNumber": "BZG05C6V8-M3_A-08",
     "manufacturer": "Melexis",
     "manufacturerLogo": "assets/logos/melexis.png",
@@ -1334,7 +1334,7 @@
   },
   {
     "id": 52,
-    "mouserPartNumber": "78-SM8S75AHM3/I",
+    "mdPartNumber": "78-SM8S75AHM3/I",
     "manufacturerPartNumber": "SM8S75AHM3/I",
     "manufacturer": "Littelfuse",
     "manufacturerLogo": "assets/logos/littelfuse.png",
@@ -1360,7 +1360,7 @@
   },
   {
     "id": 53,
-    "mouserPartNumber": "78-SS8PH102-M3/I",
+    "mdPartNumber": "78-SS8PH102-M3/I",
     "manufacturerPartNumber": "SS8PH102-M3/I",
     "manufacturer": "Panasonic",
     "manufacturerLogo": "assets/logos/panasonic.png",
@@ -1386,7 +1386,7 @@
   },
   {
     "id": 54,
-    "mouserPartNumber": "78-T4F36CAHM3/I",
+    "mdPartNumber": "78-T4F36CAHM3/I",
     "manufacturerPartNumber": "T4F36CAHM3/I",
     "manufacturer": "Melexis",
     "manufacturerLogo": "assets/logos/melexis.png",
@@ -1412,7 +1412,7 @@
   },
   {
     "id": 55,
-    "mouserPartNumber": "78-VS-4C06ET07S2L-M3",
+    "mdPartNumber": "78-VS-4C06ET07S2L-M3",
     "manufacturerPartNumber": "VS-4C06ET07S2L-M3",
     "manufacturer": "Bosch",
     "manufacturerLogo": "assets/logos/bosch.png",
@@ -1438,7 +1438,7 @@
   },
   {
     "id": 56,
-    "mouserPartNumber": "78-VS-4C20CP07L-M3",
+    "mdPartNumber": "78-VS-4C20CP07L-M3",
     "manufacturerPartNumber": "VS-4C20CP07L-M3",
     "manufacturer": "Quectel",
     "manufacturerLogo": "assets/logos/quectel.png",
@@ -1464,7 +1464,7 @@
   },
   {
     "id": 57,
-    "mouserPartNumber": "78-2KDFN24CA-M3/H",
+    "mdPartNumber": "78-2KDFN24CA-M3/H",
     "manufacturerPartNumber": "2KDFN24CA-M3/H",
     "manufacturer": "Bosch",
     "manufacturerLogo": "assets/logos/bosch.png",
@@ -1490,7 +1490,7 @@
   },
   {
     "id": 58,
-    "mouserPartNumber": "78-2KDFN47CA-M3/H",
+    "mdPartNumber": "78-2KDFN47CA-M3/H",
     "manufacturerPartNumber": "2KDFN47CA-M3/H",
     "manufacturer": "Kyocera AVX",
     "manufacturerLogo": "assets/logos/kyocera-avx.png",
@@ -1516,7 +1516,7 @@
   },
   {
     "id": 59,
-    "mouserPartNumber": "78-3KDFN15A-M3/H",
+    "mdPartNumber": "78-3KDFN15A-M3/H",
     "manufacturerPartNumber": "3KDFN15A-M3/H",
     "manufacturer": "Semtech",
     "manufacturerLogo": "assets/logos/semtech.png",
@@ -1543,7 +1543,7 @@
   },
   {
     "id": 60,
-    "mouserPartNumber": "78-3KDFN18A-M3/H",
+    "mdPartNumber": "78-3KDFN18A-M3/H",
     "manufacturerPartNumber": "3KDFN18A-M3/H",
     "manufacturer": "Hongfa",
     "manufacturerLogo": "assets/logos/hongfa.png",
@@ -1569,7 +1569,7 @@
   },
   {
     "id": 61,
-    "mouserPartNumber": "78-3KDFN22A-M3/H",
+    "mdPartNumber": "78-3KDFN22A-M3/H",
     "manufacturerPartNumber": "3KDFN22A-M3/H",
     "manufacturer": "Infineon",
     "manufacturerLogo": "assets/logos/infineon.png",
@@ -1595,7 +1595,7 @@
   },
   {
     "id": 62,
-    "mouserPartNumber": "78-KBPE0480-M3/P",
+    "mdPartNumber": "78-KBPE0480-M3/P",
     "manufacturerPartNumber": "KBPE0480-M3/P",
     "manufacturer": "Delta",
     "manufacturerLogo": "assets/logos/delta.png",
@@ -1621,7 +1621,7 @@
   },
   {
     "id": 63,
-    "mouserPartNumber": "78-SS10PH102-M3/I",
+    "mdPartNumber": "78-SS10PH102-M3/I",
     "manufacturerPartNumber": "SS10PH102-M3/I",
     "manufacturer": "Chilisin",
     "manufacturerLogo": "assets/logos/chilisin.png",
@@ -1647,7 +1647,7 @@
   },
   {
     "id": 64,
-    "mouserPartNumber": "78-SS10PH102HM3/I",
+    "mdPartNumber": "78-SS10PH102HM3/I",
     "manufacturerPartNumber": "SS10PH102HM3/I",
     "manufacturer": "Kemet",
     "manufacturerLogo": "assets/logos/kemet.png",
@@ -1673,7 +1673,7 @@
   },
   {
     "id": 65,
-    "mouserPartNumber": "78-SS12PH102-M3/I",
+    "mdPartNumber": "78-SS12PH102-M3/I",
     "manufacturerPartNumber": "SS12PH102-M3/I",
     "manufacturer": "Melexis",
     "manufacturerLogo": "assets/logos/melexis.png",
@@ -1699,7 +1699,7 @@
   },
   {
     "id": 66,
-    "mouserPartNumber": "78-SS15PH102HM3/I",
+    "mdPartNumber": "78-SS15PH102HM3/I",
     "manufacturerPartNumber": "SS15PH102HM3/I",
     "manufacturer": "Laird Technologies",
     "manufacturerLogo": "assets/logos/laird-technologies.png",
@@ -1725,7 +1725,7 @@
   },
   {
     "id": 67,
-    "mouserPartNumber": "78-SS5PH102-M3/I",
+    "mdPartNumber": "78-SS5PH102-M3/I",
     "manufacturerPartNumber": "SS5PH102-M3/I",
     "manufacturer": "Panasonic",
     "manufacturerLogo": "assets/logos/panasonic.png",
@@ -1752,7 +1752,7 @@
   },
   {
     "id": 68,
-    "mouserPartNumber": "78-T4F30CAHM3/I",
+    "mdPartNumber": "78-T4F30CAHM3/I",
     "manufacturerPartNumber": "T4F30CAHM3/I",
     "manufacturer": "Littelfuse",
     "manufacturerLogo": "assets/logos/littelfuse.png",
@@ -1778,7 +1778,7 @@
   },
   {
     "id": 69,
-    "mouserPartNumber": "78-T4F43CAHM3/I",
+    "mdPartNumber": "78-T4F43CAHM3/I",
     "manufacturerPartNumber": "T4F43CAHM3/I",
     "manufacturer": "Kemet",
     "manufacturerLogo": "assets/logos/kemet.png",
@@ -1804,7 +1804,7 @@
   },
   {
     "id": 70,
-    "mouserPartNumber": "78-VS-4C20ET07S2L-M3",
+    "mdPartNumber": "78-VS-4C20ET07S2L-M3",
     "manufacturerPartNumber": "VS-4C20ET07S2L-M3",
     "manufacturer": "Taiwan Semiconductor",
     "manufacturerLogo": "assets/logos/taiwan-semiconductor.png",
@@ -1830,7 +1830,7 @@
   },
   {
     "id": 71,
-    "mouserPartNumber": "576-TPSMB2818CA",
+    "mdPartNumber": "576-TPSMB2818CA",
     "manufacturerPartNumber": "TPSMB2818CA",
     "manufacturer": "Sunon",
     "manufacturerLogo": "assets/logos/sunon.png",
@@ -1856,7 +1856,7 @@
   },
   {
     "id": 72,
-    "mouserPartNumber": "726-IMBG75R016M2HXTM",
+    "mdPartNumber": "726-IMBG75R016M2HXTM",
     "manufacturerPartNumber": "IMBG75R016M2HXTMA1",
     "manufacturer": "Pulse Electronics",
     "manufacturerLogo": "assets/logos/pulse-electronics.png",
@@ -1882,7 +1882,7 @@
   },
   {
     "id": 73,
-    "mouserPartNumber": "726-IMDQ75R033M2HXTM",
+    "mdPartNumber": "726-IMDQ75R033M2HXTM",
     "manufacturerPartNumber": "IMDQ75R033M2HXTMA1",
     "manufacturer": "Kyocera AVX",
     "manufacturerLogo": "assets/logos/kyocera-avx.png",
@@ -1908,7 +1908,7 @@
   },
   {
     "id": 74,
-    "mouserPartNumber": "726-IQE036N08NM6SCAT",
+    "mdPartNumber": "726-IQE036N08NM6SCAT",
     "manufacturerPartNumber": "IQE036N08NM6SCATMA1",
     "manufacturer": "Digi",
     "manufacturerLogo": "assets/logos/digi.png",
@@ -1934,7 +1934,7 @@
   },
   {
     "id": 75,
-    "mouserPartNumber": "757-SSM6K388RLF",
+    "mdPartNumber": "757-SSM6K388RLF",
     "manufacturerPartNumber": "SSM6K388R,LF",
     "manufacturer": "Quectel",
     "manufacturerLogo": "assets/logos/quectel.png",
@@ -1960,7 +1960,7 @@
   },
   {
     "id": 76,
-    "mouserPartNumber": "772-QPD1004ASR",
+    "mdPartNumber": "772-QPD1004ASR",
     "manufacturerPartNumber": "QPD1004ASR",
     "manufacturer": "Bosch",
     "manufacturerLogo": "assets/logos/bosch.png",
@@ -1987,7 +1987,7 @@
   },
   {
     "id": 77,
-    "mouserPartNumber": "757-TPM1R408RHLQ",
+    "mdPartNumber": "757-TPM1R408RHLQ",
     "manufacturerPartNumber": "TPM1R408RH,LQ",
     "manufacturer": "Abracon",
     "manufacturerLogo": "assets/logos/abracon.png",
@@ -2013,7 +2013,7 @@
   },
   {
     "id": 78,
-    "mouserPartNumber": "78-SQJ461EP-T1_NE3",
+    "mdPartNumber": "78-SQJ461EP-T1_NE3",
     "manufacturerPartNumber": "SQJ461EP-T1_NE3",
     "manufacturer": "MPS",
     "manufacturerLogo": "assets/logos/mps.png",
@@ -2039,7 +2039,7 @@
   },
   {
     "id": 79,
-    "mouserPartNumber": "78-SQJ463EP-T1_NE3",
+    "mdPartNumber": "78-SQJ463EP-T1_NE3",
     "manufacturerPartNumber": "SQJ463EP-T1_NE3",
     "manufacturer": "Sanken",
     "manufacturerLogo": "assets/logos/sanken.png",
@@ -2065,7 +2065,7 @@
   },
   {
     "id": 80,
-    "mouserPartNumber": "726-IQEH42NE2LM7ZCGS",
+    "mdPartNumber": "726-IQEH42NE2LM7ZCGS",
     "manufacturerPartNumber": "IQEH42NE2LM7ZCGSCATMA1",
     "manufacturer": "Littelfuse",
     "manufacturerLogo": "assets/logos/littelfuse.png",
@@ -2091,7 +2091,7 @@
   },
   {
     "id": 81,
-    "mouserPartNumber": "726-ISCH57N04NM7VSCA",
+    "mdPartNumber": "726-ISCH57N04NM7VSCA",
     "manufacturerPartNumber": "ISCH57N04NM7VSCATMA1",
     "manufacturer": "Infineon",
     "manufacturerLogo": "assets/logos/infineon.png",
@@ -2117,7 +2117,7 @@
   },
   {
     "id": 82,
-    "mouserPartNumber": "726-IAUCN08S7N036TAT",
+    "mdPartNumber": "726-IAUCN08S7N036TAT",
     "manufacturerPartNumber": "IAUCN08S7N036TATMA1",
     "manufacturer": "Vango",
     "manufacturerLogo": "assets/logos/vango.png",
@@ -2143,7 +2143,7 @@
   },
   {
     "id": 83,
-    "mouserPartNumber": "576-TP5.0SMDJ300CA",
+    "mdPartNumber": "576-TP5.0SMDJ300CA",
     "manufacturerPartNumber": "TP5.0SMDJ300CA",
     "manufacturer": "Rohm",
     "manufacturerLogo": "assets/logos/rohm.png",
@@ -2169,7 +2169,7 @@
   },
   {
     "id": 84,
-    "mouserPartNumber": "726-ISC034N08NM7ATMA",
+    "mdPartNumber": "726-ISC034N08NM7ATMA",
     "manufacturerPartNumber": "ISC034N08NM7ATMA1",
     "manufacturer": "Rubycon",
     "manufacturerLogo": "assets/logos/rubycon.png",
@@ -2196,7 +2196,7 @@
   },
   {
     "id": 85,
-    "mouserPartNumber": "747-IXTX400N20X4",
+    "mdPartNumber": "747-IXTX400N20X4",
     "manufacturerPartNumber": "IXTX400N20X4",
     "manufacturer": "Taiwan Semiconductor",
     "manufacturerLogo": "assets/logos/taiwan-semiconductor.png",
@@ -2222,7 +2222,7 @@
   },
   {
     "id": 86,
-    "mouserPartNumber": "726-FS01M5R12A7MA2BH",
+    "mdPartNumber": "726-FS01M5R12A7MA2BH",
     "manufacturerPartNumber": "FS01M5R12A7MA2BHPSA1",
     "manufacturer": "Littelfuse",
     "manufacturerLogo": "assets/logos/littelfuse.png",
@@ -2248,7 +2248,7 @@
   },
   {
     "id": 87,
-    "mouserPartNumber": "726-IAUCN10S7L040ATM",
+    "mdPartNumber": "726-IAUCN10S7L040ATM",
     "manufacturerPartNumber": "IAUCN10S7L040ATMA1",
     "manufacturer": "Quectel",
     "manufacturerLogo": "assets/logos/quectel.png",
@@ -2274,7 +2274,7 @@
   },
   {
     "id": 88,
-    "mouserPartNumber": "78-SQRS160EP-T1_GE3",
+    "mdPartNumber": "78-SQRS160EP-T1_GE3",
     "manufacturerPartNumber": "SQRS160EP-T1_GE3",
     "manufacturer": "Rohm",
     "manufacturerLogo": "assets/logos/rohm.png",
@@ -2300,7 +2300,7 @@
   },
   {
     "id": 89,
-    "mouserPartNumber": "726-IMZA75R040M2HXKS",
+    "mdPartNumber": "726-IMZA75R040M2HXKS",
     "manufacturerPartNumber": "IMZA75R040M2HXKSA1",
     "manufacturer": "Quectel",
     "manufacturerLogo": "assets/logos/quectel.png",
@@ -2326,7 +2326,7 @@
   },
   {
     "id": 90,
-    "mouserPartNumber": "726-ISC024N08NM7ATMA",
+    "mdPartNumber": "726-ISC024N08NM7ATMA",
     "manufacturerPartNumber": "ISC024N08NM7ATMA1",
     "manufacturer": "Melexis",
     "manufacturerLogo": "assets/logos/melexis.png",
@@ -2352,7 +2352,7 @@
   },
   {
     "id": 91,
-    "mouserPartNumber": "78-2KDFN13CA-M3/H",
+    "mdPartNumber": "78-2KDFN13CA-M3/H",
     "manufacturerPartNumber": "2KDFN13CA-M3/H",
     "manufacturer": "Panasonic",
     "manufacturerLogo": "assets/logos/panasonic.png",
@@ -2378,7 +2378,7 @@
   },
   {
     "id": 92,
-    "mouserPartNumber": "78-2KDFN20CA-M3/H",
+    "mdPartNumber": "78-2KDFN20CA-M3/H",
     "manufacturerPartNumber": "2KDFN20CA-M3/H",
     "manufacturer": "Semtech",
     "manufacturerLogo": "assets/logos/semtech.png",
@@ -2405,7 +2405,7 @@
   },
   {
     "id": 93,
-    "mouserPartNumber": "78-2KDFN24A-M3/H",
+    "mdPartNumber": "78-2KDFN24A-M3/H",
     "manufacturerPartNumber": "2KDFN24A-M3/H",
     "manufacturer": "Chilisin",
     "manufacturerLogo": "assets/logos/chilisin.png",
@@ -2431,7 +2431,7 @@
   },
   {
     "id": 94,
-    "mouserPartNumber": "78-2KDFN30CA-M3/H",
+    "mdPartNumber": "78-2KDFN30CA-M3/H",
     "manufacturerPartNumber": "2KDFN30CA-M3/H",
     "manufacturer": "Pulse Electronics",
     "manufacturerLogo": "assets/logos/pulse-electronics.png",
@@ -2457,7 +2457,7 @@
   },
   {
     "id": 95,
-    "mouserPartNumber": "78-SE30CLJHM3/I",
+    "mdPartNumber": "78-SE30CLJHM3/I",
     "manufacturerPartNumber": "SE30CLJHM3/I",
     "manufacturer": "Sunon",
     "manufacturerLogo": "assets/logos/sunon.png",
@@ -2483,7 +2483,7 @@
   },
   {
     "id": 96,
-    "mouserPartNumber": "78-SE40CLJHM3/I",
+    "mdPartNumber": "78-SE40CLJHM3/I",
     "manufacturerPartNumber": "SE40CLJHM3/I",
     "manufacturer": "Bosch",
     "manufacturerLogo": "assets/logos/bosch.png",
@@ -2509,7 +2509,7 @@
   },
   {
     "id": 97,
-    "mouserPartNumber": "78-SMB10J20AHM3_B/I",
+    "mdPartNumber": "78-SMB10J20AHM3_B/I",
     "manufacturerPartNumber": "SMB10J20AHM3_B/I",
     "manufacturer": "Nordic",
     "manufacturerLogo": "assets/logos/nordic.png",
@@ -2535,7 +2535,7 @@
   },
   {
     "id": 98,
-    "mouserPartNumber": "968-40N10EANS5UA11HB",
+    "mdPartNumber": "968-40N10EANS5UA11HB",
     "manufacturerPartNumber": "RBA40N10EANS-5UA11#HB0",
     "manufacturer": "Bosch",
     "manufacturerLogo": "assets/logos/bosch.png",
@@ -2561,7 +2561,7 @@
   },
   {
     "id": 99,
-    "mouserPartNumber": "968-E111N10R1SZN2HB0",
+    "mdPartNumber": "968-E111N10R1SZN2HB0",
     "manufacturerPartNumber": "RBE111N10R1SZN2#HB0",
     "manufacturer": "Bosch",
     "manufacturerLogo": "assets/logos/bosch.png",
@@ -2587,7 +2587,7 @@
   },
   {
     "id": 100,
-    "mouserPartNumber": "78-2KDFN18A-M3/H",
+    "mdPartNumber": "78-2KDFN18A-M3/H",
     "manufacturerPartNumber": "2KDFN18A-M3/H",
     "manufacturer": "MPS",
     "manufacturerLogo": "assets/logos/mps.png",
@@ -2613,7 +2613,7 @@
   },
   {
     "id": 101,
-    "mouserPartNumber": "78-2KDFN12CA-M3/H",
+    "mdPartNumber": "78-2KDFN12CA-M3/H",
     "manufacturerPartNumber": "2KDFN12CA-M3/H",
     "manufacturer": "Vango",
     "manufacturerLogo": "assets/logos/vango.png",
@@ -2640,7 +2640,7 @@
   },
   {
     "id": 102,
-    "mouserPartNumber": "78-2KDFN36CA-M3/H",
+    "mdPartNumber": "78-2KDFN36CA-M3/H",
     "manufacturerPartNumber": "2KDFN36CA-M3/H",
     "manufacturer": "Semtech",
     "manufacturerLogo": "assets/logos/semtech.png",
@@ -2666,7 +2666,7 @@
   },
   {
     "id": 103,
-    "mouserPartNumber": "78-2KDFN82CA-M3/H",
+    "mdPartNumber": "78-2KDFN82CA-M3/H",
     "manufacturerPartNumber": "2KDFN82CA-M3/H",
     "manufacturer": "Sanken",
     "manufacturerLogo": "assets/logos/sanken.png",
@@ -2692,7 +2692,7 @@
   },
   {
     "id": 104,
-    "mouserPartNumber": "78-3KDFN13CA-M3/H",
+    "mdPartNumber": "78-3KDFN13CA-M3/H",
     "manufacturerPartNumber": "3KDFN13CA-M3/H",
     "manufacturer": "Laird Technologies",
     "manufacturerLogo": "assets/logos/laird-technologies.png",
@@ -2718,7 +2718,7 @@
   },
   {
     "id": 105,
-    "mouserPartNumber": "78-3KDFN16CA-M3/H",
+    "mdPartNumber": "78-3KDFN16CA-M3/H",
     "manufacturerPartNumber": "3KDFN16CA-M3/H",
     "manufacturer": "Vango",
     "manufacturerLogo": "assets/logos/vango.png",
@@ -2744,7 +2744,7 @@
   },
   {
     "id": 106,
-    "mouserPartNumber": "78-4SMF24CA-M3/I",
+    "mdPartNumber": "78-4SMF24CA-M3/I",
     "manufacturerPartNumber": "4SMF24CA-M3/I",
     "manufacturer": "Pulse Electronics",
     "manufacturerLogo": "assets/logos/pulse-electronics.png",
@@ -2770,7 +2770,7 @@
   },
   {
     "id": 107,
-    "mouserPartNumber": "78-4SMF28CA-M3/I",
+    "mdPartNumber": "78-4SMF28CA-M3/I",
     "manufacturerPartNumber": "4SMF28CA-M3/I",
     "manufacturer": "Littelfuse",
     "manufacturerLogo": "assets/logos/littelfuse.png",
@@ -2796,7 +2796,7 @@
   },
   {
     "id": 108,
-    "mouserPartNumber": "78-BZG05C5V1-M3_A-08",
+    "mdPartNumber": "78-BZG05C5V1-M3_A-08",
     "manufacturerPartNumber": "BZG05C5V1-M3_A-08",
     "manufacturer": "Kyocera AVX",
     "manufacturerLogo": "assets/logos/kyocera-avx.png",
@@ -2822,7 +2822,7 @@
   },
   {
     "id": 109,
-    "mouserPartNumber": "78-SE50124-M3/I",
+    "mdPartNumber": "78-SE50124-M3/I",
     "manufacturerPartNumber": "SE50124-M3/I",
     "manufacturer": "Pulse Electronics",
     "manufacturerLogo": "assets/logos/pulse-electronics.png",
@@ -2849,7 +2849,7 @@
   },
   {
     "id": 110,
-    "mouserPartNumber": "78-SMB10J9.0AHM3_B/I",
+    "mdPartNumber": "78-SMB10J9.0AHM3_B/I",
     "manufacturerPartNumber": "SMB10J9.0AHM3_B/I",
     "manufacturer": "Nordic",
     "manufacturerLogo": "assets/logos/nordic.png",
@@ -2875,7 +2875,7 @@
   },
   {
     "id": 111,
-    "mouserPartNumber": "78-SQJ858AEP-T1_NE3",
+    "mdPartNumber": "78-SQJ858AEP-T1_NE3",
     "manufacturerPartNumber": "SQJ858AEP-T1_NE3",
     "manufacturer": "Kemet",
     "manufacturerLogo": "assets/logos/kemet.png",
@@ -2901,7 +2901,7 @@
   },
   {
     "id": 112,
-    "mouserPartNumber": "78-SQM40022EM_NE3",
+    "mdPartNumber": "78-SQM40022EM_NE3",
     "manufacturerPartNumber": "SQM40022EM_NE3",
     "manufacturer": "Delta",
     "manufacturerLogo": "assets/logos/delta.png",
@@ -2927,7 +2927,7 @@
   },
   {
     "id": 113,
-    "mouserPartNumber": "78-T4F33CAHM3/I",
+    "mdPartNumber": "78-T4F33CAHM3/I",
     "manufacturerPartNumber": "T4F33CAHM3/I",
     "manufacturer": "Rohm",
     "manufacturerLogo": "assets/logos/rohm.png",
@@ -2953,7 +2953,7 @@
   },
   {
     "id": 114,
-    "mouserPartNumber": "78-2KDFN100CA-M3/H",
+    "mdPartNumber": "78-2KDFN100CA-M3/H",
     "manufacturerPartNumber": "2KDFN100CA-M3/H",
     "manufacturer": "Nordic",
     "manufacturerLogo": "assets/logos/nordic.png",
@@ -2979,7 +2979,7 @@
   },
   {
     "id": 115,
-    "mouserPartNumber": "78-2KDFN13A-M3/H",
+    "mdPartNumber": "78-2KDFN13A-M3/H",
     "manufacturerPartNumber": "2KDFN13A-M3/H",
     "manufacturer": "Chilisin",
     "manufacturerLogo": "assets/logos/chilisin.png",
@@ -3005,7 +3005,7 @@
   },
   {
     "id": 116,
-    "mouserPartNumber": "78-2KDFN15A-M3/H",
+    "mdPartNumber": "78-2KDFN15A-M3/H",
     "manufacturerPartNumber": "2KDFN15A-M3/H",
     "manufacturer": "Panasonic",
     "manufacturerLogo": "assets/logos/panasonic.png",
@@ -3031,7 +3031,7 @@
   },
   {
     "id": 117,
-    "mouserPartNumber": "78-2KDFN16A-M3/H",
+    "mdPartNumber": "78-2KDFN16A-M3/H",
     "manufacturerPartNumber": "2KDFN16A-M3/H",
     "manufacturer": "Semtech",
     "manufacturerLogo": "assets/logos/semtech.png",
@@ -3058,7 +3058,7 @@
   },
   {
     "id": 118,
-    "mouserPartNumber": "78-2KDFN16CA-M3/H",
+    "mdPartNumber": "78-2KDFN16CA-M3/H",
     "manufacturerPartNumber": "2KDFN16CA-M3/H",
     "manufacturer": "Laird Technologies",
     "manufacturerLogo": "assets/logos/laird-technologies.png",
@@ -3084,7 +3084,7 @@
   },
   {
     "id": 119,
-    "mouserPartNumber": "78-2KDFN18CA-M3/H",
+    "mdPartNumber": "78-2KDFN18CA-M3/H",
     "manufacturerPartNumber": "2KDFN18CA-M3/H",
     "manufacturer": "Pulse Electronics",
     "manufacturerLogo": "assets/logos/pulse-electronics.png",
@@ -3110,7 +3110,7 @@
   },
   {
     "id": 120,
-    "mouserPartNumber": "78-2KDFN43CA-M3/H",
+    "mdPartNumber": "78-2KDFN43CA-M3/H",
     "manufacturerPartNumber": "2KDFN43CA-M3/H",
     "manufacturer": "Sanken",
     "manufacturerLogo": "assets/logos/sanken.png",
@@ -3136,7 +3136,7 @@
   },
   {
     "id": 121,
-    "mouserPartNumber": "78-2KDFN68CA-M3/H",
+    "mdPartNumber": "78-2KDFN68CA-M3/H",
     "manufacturerPartNumber": "2KDFN68CA-M3/H",
     "manufacturer": "Kemet",
     "manufacturerLogo": "assets/logos/kemet.png",
@@ -3162,7 +3162,7 @@
   },
   {
     "id": 122,
-    "mouserPartNumber": "78-3KDFN12CA-M3/H",
+    "mdPartNumber": "78-3KDFN12CA-M3/H",
     "manufacturerPartNumber": "3KDFN12CA-M3/H",
     "manufacturer": "Rohm",
     "manufacturerLogo": "assets/logos/rohm.png",
@@ -3188,7 +3188,7 @@
   },
   {
     "id": 123,
-    "mouserPartNumber": "78-3KDFN22CA-M3/H",
+    "mdPartNumber": "78-3KDFN22CA-M3/H",
     "manufacturerPartNumber": "3KDFN22CA-M3/H",
     "manufacturer": "Vango",
     "manufacturerLogo": "assets/logos/vango.png",
@@ -3214,7 +3214,7 @@
   },
   {
     "id": 124,
-    "mouserPartNumber": "78-3KDFN24CA-M3/H",
+    "mdPartNumber": "78-3KDFN24CA-M3/H",
     "manufacturerPartNumber": "3KDFN24CA-M3/H",
     "manufacturer": "Winbond",
     "manufacturerLogo": "assets/logos/winbond.png",
@@ -3240,7 +3240,7 @@
   },
   {
     "id": 125,
-    "mouserPartNumber": "78-4SMF10CA-M3/I",
+    "mdPartNumber": "78-4SMF10CA-M3/I",
     "manufacturerPartNumber": "4SMF10CA-M3/I",
     "manufacturer": "Sunon",
     "manufacturerLogo": "assets/logos/sunon.png",
@@ -3266,7 +3266,7 @@
   },
   {
     "id": 126,
-    "mouserPartNumber": "",
+    "mdPartNumber": "",
     "manufacturerPartNumber": "PTC-04-DB-90316",
     "manufacturer": "Rubycon",
     "manufacturerLogo": "assets/logos/rubycon.png",
@@ -3295,7 +3295,7 @@
   },
   {
     "id": 127,
-    "mouserPartNumber": "",
+    "mdPartNumber": "",
     "manufacturerPartNumber": "PTC04-DB-922XX",
     "manufacturer": "Rubycon",
     "manufacturerLogo": "assets/logos/rubycon.png",
@@ -3324,7 +3324,7 @@
   },
   {
     "id": 128,
-    "mouserPartNumber": "",
+    "mdPartNumber": "",
     "manufacturerPartNumber": "MLX-UNIV-MASTER-CABLE",
     "manufacturer": "Infineon",
     "manufacturerLogo": "assets/logos/infineon.png",
@@ -3353,7 +3353,7 @@
   },
   {
     "id": 129,
-    "mouserPartNumber": "",
+    "mdPartNumber": "",
     "manufacturerPartNumber": "EVB90632",
     "manufacturer": "Rohm",
     "manufacturerLogo": "assets/logos/rohm.png",
@@ -3382,7 +3382,7 @@
   },
   {
     "id": 130,
-    "mouserPartNumber": "",
+    "mdPartNumber": "",
     "manufacturerPartNumber": "EVB90640-41",
     "manufacturer": "Sunon",
     "manufacturerLogo": "assets/logos/sunon.png",
@@ -3411,7 +3411,7 @@
   },
   {
     "id": 131,
-    "mouserPartNumber": "",
+    "mdPartNumber": "",
     "manufacturerPartNumber": "EVB90393",
     "manufacturer": "Infineon",
     "manufacturerLogo": "assets/logos/infineon.png",
@@ -3440,7 +3440,7 @@
   },
   {
     "id": 132,
-    "mouserPartNumber": "",
+    "mdPartNumber": "",
     "manufacturerPartNumber": "EVB90372-GDC-300-REV1.0",
     "manufacturer": "Hongfa",
     "manufacturerLogo": "assets/logos/hongfa.png",
@@ -3469,7 +3469,7 @@
   },
   {
     "id": 133,
-    "mouserPartNumber": "",
+    "mdPartNumber": "",
     "manufacturerPartNumber": "EVB90316-GO",
     "manufacturer": "Winbond",
     "manufacturerLogo": "assets/logos/winbond.png",
@@ -3498,7 +3498,7 @@
   },
   {
     "id": 134,
-    "mouserPartNumber": "",
+    "mdPartNumber": "",
     "manufacturerPartNumber": "PTC04-DB-HALL05",
     "manufacturer": "Panasonic",
     "manufacturerLogo": "assets/logos/panasonic.png",
@@ -3527,7 +3527,7 @@
   },
   {
     "id": 135,
-    "mouserPartNumber": "",
+    "mdPartNumber": "",
     "manufacturerPartNumber": "LPWI201610H1R0T",
     "manufacturer": "Semtech",
     "manufacturerLogo": "assets/logos/semtech.png",
@@ -3556,7 +3556,7 @@
   },
   {
     "id": 136,
-    "mouserPartNumber": "",
+    "mdPartNumber": "",
     "manufacturerPartNumber": "CAP-10/440R",
     "manufacturer": "Littelfuse",
     "manufacturerLogo": "assets/logos/littelfuse.png",
@@ -3585,7 +3585,7 @@
   },
   {
     "id": 137,
-    "mouserPartNumber": "",
+    "mdPartNumber": "",
     "manufacturerPartNumber": "1-1744036-1",
     "manufacturer": "MPS",
     "manufacturerLogo": "assets/logos/mps.png",
@@ -3614,7 +3614,7 @@
   },
   {
     "id": 138,
-    "mouserPartNumber": "",
+    "mdPartNumber": "",
     "manufacturerPartNumber": "MAXESSENTIAL02EP#",
     "manufacturer": "Laird Technologies",
     "manufacturerLogo": "assets/logos/laird-technologies.png",
@@ -3643,7 +3643,7 @@
   },
   {
     "id": 139,
-    "mouserPartNumber": "778-PS67K-3S-24L-250",
+    "mdPartNumber": "778-PS67K-3S-24L-250",
     "manufacturerPartNumber": "PS67K-3S-24L-250",
     "manufacturer": "Abracon",
     "manufacturerLogo": "assets/logos/abracon.png",
@@ -3672,7 +3672,7 @@
   },
   {
     "id": 140,
-    "mouserPartNumber": "490-DQD6N-24-D15-T",
+    "mdPartNumber": "490-DQD6N-24-D15-T",
     "manufacturerPartNumber": "DQD6N-24-D15-T",
     "manufacturer": "Digi",
     "manufacturerLogo": "assets/logos/digi.png",
@@ -3701,7 +3701,7 @@
   },
   {
     "id": 141,
-    "mouserPartNumber": "653-8NRS36024A0L2IL3",
+    "mdPartNumber": "653-8NRS36024A0L2IL3",
     "manufacturerPartNumber": "S8NR-S36024-A0L2-IL3",
     "manufacturer": "Sanken",
     "manufacturerLogo": "assets/logos/sanken.png",
@@ -3730,7 +3730,7 @@
   },
   {
     "id": 142,
-    "mouserPartNumber": "653-8NRS60024A2L2IL3",
+    "mdPartNumber": "653-8NRS60024A2L2IL3",
     "manufacturerPartNumber": "S8NR-S60024-A2L2-IL3",
     "manufacturer": "Winbond",
     "manufacturerLogo": "assets/logos/winbond.png",
@@ -3756,7 +3756,7 @@
   },
   {
     "id": 143,
-    "mouserPartNumber": "651-1119230",
+    "mdPartNumber": "651-1119230",
     "manufacturerPartNumber": "1119230",
     "manufacturer": "MPS",
     "manufacturerLogo": "assets/logos/mps.png",
@@ -3782,7 +3782,7 @@
   },
   {
     "id": 144,
-    "mouserPartNumber": "923-EKI-2711MPSI-A",
+    "mdPartNumber": "923-EKI-2711MPSI-A",
     "manufacturerPartNumber": "EKI-2711MPSI-A",
     "manufacturer": "Pulse Electronics",
     "manufacturerLogo": "assets/logos/pulse-electronics.png",
@@ -3808,7 +3808,7 @@
   },
   {
     "id": 145,
-    "mouserPartNumber": "653-8NRS36024A2L1IL3",
+    "mdPartNumber": "653-8NRS36024A2L1IL3",
     "manufacturerPartNumber": "S8NR-S36024-A2L1-IL3",
     "manufacturer": "TDK",
     "manufacturerLogo": "assets/logos/tdk.png",
@@ -3834,7 +3834,7 @@
   },
   {
     "id": 146,
-    "mouserPartNumber": "490-DQD6N-24-S5-T",
+    "mdPartNumber": "490-DQD6N-24-S5-T",
     "manufacturerPartNumber": "DQD6N-24-S5-T",
     "manufacturer": "Panasonic",
     "manufacturerLogo": "assets/logos/panasonic.png",
@@ -3860,7 +3860,7 @@
   },
   {
     "id": 147,
-    "mouserPartNumber": "653-8NRS60024A0L3IL3",
+    "mdPartNumber": "653-8NRS60024A0L3IL3",
     "manufacturerPartNumber": "S8NR-S60024-A0L3-IL3",
     "manufacturer": "Digi",
     "manufacturerLogo": "assets/logos/digi.png",
@@ -3886,7 +3886,7 @@
   },
   {
     "id": 148,
-    "mouserPartNumber": "967-CUS1200M-24",
+    "mdPartNumber": "967-CUS1200M-24",
     "manufacturerPartNumber": "CUS1200M-24",
     "manufacturer": "Laird Technologies",
     "manufacturerLogo": "assets/logos/laird-technologies.png",
@@ -3912,7 +3912,7 @@
   },
   {
     "id": 149,
-    "mouserPartNumber": "584-LT8647RCPZ-RL",
+    "mdPartNumber": "584-LT8647RCPZ-RL",
     "manufacturerPartNumber": "LT8647RCPZ-RL",
     "manufacturer": "Pulse Electronics",
     "manufacturerLogo": "assets/logos/pulse-electronics.png",
@@ -3938,7 +3938,7 @@
   },
   {
     "id": 150,
-    "mouserPartNumber": "700-ADPL86610ATB+T",
+    "mdPartNumber": "700-ADPL86610ATB+T",
     "manufacturerPartNumber": "ADPL86610ATB+T",
     "manufacturer": "Chilisin",
     "manufacturerLogo": "assets/logos/chilisin.png",
@@ -3964,7 +3964,7 @@
   },
   {
     "id": 151,
-    "mouserPartNumber": "700-TMC5241ATU+",
+    "mdPartNumber": "700-TMC5241ATU+",
     "manufacturerPartNumber": "TMC5241ATU+",
     "manufacturer": "Nuvoton",
     "manufacturerLogo": "assets/logos/nuvoton.png",
@@ -3990,7 +3990,7 @@
   },
   {
     "id": 152,
-    "mouserPartNumber": "209-LBA100US15",
+    "mdPartNumber": "209-LBA100US15",
     "manufacturerPartNumber": "LBA100US15",
     "manufacturer": "Semtech",
     "manufacturerLogo": "assets/logos/semtech.png",
@@ -4016,7 +4016,7 @@
   },
   {
     "id": 153,
-    "mouserPartNumber": "209-LBA200PS48",
+    "mdPartNumber": "209-LBA200PS48",
     "manufacturerPartNumber": "LBA200PS48",
     "manufacturer": "Nuvoton",
     "manufacturerLogo": "assets/logos/nuvoton.png",
@@ -4042,7 +4042,7 @@
   },
   {
     "id": 154,
-    "mouserPartNumber": "209-LBA75US15",
+    "mdPartNumber": "209-LBA75US15",
     "manufacturerPartNumber": "LBA75US15",
     "manufacturer": "Rohm",
     "manufacturerLogo": "assets/logos/rohm.png",
@@ -4068,7 +4068,7 @@
   },
   {
     "id": 155,
-    "mouserPartNumber": "46-450-AENV-C",
+    "mdPartNumber": "46-450-AENV-C",
     "manufacturerPartNumber": "450-AENV-C",
     "manufacturer": "Delta",
     "manufacturerLogo": "assets/logos/delta.png",
@@ -4094,7 +4094,7 @@
   },
   {
     "id": 156,
-    "mouserPartNumber": "46-C-C142C15C14G3FRD",
+    "mdPartNumber": "46-C-C142C15C14G3FRD",
     "manufacturerPartNumber": "C-C142C15C14G3FRD",
     "manufacturer": "Kemet",
     "manufacturerLogo": "assets/logos/kemet.png",
@@ -4120,7 +4120,7 @@
   },
   {
     "id": 157,
-    "mouserPartNumber": "490-DQD6N-24-D5",
+    "mdPartNumber": "490-DQD6N-24-D5",
     "manufacturerPartNumber": "DQD6N-24-D5",
     "manufacturer": "Kemet",
     "manufacturerLogo": "assets/logos/kemet.png",
@@ -4146,7 +4146,7 @@
   },
   {
     "id": 158,
-    "mouserPartNumber": "490-DQD6N-48-S15",
+    "mdPartNumber": "490-DQD6N-48-S15",
     "manufacturerPartNumber": "DQD6N-48-S15",
     "manufacturer": "Semtech",
     "manufacturerLogo": "assets/logos/semtech.png",
@@ -4172,7 +4172,7 @@
   },
   {
     "id": 159,
-    "mouserPartNumber": "490-DQD6N-48-S24",
+    "mdPartNumber": "490-DQD6N-48-S24",
     "manufacturerPartNumber": "DQD6N-48-S24",
     "manufacturer": "Delta",
     "manufacturerLogo": "assets/logos/delta.png",
@@ -4198,7 +4198,7 @@
   },
   {
     "id": 160,
-    "mouserPartNumber": "490-PBO-3F-5",
+    "mdPartNumber": "490-PBO-3F-5",
     "manufacturerPartNumber": "PBO-3F-5",
     "manufacturer": "Abracon",
     "manufacturerLogo": "assets/logos/abracon.png",
@@ -4224,7 +4224,7 @@
   },
   {
     "id": 161,
-    "mouserPartNumber": "651-1484524",
+    "mdPartNumber": "651-1484524",
     "manufacturerPartNumber": "1484524",
     "manufacturer": "Yageo",
     "manufacturerLogo": "assets/logos/yageo.png",
@@ -4250,7 +4250,7 @@
   },
   {
     "id": 162,
-    "mouserPartNumber": "209-LBA350PS48",
+    "mdPartNumber": "209-LBA350PS48",
     "manufacturerPartNumber": "LBA350PS48",
     "manufacturer": "Digi",
     "manufacturerLogo": "assets/logos/digi.png",
@@ -4276,7 +4276,7 @@
   },
   {
     "id": 163,
-    "mouserPartNumber": "46-391173-001-C",
+    "mdPartNumber": "46-391173-001-C",
     "manufacturerPartNumber": "391173-001-C",
     "manufacturer": "Abracon",
     "manufacturerLogo": "assets/logos/abracon.png",

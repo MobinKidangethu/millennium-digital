@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useState } from 'react';
 import { Pressable, ScrollView, View } from 'react-native';
 import { colors, radius, spacing, layout, useResponsive, MDText } from '@/design-system';
 import { useCategories } from '@/features/categories';
@@ -6,28 +6,13 @@ import { MDCategoryIcon } from '@/components/MDCategoryIcon';
 import { ProductCatalogView } from '@/components/ProductCatalogView';
 
 const ALL_KEY = '__all__';
-const DEFAULT_CATEGORY_NAME = 'Semiconductors';
 
 export default function ProductCatalog() {
   const { isDesktopUp } = useResponsive();
   const { data: categories } = useCategories();
-  const [selected, setSelected] = useState<string | null>(null);
+  const [selected, setSelected] = useState<string>(ALL_KEY);
 
-  const defaultCategory = useMemo(() => {
-    if (!categories || categories.length === 0) return null;
-    return (
-      categories.find((c) => c.name.toLowerCase() === DEFAULT_CATEGORY_NAME.toLowerCase())?.name ??
-      categories[0].name
-    );
-  }, [categories]);
-
-  useEffect(() => {
-    if (selected === null && defaultCategory) {
-      setSelected(defaultCategory);
-    }
-  }, [selected, defaultCategory]);
-
-  const active = selected ?? defaultCategory ?? ALL_KEY;
+  const active = selected;
   const isAll = active === ALL_KEY;
 
   const titleBlock = (

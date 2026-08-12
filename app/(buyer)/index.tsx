@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Image, Pressable, ScrollView, View } from 'react-native';
+import { Image as ExpoImage } from 'expo-image';
 import Svg, { Circle } from 'react-native-svg';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -29,6 +30,8 @@ import { SegmentCarousel } from '@/components/SegmentCarousel';
 import { ProductRail } from '@/components/ProductRail';
 import { Footer } from '@/components/Footer';
 import { ProtoBadge } from '@/components/ProtoBadge';
+import { EngineeringWorkspaceCardTile } from '@/components/EngineeringWorkspaceCardTile';
+import { ENGINEERING_WORKSPACE_CARDS } from '@/constants/engineeringWorkspaceCards';
 
 const SUPPORT_GRID: { icon: keyof typeof Ionicons.glyphMap; title: string; imageUrl: string }[] = [
   {
@@ -96,7 +99,8 @@ function SupportGridImage({
 
 export default function Home() {
   const router = useRouter();
-  const { isDesktopUp } = useResponsive();
+  const { isDesktopUp, isTabletUp } = useResponsive();
+  const workspaceColumns = isDesktopUp ? 3 : isTabletUp ? 2 : 1;
 
   const { data: categories, isLoading: categoriesLoading } = useCategories();
   const { data: manufacturers } = useManufacturers();
@@ -110,19 +114,9 @@ export default function Home() {
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: colors.background }}>
-      {/* Hero */}
+      {/* Hero — full width, edge to edge */}
       <View style={{ backgroundColor: colors.surface, overflow: 'hidden' }}>
-        <View
-          style={{
-            maxWidth: layout.maxContentWidth,
-            width: '100%',
-            alignSelf: 'center',
-            paddingHorizontal: spacing.xl,
-            paddingVertical: spacing.xl,
-          }}
-        >
-          <SegmentCarousel />
-        </View>
+        <SegmentCarousel />
       </View>
 
       {/* Shop by Category — directly below the hero carousel */}
@@ -168,9 +162,9 @@ export default function Home() {
           }}
         >
           {[
-            { icon: 'grid-outline' as const, value: `${categories?.length ?? 0}+`, label: 'Engineering Categories' },
-            { icon: 'business-outline' as const, value: `${manufacturers?.length ?? 0}+`, label: 'Verified Manufacturers' },
-            { icon: 'cube-outline' as const, value: `${allProducts?.length ?? 0}+`, label: 'Catalog Parts' },
+            { icon: 'grid-outline' as const, value: `${categories?.length ?? 0}+`, label: 'Engineering Categories', accent: colors.brand.primary },
+            { icon: 'business-outline' as const, value: `${manufacturers?.length ?? 0}+`, label: 'Verified Manufacturers', accent: colors.teal[500] },
+            { icon: 'cube-outline' as const, value: `${allProducts?.length ?? 0}+`, label: 'Catalog Parts', accent: colors.status.success },
           ].map((stat) => (
             <View
               key={stat.label}
@@ -182,6 +176,8 @@ export default function Home() {
                 backgroundColor: colors.surfaceRaised,
                 borderWidth: 1,
                 borderColor: colors.border,
+                borderLeftWidth: 3,
+                borderLeftColor: stat.accent,
                 borderRadius: radius.lg,
                 padding: spacing.lg,
               }}
@@ -191,15 +187,17 @@ export default function Home() {
                   width: 52,
                   height: 52,
                   borderRadius: radius.pill,
-                  backgroundColor: colors.brand.primarySoft,
+                  backgroundColor: `${stat.accent}1A`,
                   alignItems: 'center',
                   justifyContent: 'center',
                 }}
               >
-                <Ionicons name={stat.icon} size={22} color={colors.brand.primary} />
+                <Ionicons name={stat.icon} size={22} color={stat.accent} />
               </View>
               <View>
-                <MDText variant="h2">{stat.value}</MDText>
+                <MDText variant="h2" style={{ color: stat.accent }}>
+                  {stat.value}
+                </MDText>
                 <MDText variant="bodySm" tone="secondary">
                   {stat.label}
                 </MDText>
@@ -283,13 +281,13 @@ export default function Home() {
           </View>
         ) : null}
 
-        {/* Engineering Workspace teaser */}
+        {/* Engineering Workspace teaser — full tool set, real images, same tiles as the dedicated workspace page */}
         <View style={{ marginBottom: spacing['3xl'] }}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: spacing.lg, flexWrap: 'wrap', gap: spacing.sm }}>
             <View>
               <MDText variant="h2">Engineering Workspace</MDText>
               <MDText variant="body" tone="secondary" style={{ marginTop: spacing.xs }}>
-                AI search, BOM matching, and direct design requests — beyond browse-and-buy.
+                AI search, BOM matching, supplier discovery, and direct design requests — beyond browse-and-buy.
               </MDText>
             </View>
             <Pressable onPress={() => router.push('/(buyer)/engineering')} style={{ flexDirection: 'row', alignItems: 'center', gap: 2 }}>
@@ -300,32 +298,13 @@ export default function Home() {
             </Pressable>
           </View>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.lg }}>
-            {[
-              { icon: 'sparkles-outline' as const, title: 'AI Engineering Search', desc: 'Plain-language requirement to matched parts.', href: '/(buyer)/ai-search' },
-              { icon: 'document-attach-outline' as const, title: 'BOM & RFQ', desc: 'Upload a BOM, match components, request a quote.', href: '/(buyer)/bom' },
-              { icon: 'construct-outline' as const, title: 'Design Request', desc: 'Send our engineering team a structured brief.', href: '/(buyer)/design-request' },
-            ].map((item) => (
-              <Pressable
-                key={item.title}
-                onPress={() => router.push(item.href as never)}
-                style={{
-                  width: isDesktopUp ? '31.5%' : '100%',
-                  borderWidth: 1,
-                  borderColor: colors.brand.primarySoftBorder,
-                  backgroundColor: colors.brand.primarySoft,
-                  borderRadius: radius.lg,
-                  padding: spacing.lg,
-                  gap: spacing.xs,
-                }}
-              >
-                <Ionicons name={item.icon} size={22} color={colors.brand.primary} />
-                <MDText variant="bodyMedium" style={{ marginTop: spacing.xs }}>
-                  {item.title}
-                </MDText>
-                <MDText variant="caption" tone="secondary">
-                  {item.desc}
-                </MDText>
-              </Pressable>
+            {ENGINEERING_WORKSPACE_CARDS.map((card) => (
+              <EngineeringWorkspaceCardTile
+                key={card.title}
+                card={card}
+                columns={workspaceColumns}
+                onPress={() => router.push(card.href as never)}
+              />
             ))}
           </View>
         </View>
@@ -534,9 +513,7 @@ export default function Home() {
             Built for Scale
           </MDText>
           <MDText variant="body" tone="secondary" style={{ marginBottom: spacing.xl, maxWidth: 560 }}>
-            Live catalog numbers today, alongside the governance targets this architecture is built to meet
-            as it grows. Solid rings mark numbers measured from the live catalog; dashed rings mark forward
-            governance targets.
+            Solid rings are live catalog numbers; dashed rings are forward governance targets.
           </MDText>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.lg }}>
             {[
@@ -556,9 +533,9 @@ export default function Home() {
                   key={stat.label}
                   style={{
                     width: isDesktopUp ? '15.5%' : '30%',
-                    backgroundColor: colors.surfaceRaised,
+                    backgroundColor: `${stat.accent}14`,
                     borderWidth: 1,
-                    borderColor: colors.border,
+                    borderColor: `${stat.accent}33`,
                     borderRadius: radius.lg,
                     padding: spacing.md,
                     gap: 6,
@@ -581,7 +558,7 @@ export default function Home() {
                         width: ringSize - 16,
                         height: ringSize - 16,
                         borderRadius: radius.pill,
-                        backgroundColor: `${stat.accent}1A`,
+                        backgroundColor: colors.gray[0],
                         alignItems: 'center',
                         justifyContent: 'center',
                       }}
@@ -592,7 +569,7 @@ export default function Home() {
                   <MDText variant="h3" style={{ color: stat.accent }}>
                     {stat.value}
                   </MDText>
-                  <MDText variant="caption" tone="secondary">
+                  <MDText variant="caption" tone="primary">
                     {stat.label}
                   </MDText>
                   {!stat.live ? <ProtoBadge kind="target" label="Target" /> : null}
@@ -666,6 +643,54 @@ export default function Home() {
                 </MDText>
               </View>
             ))}
+          </View>
+        </View>
+      </View>
+
+      {/* Ecosystem — Connecting Buyers & Sellers */}
+      <View style={{ backgroundColor: colors.gray[900], overflow: 'hidden' }}>
+        <View
+          style={{
+            maxWidth: layout.maxContentWidth,
+            width: '100%',
+            alignSelf: 'center',
+            paddingHorizontal: spacing.xl,
+            paddingVertical: isDesktopUp ? spacing['3xl'] : spacing.xl,
+            flexDirection: isDesktopUp ? 'row' : 'column',
+            alignItems: 'center',
+            gap: spacing.xl,
+          }}
+        >
+          <View style={{ flex: isDesktopUp ? 1 : undefined, alignItems: 'center' }}>
+            <ExpoImage
+              source={require('../../assets/buyer-seller-connection.gif')}
+              style={{ width: isDesktopUp ? 380 : 260, height: isDesktopUp ? 253 : 173 }}
+              contentFit="contain"
+              accessibilityLabel="Millennium Digital connecting buyers and sellers"
+            />
+          </View>
+          <View style={{ flex: isDesktopUp ? 1 : undefined, gap: spacing.sm, alignItems: isDesktopUp ? 'flex-start' : 'center' }}>
+            <MDText variant="h2" style={{ color: colors.gray[0] }} align={isDesktopUp ? 'left' : 'center'}>
+              One Platform. Every Side of the Deal.
+            </MDText>
+            <MDText
+              variant="body"
+              style={{ color: colors.gray[400], maxWidth: 460 }}
+              align={isDesktopUp ? 'left' : 'center'}
+            >
+              Millennium Digital connects engineering buyers directly to verified suppliers —
+              seamless discovery, reliable fulfillment, and trusted governance on every order.
+            </MDText>
+            <View style={{ flexDirection: 'row', gap: spacing.sm, flexWrap: 'wrap', marginTop: spacing.sm }}>
+              <MDButton label="Shop as a Buyer" onPress={() => router.push('/(buyer)/products')} />
+              <MDButton
+                label="Become a Supplier"
+                variant="ghost"
+                textColor={colors.gray[0]}
+                style={{ borderWidth: 1, borderColor: colors.gray[0] }}
+                onPress={() => router.push('/(auth)/seller-register')}
+              />
+            </View>
           </View>
         </View>
       </View>

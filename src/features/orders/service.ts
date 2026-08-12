@@ -41,6 +41,9 @@ export interface CreateOrderInput {
   shippingMethod: ShippingMethodOption;
   paymentMethod: PaymentMethodSelection;
   currency: string;
+  /** Promo code discount carried from checkout (see PromoCodeField / promotionsService), if any. */
+  discountTotal?: number;
+  promoCode?: string;
 }
 
 export async function createOrder(input: CreateOrderInput): Promise<Order> {
@@ -48,7 +51,11 @@ export async function createOrder(input: CreateOrderInput): Promise<Order> {
 
   const subtotal = input.lines.reduce((sum, l) => sum + l.lineTotal, 0);
   const tax = Math.round(subtotal * TAX_RATE * 100) / 100;
-  const total = Math.round((subtotal + tax + input.shippingMethod.cost) * 100) / 100;
+  const discountTotal = input.discountTotal ? Math.min(input.discountTotal, subtotal) : 0;
+  const total = Math.max(
+    0,
+    Math.round((subtotal + tax + input.shippingMethod.cost - discountTotal) * 100) / 100,
+  );
   const placedAt = new Date().toISOString();
 
   const order: Order = {
@@ -61,12 +68,13 @@ export async function createOrder(input: CreateOrderInput): Promise<Order> {
       manufacturerPartNumber: l.product.manufacturerPartNumber,
       title: l.product.title,
       image: l.product.image,
-      price: l.product.price,
+      price: l.unitPrice,
       quantity: l.quantity,
     })),
     subtotal,
     shippingCost: input.shippingMethod.cost,
     tax,
+    ...(discountTotal > 0 ? { discountTotal, promoCode: input.promoCode } : {}),
     total,
     currency: input.currency,
     shippingAddress: input.shippingAddress,

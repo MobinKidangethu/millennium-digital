@@ -45,6 +45,7 @@ export default function ResetPassword() {
       title="Set a new password"
       subtitle={email ? `Resetting password for ${email}` : 'Choose a new password for your account.'}
       showBack
+      panel={{ character: require('../../assets/character-buyer.png') }}
     >
       <View style={{ gap: spacing.lg }}>
         <MDInput
