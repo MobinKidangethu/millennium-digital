@@ -78,6 +78,15 @@ export default function MyDesignRequests() {
               <MDText variant="caption" tone="secondary" numberOfLines={2}>
                 {request.technicalRequirement}
               </MDText>
+              {request.sourcePartNumber ? (
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: spacing.xs }}>
+                  <Ionicons name="git-branch-outline" size={12} color={colors.text.tertiary} />
+                  <MDText variant="caption" tone="tertiary">
+                    From BOM · {request.sourceDesignator ? `${request.sourceDesignator} · ` : ''}
+                    {request.sourcePartNumber}
+                  </MDText>
+                </View>
+              ) : null}
             </View>
           ))}
         </View>

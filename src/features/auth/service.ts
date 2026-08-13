@@ -57,15 +57,43 @@ export const DEMO_GOOGLE_ACCOUNT = { fullName: 'Asha Rao', email: 'asha.rao@gmai
 
 let usersCache: RegisteredUser[] | null = null;
 
+/**
+ * Bump this whenever DEMO_USERS changes (new demo account, changed demo
+ * password/role, etc). Registered-users data is cached in AsyncStorage
+ * (localStorage on web) the first time the app runs on a given browser, so
+ * without this version check a browser that first loaded the app before a
+ * demo-account change would keep comparing logins against the *old* cached
+ * demo credentials forever — even though the UI shows the current, correct
+ * ones. Bumping the version forces a one-time resync with the latest
+ * DEMO_USERS while preserving any real (non-demo) accounts someone
+ * registered on that browser.
+ */
+const DEMO_USERS_SEED_VERSION = 2;
+const DEMO_USER_IDS = new Set(DEMO_USERS.map((u) => u.id));
+
 async function loadUsers(): Promise<RegisteredUser[]> {
   if (usersCache) return usersCache;
-  const raw = await AsyncStorage.getItem(STORAGE_KEYS.registeredUsers);
-  if (raw) {
+  const [raw, rawVersion] = await Promise.all([
+    AsyncStorage.getItem(STORAGE_KEYS.registeredUsers),
+    AsyncStorage.getItem(STORAGE_KEYS.registeredUsersSeedVersion),
+  ]);
+  const storedVersion = rawVersion ? Number(rawVersion) : 0;
+
+  if (raw && storedVersion === DEMO_USERS_SEED_VERSION) {
     usersCache = JSON.parse(raw);
-  } else {
-    usersCache = DEMO_USERS;
-    await AsyncStorage.setItem(STORAGE_KEYS.registeredUsers, JSON.stringify(usersCache));
+    return usersCache!;
   }
+
+  // First run, or the cached demo-seed data is out of date: keep any real
+  // (non-demo) accounts that were registered on this browser, and refresh
+  // the demo accounts to match the current DEMO_USERS source of truth.
+  const stored: RegisteredUser[] = raw ? JSON.parse(raw) : [];
+  const nonDemoUsers = stored.filter((u) => !DEMO_USER_IDS.has(u.id));
+  usersCache = [...DEMO_USERS, ...nonDemoUsers];
+  await Promise.all([
+    AsyncStorage.setItem(STORAGE_KEYS.registeredUsers, JSON.stringify(usersCache)),
+    AsyncStorage.setItem(STORAGE_KEYS.registeredUsersSeedVersion, String(DEMO_USERS_SEED_VERSION)),
+  ]);
   return usersCache!;
 }
 

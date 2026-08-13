@@ -1,6 +1,7 @@
 export const STORAGE_KEYS = {
   session: 'md.auth.session',
   registeredUsers: 'md.auth.users',
+  registeredUsersSeedVersion: 'md.auth.users.seedVersion',
   cart: 'md.cart',
   wishlist: 'md.wishlist',
   compare: 'md.compare',

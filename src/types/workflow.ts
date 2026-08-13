@@ -177,6 +177,10 @@ export interface DesignRequestInput {
   additionalRequirements?: string;
   contactName?: string;
   contactEmail?: string;
+  /** Set when this request was launched from a BOM line's "Submit Design Request" action, so it can be traced back. */
+  sourceBomLineId?: string;
+  sourcePartNumber?: string;
+  sourceDesignator?: string;
 }
 
 export interface DesignRequest extends DesignRequestInput {
@@ -184,6 +188,24 @@ export interface DesignRequest extends DesignRequestInput {
   referenceNumber: string;
   submittedAt: string;
   status: DesignRequestStatus;
+}
+
+/**
+ * Links a submitted Design Request back to the BOM line that raised it.
+ * Kept in bomWorkflowStore (not on the BomMatchResult itself, which is
+ * regenerated fresh each time a BOM is processed) so the BOM results screen
+ * can mark that line "Design Request Uploaded" and keep it out of the
+ * cart/RFQ flow, even after navigating away to the Design Request form and
+ * back.
+ */
+export interface BomDesignRequestLink {
+  lineId: string;
+  partNumber: string;
+  designator?: string;
+  requestId: string;
+  referenceNumber: string;
+  status: DesignRequestStatus;
+  submittedAt: string;
 }
 
 // ---------------------------------------------------------------------------

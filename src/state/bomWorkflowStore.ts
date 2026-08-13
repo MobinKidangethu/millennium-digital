@@ -1,43 +1,79 @@
 import { create } from 'zustand';
-import type { Bom, BomMatchResult, Quote, Rfq } from '@/types';
+import type { BomDesignRequestLink, BomMatchResult, Quote, Rfq } from '@/types';
+
+export type BomWorkflowStep = 'input' | 'processing' | 'results';
 
 /**
  * In-memory state for the single active BOM -> RFQ -> Quote demo journey.
- * Deliberately not persisted: this mirrors an active working session in a
- * real procurement tool, not a stored record — a production BOMService /
- * RFQService would persist BOMs and RFQs server-side per buyer/account.
+ * Deliberately not persisted to disk: this mirrors an active working
+ * session in a real procurement tool, not a stored record — a production
+ * BOMService / RFQService would persist BOMs and RFQs server-side per
+ * buyer/account.
+ *
+ * The BOM step/text/matches/selections used to live as local component
+ * state inside the BOM screen, which meant navigating away (e.g. to submit
+ * a Design Request for an unmatched line) and back reset the whole screen
+ * to a blank upload form — the processed results were lost. Lifting that
+ * state here keeps it alive across navigation for the lifetime of the app
+ * session, so "Submit Design Request" -> fill form -> submit -> back
+ * returns to the same processed BOM, not a blank one.
  */
 interface BomWorkflowState {
-  bom: Bom | null;
+  step: BomWorkflowStep;
+  text: string;
   matches: BomMatchResult[];
-  selectedProductIds: number[];
+  selectedExactIds: string[];
+  chosenAlternative: Record<string, number>;
+  /** BOM line id -> the Design Request submitted for it. Cleared whenever a new BOM is processed. */
+  designRequestLinks: Record<string, BomDesignRequestLink>;
   rfq: Rfq | null;
   quote: Quote | null;
-  setBom: (bom: Bom) => void;
-  setMatches: (matches: BomMatchResult[]) => void;
-  toggleSelected: (productId: number) => void;
-  setSelectedProductIds: (ids: number[]) => void;
+  setStep: (step: BomWorkflowStep) => void;
+  setText: (text: string) => void;
+  /** Atomically applies a freshly matched BOM's results and resets per-line selections/links from any previous run. */
+  startBomResults: (matches: BomMatchResult[], selectedExactIds: string[], chosenAlternative: Record<string, number>) => void;
+  toggleSelectedExact: (lineId: string) => void;
+  chooseAlternativeFor: (lineId: string, productId: number) => void;
+  /** Marks a BOM line as having a Design Request submitted for it — excludes it from cart/RFQ processing. */
+  linkDesignRequest: (link: BomDesignRequestLink) => void;
   setRfq: (rfq: Rfq | null) => void;
   setQuote: (quote: Quote | null) => void;
-  reset: () => void;
+  /** Clears the whole BOM workflow back to a blank upload form (e.g. "Start New BOM"). */
+  resetBomWorkflow: () => void;
 }
 
 export const useBomWorkflowStore = create<BomWorkflowState>()((set, get) => ({
-  bom: null,
+  step: 'input',
+  text: '',
   matches: [],
-  selectedProductIds: [],
+  selectedExactIds: [],
+  chosenAlternative: {},
+  designRequestLinks: {},
   rfq: null,
   quote: null,
-  setBom: (bom) => set({ bom }),
-  setMatches: (matches) => set({ matches }),
-  toggleSelected: (productId) =>
+  setStep: (step) => set({ step }),
+  setText: (text) => set({ text }),
+  startBomResults: (matches, selectedExactIds, chosenAlternative) =>
+    set({ matches, selectedExactIds, chosenAlternative, designRequestLinks: {}, step: 'results' }),
+  toggleSelectedExact: (lineId) =>
     set({
-      selectedProductIds: get().selectedProductIds.includes(productId)
-        ? get().selectedProductIds.filter((id) => id !== productId)
-        : [...get().selectedProductIds, productId],
+      selectedExactIds: get().selectedExactIds.includes(lineId)
+        ? get().selectedExactIds.filter((id) => id !== lineId)
+        : [...get().selectedExactIds, lineId],
     }),
-  setSelectedProductIds: (ids) => set({ selectedProductIds: ids }),
+  chooseAlternativeFor: (lineId, productId) => set({ chosenAlternative: { ...get().chosenAlternative, [lineId]: productId } }),
+  linkDesignRequest: (link) => set({ designRequestLinks: { ...get().designRequestLinks, [link.lineId]: link } }),
   setRfq: (rfq) => set({ rfq }),
   setQuote: (quote) => set({ quote }),
-  reset: () => set({ bom: null, matches: [], selectedProductIds: [], rfq: null, quote: null }),
+  resetBomWorkflow: () =>
+    set({
+      step: 'input',
+      text: '',
+      matches: [],
+      selectedExactIds: [],
+      chosenAlternative: {},
+      designRequestLinks: {},
+      rfq: null,
+      quote: null,
+    }),
 }));

@@ -1,6 +1,6 @@
 import { useState, type ReactNode } from 'react';
 import { Pressable, ScrollView, View } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import {
   colors,
@@ -14,7 +14,7 @@ import {
   MDText,
 } from '@/design-system';
 import { designRequestService } from '@/features/designRequests';
-import { useAuthStore } from '@/state';
+import { useAuthStore, useBomWorkflowStore } from '@/state';
 import { ProtoBadge } from '@/components/ProtoBadge';
 import type { DesignRequest } from '@/types';
 
@@ -36,15 +36,34 @@ export default function DesignRequestScreen() {
   const router = useRouter();
   const toast = useToast();
   const session = useAuthStore((s) => s.session);
+  const linkDesignRequest = useBomWorkflowStore((s) => s.linkDesignRequest);
 
-  const [projectName, setProjectName] = useState('');
+  /**
+   * Present when this screen was opened from a BOM line's "Submit Design
+   * Request" action (see app/(buyer)/bom/index.tsx's goToDesignRequest).
+   * Used to (a) pre-fill and give context, (b) link the submitted request
+   * back to that exact BOM line so it's marked "Design Request Uploaded"
+   * and excluded from the cart/RFQ, and (c) offer a return path.
+   */
+  const { bomLineId, partNumber, designator, quantity, returnTo } = useLocalSearchParams<{
+    bomLineId?: string;
+    partNumber?: string;
+    designator?: string;
+    quantity?: string;
+    returnTo?: string;
+  }>();
+  const fromBom = Boolean(bomLineId && partNumber);
+
+  const [projectName, setProjectName] = useState(fromBom ? `New Design — ${partNumber}` : '');
   const [application, setApplication] = useState<string | null>(null);
   const [technicalRequirement, setTechnicalRequirement] = useState('');
-  const [targetQuantity, setTargetQuantity] = useState('');
+  const [targetQuantity, setTargetQuantity] = useState(fromBom && quantity ? quantity : '');
   const [targetCost, setTargetCost] = useState('');
   const [requiredDate, setRequiredDate] = useState('');
   const [bomFileName, setBomFileName] = useState<string | null>(null);
-  const [additionalRequirements, setAdditionalRequirements] = useState('');
+  const [additionalRequirements, setAdditionalRequirements] = useState(
+    fromBom ? `Sourced from BOM line ${designator ? `${designator} · ` : ''}${partNumber}.` : '',
+  );
   const [contactName, setContactName] = useState(session?.user.fullName ?? '');
   const [contactEmail, setContactEmail] = useState(session?.user.email ?? '');
   const [submitting, setSubmitting] = useState(false);
@@ -70,7 +89,21 @@ export default function DesignRequestScreen() {
         additionalRequirements: additionalRequirements || undefined,
         contactName: contactName || undefined,
         contactEmail: contactEmail || undefined,
+        sourceBomLineId: bomLineId,
+        sourcePartNumber: partNumber,
+        sourceDesignator: designator || undefined,
       });
+      if (bomLineId && partNumber) {
+        linkDesignRequest({
+          lineId: bomLineId,
+          partNumber,
+          designator: designator || undefined,
+          requestId: request.id,
+          referenceNumber: request.referenceNumber,
+          status: request.status,
+          submittedAt: request.submittedAt,
+        });
+      }
       setSubmitted(request);
     } finally {
       setSubmitting(false);
@@ -101,6 +134,17 @@ export default function DesignRequestScreen() {
             follow up at {submitted.contactEmail || 'the email on your account'}.
           </MDText>
 
+          {fromBom ? (
+            <MDCard padding="md" style={{ width: '100%', marginBottom: spacing.lg, flexDirection: 'row', alignItems: 'flex-start', gap: spacing.sm, backgroundColor: colors.status.successSoft }}>
+              <Ionicons name="checkmark-circle-outline" size={18} color={colors.status.successStrong} style={{ marginTop: 2 }} />
+              <MDText variant="bodySm" style={{ color: colors.status.successStrong, flex: 1 }}>
+                BOM line {designator ? `${designator} · ` : ''}
+                {partNumber} is now marked "Design Request Uploaded" on your BOM and has been excluded from that
+                quote/cart — it'll follow this design-request process instead.
+              </MDText>
+            </MDCard>
+          ) : null}
+
           <MDCard padding="lg" style={{ width: '100%', marginBottom: spacing.xl }}>
             <MDText variant="h4" style={{ marginBottom: spacing.md }}>What happens next</MDText>
             {(['Submitted', 'Engineering Review', 'Scoped', 'Quoted'] as const).map((stage, index) => (
@@ -129,7 +173,18 @@ export default function DesignRequestScreen() {
           </MDCard>
 
           <View style={{ flexDirection: 'row', gap: spacing.md, flexWrap: 'wrap', justifyContent: 'center' }}>
-            <MDButton label="Explore AI Engineering Search" onPress={() => router.push('/(buyer)/ai-search')} />
+            {fromBom ? (
+              <MDButton
+                label="Back to Processed BOM"
+                iconLeft={<Ionicons name="arrow-back" size={16} color={colors.gray[0]} />}
+                onPress={() => router.push(((returnTo as string) || '/(buyer)/bom') as never)}
+              />
+            ) : null}
+            <MDButton
+              label="Explore AI Engineering Search"
+              variant={fromBom ? 'outline' : undefined}
+              onPress={() => router.push('/(buyer)/ai-search')}
+            />
             <MDButton label="Back to Home" variant="outline" onPress={() => router.push('/(buyer)')} />
           </View>
         </View>
@@ -147,6 +202,17 @@ export default function DesignRequestScreen() {
           Tell us what you're designing and we'll route it to the right engineering and sourcing team — this is
           a structured intake, not a generic contact form.
         </MDText>
+
+        {fromBom ? (
+          <MDCard padding="md" style={{ marginBottom: spacing.lg, flexDirection: 'row', alignItems: 'flex-start', gap: spacing.sm, backgroundColor: colors.status.warningSoft }}>
+            <Ionicons name="git-branch-outline" size={16} color={colors.status.warningStrong} style={{ marginTop: 2 }} />
+            <MDText variant="bodySm" style={{ color: colors.status.warningStrong, flex: 1 }}>
+              Linked to BOM line {designator ? `${designator} · ` : ''}
+              {partNumber} (requested qty {quantity}). Submitting this request marks that part number "Design
+              Request Uploaded" on your BOM and keeps it out of the cart/RFQ — it'll be tracked here instead.
+            </MDText>
+          </MDCard>
+        ) : null}
 
         <MDCard padding="lg">
           <Field label="Project / Design Name" required>

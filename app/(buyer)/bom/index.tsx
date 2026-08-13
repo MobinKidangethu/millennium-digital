@@ -22,7 +22,7 @@ import { MDPrice } from '@/components/MDPrice';
 import { MDStockStatus } from '@/components/MDStockStatus';
 import { BackorderNote } from '@/components/BackorderNote';
 import { downloadTextFile, toCsv, computeBackorderSplit } from '@/utils';
-import type { BomMatchResult } from '@/types';
+import type { BomDesignRequestLink, BomMatchResult } from '@/types';
 
 type Step = 'input' | 'processing' | 'results';
 
@@ -84,11 +84,18 @@ const MATCH_CONFIG: Record<BomMatchResult['matchType'], { label: string; tone: '
 export function BomWorkflowContent() {
   const router = useRouter();
   const toast = useToast();
-  const [step, setStep] = useState<Step>('input');
-  const [text, setText] = useState('');
-  const [matches, setMatches] = useState<BomMatchResult[]>([]);
-  const [selectedExact, setSelectedExact] = useState<Set<string>>(new Set());
-  const [chosenAlternative, setChosenAlternative] = useState<Record<string, number>>({});
+  const step = useBomWorkflowStore((s) => s.step);
+  const setStep = useBomWorkflowStore((s) => s.setStep);
+  const text = useBomWorkflowStore((s) => s.text);
+  const setText = useBomWorkflowStore((s) => s.setText);
+  const matches = useBomWorkflowStore((s) => s.matches);
+  const startBomResults = useBomWorkflowStore((s) => s.startBomResults);
+  const selectedExactIds = useBomWorkflowStore((s) => s.selectedExactIds);
+  const toggleSelectedExact = useBomWorkflowStore((s) => s.toggleSelectedExact);
+  const chosenAlternative = useBomWorkflowStore((s) => s.chosenAlternative);
+  const chooseAlternativeFor = useBomWorkflowStore((s) => s.chooseAlternativeFor);
+  const designRequestLinks = useBomWorkflowStore((s) => s.designRequestLinks);
+  const resetBomWorkflow = useBomWorkflowStore((s) => s.resetBomWorkflow);
   const [creatingRfq, setCreatingRfq] = useState(false);
   const setRfq = useBomWorkflowStore((s) => s.setRfq);
   const setQuote = useBomWorkflowStore((s) => s.setQuote);
@@ -112,16 +119,38 @@ export function BomWorkflowContent() {
     }
     setStep('processing');
     const results = await bomService.matchBomItems(lines);
-    setMatches(results);
-    setSelectedExact(new Set(results.filter((r) => r.matchType === 'exact').map((r) => r.line.id)));
+    const defaultExact = results.filter((r) => r.matchType === 'exact').map((r) => r.line.id);
     const defaultAlt: Record<string, number> = {};
     results
       .filter((r) => (r.matchType === 'alternative' || r.matchType === 'ai-suggested') && r.alternatives.length > 0)
       .forEach((r) => {
         defaultAlt[r.line.id] = r.alternatives[0].id;
       });
-    setChosenAlternative(defaultAlt);
-    setStep('results');
+    startBomResults(results, defaultExact, defaultAlt);
+  };
+
+  const startNewBom = () => {
+    resetBomWorkflow();
+    toast.show('Started a new BOM.', 'neutral');
+  };
+
+  /**
+   * Sends the unmatched/new-design BOM line's context along to the Design
+   * Request form so it can (a) pre-fill the part number/qty and (b) link the
+   * submitted request back to this exact line via bomWorkflowStore, and
+   * (c) offer a "Back to BOM" return path once submitted.
+   */
+  const goToDesignRequest = (result: BomMatchResult) => {
+    router.push({
+      pathname: '/(buyer)/design-request',
+      params: {
+        bomLineId: result.line.id,
+        partNumber: result.line.requestedPartNumber,
+        designator: result.line.designator ?? '',
+        quantity: String(result.line.quantity),
+        returnTo: '/(buyer)/bom',
+      },
+    });
   };
 
   const loadSample = () => {
@@ -184,17 +213,20 @@ export function BomWorkflowContent() {
       'Unit Price',
     ];
     const rows = matches.map((result) => {
+      const linked = designRequestLinks[result.line.id];
       const matched =
-        result.matchType === 'exact'
-          ? result.product
-          : result.matchType === 'alternative' || result.matchType === 'ai-suggested'
-            ? result.alternatives.find((a) => a.id === chosenAlternative[result.line.id])
-            : undefined;
+        linked
+          ? undefined
+          : result.matchType === 'exact'
+            ? result.product
+            : result.matchType === 'alternative' || result.matchType === 'ai-suggested'
+              ? result.alternatives.find((a) => a.id === chosenAlternative[result.line.id])
+              : undefined;
       return [
         result.line.designator ?? '',
         result.line.requestedPartNumber,
         String(result.line.quantity),
-        MATCH_CONFIG[result.matchType].label,
+        linked ? `Design Request Uploaded (${linked.referenceNumber})` : MATCH_CONFIG[result.matchType].label,
         matched?.manufacturerPartNumber ?? '',
         matched?.manufacturer ?? '',
         matched ? String(matched.price) : '',
@@ -205,17 +237,21 @@ export function BomWorkflowContent() {
   };
 
   const selectedLineCount =
-    Array.from(selectedExact).length +
+    selectedExactIds.length +
     Object.keys(chosenAlternative).filter((id) =>
-      matches.find((m) => m.line.id === id && (m.matchType === 'alternative' || m.matchType === 'ai-suggested')),
+      matches.find((m) => m.line.id === id && (m.matchType === 'alternative' || m.matchType === 'ai-suggested')) &&
+      !designRequestLinks[id],
     ).length;
 
   const requestQuote = async () => {
     const rfqLines: { product: import('@/types').Product; quantity: number }[] = [];
     for (const result of matches) {
-      if (result.matchType === 'exact' && selectedExact.has(result.line.id) && result.product) {
+      if (result.matchType === 'exact' && selectedExactIds.includes(result.line.id) && result.product) {
         rfqLines.push({ product: result.product, quantity: result.line.quantity });
-      } else if (result.matchType === 'alternative' || result.matchType === 'ai-suggested') {
+      } else if (
+        (result.matchType === 'alternative' || result.matchType === 'ai-suggested') &&
+        !designRequestLinks[result.line.id]
+      ) {
         const chosenId = chosenAlternative[result.line.id];
         const product = result.alternatives.find((a) => a.id === chosenId);
         if (product) rfqLines.push({ product, quantity: result.line.quantity });
@@ -298,6 +334,19 @@ export function BomWorkflowContent() {
 
         {step === 'results' ? (
           <View>
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: spacing.sm, marginBottom: spacing.md }}>
+              <MDText variant="bodySm" tone="tertiary">
+                Results stay here while you handle a design request — come back to this same BOM any time.
+              </MDText>
+              <MDButton
+                label="Start New BOM"
+                size="sm"
+                variant="ghost"
+                iconLeft={<Ionicons name="refresh-outline" size={14} color={colors.text.secondary} />}
+                onPress={startNewBom}
+              />
+            </View>
+
             <View style={{ flexDirection: 'row', gap: spacing.md, marginBottom: spacing.xl, flexWrap: 'wrap' }}>
               <SummaryPill label="Total Lines" value={summary.total} tone="neutral" />
               <SummaryPill label="Exact Matches" value={summary.exact} tone="success" />
@@ -305,10 +354,16 @@ export function BomWorkflowContent() {
               <SummaryPill label="AI Recommended Alternatives" value={summary.alternative} tone="warning" />
               <SummaryPill label="AI Suggested · New Design" value={summary.aiSuggested} tone="error" />
               <SummaryPill label="No Match" value={summary.unmatched} tone="error" />
+              <SummaryPill label="Design Requests Uploaded" value={Object.keys(designRequestLinks).length} tone="success" />
             </View>
 
             <View style={{ gap: spacing.md, marginBottom: spacing.xl }}>
-              {matches.map((result) => (
+              {matches.map((result) => {
+                const designLink = designRequestLinks[result.line.id];
+                const badge = designLink
+                  ? { label: `Design Request Uploaded · ${designLink.referenceNumber}`, tone: 'success' as const }
+                  : MATCH_CONFIG[result.matchType];
+                return (
                 <MDCard key={result.line.id} padding="lg">
                   <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: spacing.sm }}>
                     <View>
@@ -320,19 +375,12 @@ export function BomWorkflowContent() {
                         Requested Qty {result.line.quantity}
                       </MDText>
                     </View>
-                    <MDBadge label={MATCH_CONFIG[result.matchType].label} tone={MATCH_CONFIG[result.matchType].tone} />
+                    <MDBadge label={badge.label} tone={badge.tone} />
                   </View>
 
                   {result.matchType === 'exact' && result.product ? (
                     <Pressable
-                      onPress={() =>
-                        setSelectedExact((prev) => {
-                          const next = new Set(prev);
-                          if (next.has(result.line.id)) next.delete(result.line.id);
-                          else next.add(result.line.id);
-                          return next;
-                        })
-                      }
+                      onPress={() => toggleSelectedExact(result.line.id)}
                       style={{
                         flexDirection: 'row',
                         alignItems: 'center',
@@ -340,14 +388,14 @@ export function BomWorkflowContent() {
                         padding: spacing.md,
                         borderRadius: radius.md,
                         borderWidth: 1,
-                        borderColor: selectedExact.has(result.line.id) ? colors.brand.primary : colors.border,
-                        backgroundColor: selectedExact.has(result.line.id) ? colors.brand.primarySoft : colors.surface,
+                        borderColor: selectedExactIds.includes(result.line.id) ? colors.brand.primary : colors.border,
+                        backgroundColor: selectedExactIds.includes(result.line.id) ? colors.brand.primarySoft : colors.surface,
                       }}
                     >
                       <Ionicons
-                        name={selectedExact.has(result.line.id) ? 'checkbox' : 'square-outline'}
+                        name={selectedExactIds.includes(result.line.id) ? 'checkbox' : 'square-outline'}
                         size={20}
-                        color={selectedExact.has(result.line.id) ? colors.brand.primary : colors.text.tertiary}
+                        color={selectedExactIds.includes(result.line.id) ? colors.brand.primary : colors.text.tertiary}
                       />
                       <MDManufacturerLogo manufacturer={result.product.manufacturer} width={64} height={16} />
                       <View style={{ flex: 1 }}>
@@ -375,7 +423,7 @@ export function BomWorkflowContent() {
                         return (
                           <Pressable
                             key={alt.id}
-                            onPress={() => setChosenAlternative((prev) => ({ ...prev, [result.line.id]: alt.id }))}
+                            onPress={() => chooseAlternativeFor(result.line.id, alt.id)}
                             style={{
                               flexDirection: 'row',
                               alignItems: 'center',
@@ -400,6 +448,9 @@ export function BomWorkflowContent() {
                   ) : null}
 
                   {result.matchType === 'ai-suggested' ? (
+                    designLink ? (
+                      <DesignRequestLinkedNote link={designLink} onViewRequests={() => router.push('/(buyer)/account/design-requests')} />
+                    ) : (
                     <View style={{ gap: spacing.sm }}>
                       <View
                         style={{
@@ -424,7 +475,7 @@ export function BomWorkflowContent() {
                         return (
                           <Pressable
                             key={alt.id}
-                            onPress={() => setChosenAlternative((prev) => ({ ...prev, [result.line.id]: alt.id }))}
+                            onPress={() => chooseAlternativeFor(result.line.id, alt.id)}
                             style={{
                               flexDirection: 'row',
                               alignItems: 'center',
@@ -450,12 +501,16 @@ export function BomWorkflowContent() {
                         size="sm"
                         variant="outline"
                         iconLeft={<Ionicons name="construct-outline" size={14} color={colors.brand.primary} />}
-                        onPress={() => router.push('/(buyer)/design-request')}
+                        onPress={() => goToDesignRequest(result)}
                       />
                     </View>
+                    )
                   ) : null}
 
                   {result.matchType === 'unmatched' ? (
+                    designLink ? (
+                      <DesignRequestLinkedNote link={designLink} onViewRequests={() => router.push('/(buyer)/account/design-requests')} />
+                    ) : (
                     <View
                       style={{
                         flexDirection: 'row',
@@ -474,12 +529,14 @@ export function BomWorkflowContent() {
                         label="Submit Design Request"
                         size="sm"
                         variant="outline"
-                        onPress={() => router.push('/(buyer)/design-request')}
+                        onPress={() => goToDesignRequest(result)}
                       />
                     </View>
+                    )
                   ) : null}
                 </MDCard>
-              ))}
+                );
+              })}
             </View>
 
             <MDCard padding="lg" style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: spacing.md }}>
@@ -520,6 +577,40 @@ function SummaryPill({ label, value, tone }: { label: string; value: number; ton
     <View style={{ borderWidth: 1, borderColor: colors.border, borderRadius: radius.md, paddingHorizontal: spacing.lg, paddingVertical: spacing.md, minWidth: 140 }}>
       <MDText variant="h3" style={{ color: toneColor }}>{value}</MDText>
       <MDText variant="caption" tone="tertiary">{label}</MDText>
+    </View>
+  );
+}
+
+/**
+ * Replaces the alternate-picker/"Submit Design Request" controls on a BOM
+ * line once a Design Request has actually been submitted for it — makes it
+ * explicit that this part number now follows the design-request process
+ * (tracked via reference number in My Design Requests) and will NOT be
+ * added to the cart/RFQ from this BOM run.
+ */
+function DesignRequestLinkedNote({ link, onViewRequests }: { link: BomDesignRequestLink; onViewRequests: () => void }) {
+  return (
+    <View
+      style={{
+        flexDirection: 'row',
+        alignItems: 'flex-start',
+        gap: spacing.sm,
+        padding: spacing.md,
+        borderRadius: radius.md,
+        backgroundColor: colors.status.successSoft,
+      }}
+    >
+      <Ionicons name="checkmark-circle-outline" size={16} color={colors.status.successStrong} style={{ marginTop: 2 }} />
+      <View style={{ flex: 1 }}>
+        <MDText variant="bodySm" weight="600" style={{ color: colors.status.successStrong }}>
+          Design Request {link.referenceNumber} submitted
+        </MDText>
+        <MDText variant="caption" tone="secondary" style={{ marginTop: 2 }}>
+          This part number follows the design-request process from here — it's excluded from the cart/RFQ for this
+          BOM. Track its status in My Design Requests.
+        </MDText>
+      </View>
+      <MDButton label="Track Status" size="sm" variant="ghost" onPress={onViewRequests} />
     </View>
   );
 }
