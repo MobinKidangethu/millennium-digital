@@ -17,7 +17,7 @@ import EmbeddedSolutionsIcon from '../../assets/icons/categories/embedded-soluti
  * default export unwraps correctly under Babel's ESM interop.
  */
 export const CATEGORY_ICONS: Record<string, ComponentType<SvgProps>> = {
-  semiconductors: SemiconductorsIcon,
+  'evaluation board': SemiconductorsIcon,
   sensors: SensorsIcon,
   'tools & supplies': ToolsSuppliesIcon,
   'passive components': PassiveComponentsIcon,

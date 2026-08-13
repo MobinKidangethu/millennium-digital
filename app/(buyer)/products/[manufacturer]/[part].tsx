@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, View } from 'react-native';
+import { ActivityIndicator, Linking, Platform, Pressable, ScrollView, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import {
@@ -22,7 +22,6 @@ import { MDManufacturerLogo } from '@/components/MDManufacturerLogo';
 import { MDRohsBadge } from '@/components/MDRohsBadge';
 import { MDPrice } from '@/components/MDPrice';
 import { MDStockStatus } from '@/components/MDStockStatus';
-import { MDDatasheetButton } from '@/components/MDDatasheetButton';
 import { MDBreadcrumb } from '@/components/MDBreadcrumb';
 import { MDQuantitySelector } from '@/components/MDQuantitySelector';
 import { MDSpecTable } from '@/components/MDSpecTable';
@@ -152,14 +151,41 @@ export default function ProductDetail() {
           </View>
 
           <View style={{ flex: 1, gap: spacing.md }}>
-            <Pressable
-              onPress={() => router.push(`/(buyer)/manufacturers/${product.manufacturerSlug}`)}
-              accessibilityLabel={`View all ${product.manufacturer} products`}
-              style={{ alignSelf: 'flex-start' }}
-            >
-              <MDManufacturerLogo manufacturer={product.manufacturer} width={130} height={30} />
-            </Pressable>
-            <MDText variant="h1">{product.manufacturerPartNumber}</MDText>
+            <View style={{ flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+              <Pressable
+                onPress={() => router.push(`/(buyer)/manufacturers/${product.manufacturerSlug}`)}
+                accessibilityLabel={`View all ${product.manufacturer} products`}
+              >
+                <MDManufacturerLogo manufacturer={product.manufacturer} width={130} height={30} />
+              </Pressable>
+              <MDIconButton
+                accessibilityLabel={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
+                variant="outline"
+                onPress={() => toggleWishlist(product.id)}
+              >
+                <Ionicons
+                  name={isWishlisted ? 'heart' : 'heart-outline'}
+                  size={18}
+                  color={isWishlisted ? colors.brand.primary : colors.text.secondary}
+                />
+              </MDIconButton>
+            </View>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
+              <MDText variant="h1">{product.manufacturerPartNumber}</MDText>
+              <MDIconButton
+                accessibilityLabel="Copy part number"
+                variant="ghost"
+                size={30}
+                onPress={() => {
+                  if (Platform.OS === 'web' && navigator?.clipboard) {
+                    navigator.clipboard.writeText(product.manufacturerPartNumber);
+                    toast.show('Part number copied', 'success');
+                  }
+                }}
+              >
+                <Ionicons name="copy-outline" size={15} color={colors.text.tertiary} />
+              </MDIconButton>
+            </View>
             {product.title !== product.manufacturerPartNumber ? (
               <MDText variant="bodyLg" tone="secondary">
                 {product.title}
@@ -178,7 +204,7 @@ export default function ProductDetail() {
               {product.package ? <MDBadge label={product.package} tone="neutral" /> : null}
               {product.technology ? <MDBadge label={product.technology} tone="neutral" /> : null}
               {product.rohs ? <MDRohsBadge /> : null}
-              <MDBadge label={product.lifecycle} tone="info" />
+              {product.lifecycle ? <MDBadge label={product.lifecycle} tone="brand" /> : null}
             </View>
 
             <View
@@ -190,38 +216,63 @@ export default function ProductDetail() {
                 borderTopColor: colors.border,
               }}
             >
-              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.md }}>
+              <View
+                style={{
+                  flexDirection: isDesktopUp ? 'row' : 'column',
+                  alignItems: isDesktopUp ? 'center' : 'stretch',
+                  gap: spacing.sm,
+                }}
+              >
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
                   <MDText variant="caption" tone="tertiary">
                     Quantity
                   </MDText>
                   <MDQuantitySelector value={quantity} onChange={setQuantity} min={1} max={99999} />
                 </View>
+                <MDButton label="Add to Cart" onPress={handleAddToCart} style={{ flex: 1 }} iconRight={<Ionicons name="cart-outline" size={16} color={colors.text.onPrimary} />} />
+                <MDIconButton
+                  accessibilityLabel={isComparing ? 'Remove from compare' : 'Add to compare'}
+                  variant="outline"
+                  onPress={handleToggleCompare}
+                >
+                  <Ionicons
+                    name="git-compare-outline"
+                    size={18}
+                    color={isComparing ? colors.brand.primary : colors.text.secondary}
+                  />
+                </MDIconButton>
+                <MDButton label="Buy Now" variant="secondary" onPress={handleBuyNow} />
+              </View>
 
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
-                  <MDIconButton
-                    accessibilityLabel={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
-                    variant="outline"
-                    onPress={() => toggleWishlist(product.id)}
-                  >
-                    <Ionicons
-                      name={isWishlisted ? 'heart' : 'heart-outline'}
-                      size={18}
-                      color={isWishlisted ? colors.brand.primary : colors.text.secondary}
-                    />
-                  </MDIconButton>
-                  <MDIconButton
-                    accessibilityLabel={isComparing ? 'Remove from compare' : 'Add to compare'}
-                    variant="outline"
-                    onPress={handleToggleCompare}
-                  >
-                    <Ionicons
-                      name="git-compare-outline"
-                      size={18}
-                      color={isComparing ? colors.brand.primary : colors.text.secondary}
-                    />
-                  </MDIconButton>
-                </View>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.md }}>
+                <Pressable
+                  onPress={handleRequestQuote}
+                  disabled={requestingQuote}
+                  style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs, opacity: requestingQuote ? 0.6 : 1 }}
+                >
+                  {requestingQuote ? (
+                    <ActivityIndicator size="small" color={colors.brand.primary} />
+                  ) : (
+                    <Ionicons name="document-text-outline" size={14} color={colors.brand.primary} />
+                  )}
+                  <MDText variant="bodySm" weight="600" style={{ color: colors.brand.primary }}>
+                    Request Quote (RFQ)
+                  </MDText>
+                </Pressable>
+                {product.datasheet ? (
+                  <>
+                    <View style={{ width: 1, height: 14, backgroundColor: colors.border }} />
+                    <Pressable
+                      onPress={() => Linking.openURL(product.datasheet)}
+                      style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs }}
+                    >
+                      <Ionicons name="document-attach-outline" size={14} color={colors.brand.primary} />
+                      <MDText variant="bodySm" weight="600" style={{ color: colors.brand.primary }}>
+                        View Datasheet
+                      </MDText>
+                    </Pressable>
+                  </>
+                ) : null}
               </View>
 
               {backorderSplit.hasBackorder ? (
@@ -250,25 +301,13 @@ export default function ProductDetail() {
                   </View>
                 </Pressable>
               ) : null}
-
-              <MDButton label="Add to Cart" onPress={handleAddToCart} fullWidth />
-              <MDButton label="Buy Now" variant="secondary" onPress={handleBuyNow} fullWidth />
-              <MDButton
-                label="Request Quote (RFQ)"
-                variant="outline"
-                fullWidth
-                loading={requestingQuote}
-                iconLeft={<Ionicons name="document-text-outline" size={16} color={colors.brand.primary} />}
-                onPress={handleRequestQuote}
-              />
-              {product.datasheet ? <MDDatasheetButton url={product.datasheet} variant="outline" fullWidth /> : null}
             </View>
           </View>
         </View>
 
-        <View style={{ maxWidth: isDesktopUp ? 720 : undefined }}>
+        <View>
           {product.description ? (
-            <View style={{ marginBottom: spacing.xl }}>
+            <View style={{ marginBottom: spacing.xl, maxWidth: isDesktopUp ? 720 : undefined }}>
               <MDText variant="h4" style={{ marginBottom: spacing.sm }}>
                 Description
               </MDText>
@@ -278,35 +317,43 @@ export default function ProductDetail() {
             </View>
           ) : null}
 
-          <MDSpecTable
-            title="Product Information"
-            rows={[
-              { label: 'Manufacturer', value: product.manufacturer },
-              { label: 'Manufacturer Part Number', value: product.manufacturerPartNumber },
-              { label: 'MD Part Number', value: product.mdPartNumber },
-              { label: 'Product Type', value: product.productType },
-              { label: 'Technology', value: product.technology },
-              { label: 'Package', value: product.package },
-              { label: 'Mounting Style', value: product.mountingStyle },
-            ]}
-          />
+          <View style={{ flexDirection: isDesktopUp ? 'row' : 'column', gap: spacing.xl, alignItems: 'flex-start' }}>
+            <MDSpecTable
+              icon="document-text-outline"
+              title="Product Information"
+              style={{ flex: 1, width: '100%' }}
+              rows={[
+                { label: 'Manufacturer', value: product.manufacturer },
+                { label: 'Manufacturer Part Number', value: product.manufacturerPartNumber },
+                { label: 'MD Part Number', value: product.mdPartNumber },
+                { label: 'Product Type', value: product.productType },
+                { label: 'Technology', value: product.technology },
+                { label: 'Package', value: product.package },
+                { label: 'Mounting Style', value: product.mountingStyle },
+              ]}
+            />
 
-          <MDSpecTable
-            title="Compliance"
-            rows={[
-              { label: 'RoHS', value: product.rohsLabel || (product.rohs ? 'RoHS Compliant' : '') },
-              { label: 'Lifecycle', value: product.lifecycle },
-            ]}
-          />
+            <MDSpecTable
+              icon="shield-checkmark-outline"
+              title="Compliance"
+              style={{ flex: 1, width: '100%' }}
+              rows={[
+                { label: 'RoHS', value: product.rohsLabel || (product.rohs ? 'RoHS Compliant' : '') },
+                { label: 'Lifecycle', value: product.lifecycle },
+              ]}
+            />
 
-          <MDSpecTable
-            title="Availability"
-            rows={[
-              { label: 'Stock Status', value: product.stockStatus },
-              { label: 'Available Quantity', value: product.availability?.toLocaleString() ?? '' },
-              { label: 'Stock Type', value: product.stockType },
-            ]}
-          />
+            <MDSpecTable
+              icon="stats-chart-outline"
+              title="Availability"
+              style={{ flex: 1, width: '100%' }}
+              rows={[
+                { label: 'Stock Status', value: product.stockStatus },
+                { label: 'Available Quantity', value: product.availability?.toLocaleString() ?? '' },
+                { label: 'Stock Type', value: product.stockType },
+              ]}
+            />
+          </View>
         </View>
 
         {related && related.length > 0 ? (

@@ -166,6 +166,80 @@ function familyPrefix(s: string): string {
   return normalize(s).slice(0, 6);
 }
 
+/**
+ * Reverse of designatorPrefix() above: maps a reference-designator prefix
+ * (the Designator column on an uploaded BOM — the same R/C/L/Q/D/J/U
+ * convention real engineering BOMs use) to the catalog keywords it implies.
+ * Lets a genuinely new/custom part (no exact or same-family match) still
+ * get a sensible "closest available component" suggestion instead of a
+ * dead end.
+ */
+const DESIGNATOR_CATEGORY_HINTS: { prefix: RegExp; keywords: string[] }[] = [
+  { prefix: /^SEN/i, keywords: ['sensor'] },
+  { prefix: /^TL/i, keywords: ['tool', 'program', 'evaluation'] },
+  { prefix: /^Q/i, keywords: ['mosfet', 'igbt', 'transistor', 'fet', 'gan'] },
+  { prefix: /^D/i, keywords: ['diode', 'rectifier', 'schottky', 'zener'] },
+  { prefix: /^C/i, keywords: ['capacitor'] },
+  { prefix: /^R/i, keywords: ['resistor'] },
+  { prefix: /^L/i, keywords: ['inductor', 'wire', 'cable'] },
+  { prefix: /^J/i, keywords: ['connector'] },
+];
+
+function inferKeywordsFromDesignator(designator?: string): string[] {
+  if (!designator) return [];
+  const hit = DESIGNATOR_CATEGORY_HINTS.find((h) => h.prefix.test(designator));
+  return hit?.keywords ?? [];
+}
+
+/** Same deterministic seeded-hash approach used elsewhere in this file / utils/backorder.ts — stable across reloads, not Math.random(). */
+function pseudoIndex(seed: number, length: number): number {
+  if (length <= 0) return 0;
+  return (((seed * 2654435761) % length) + length) % length;
+}
+
+/**
+ * "AI Suggested Alternate" fallback for a BOM line with no exact or
+ * same-family match — i.e. a part that genuinely isn't in the catalog
+ * (a new/custom design). Infers a likely component category from the
+ * line's reference-designator convention and ranks catalog products
+ * against it; falls back to a deterministic catalog spread so a
+ * suggestion is always returned rather than a dead end. A production
+ * version would call a real component-recommendation model behind this
+ * same shape.
+ */
+function findAiSuggestedAlternatives(line: BomLineItem, catalog: Product[]): { alternatives: Product[]; reason: string } {
+  const keywords = inferKeywordsFromDesignator(line.designator);
+
+  if (keywords.length > 0) {
+    const scored = catalog
+      .map((p) => {
+        const haystack = `${p.productType} ${p.category} ${p.technology}`.toLowerCase();
+        const score = keywords.reduce((s, kw) => s + (haystack.includes(kw) ? 1 : 0), 0);
+        return { p, score };
+      })
+      .filter((s) => s.score > 0)
+      .sort((a, b) => b.score - a.score || b.p.availability - a.p.availability);
+
+    if (scored.length > 0) {
+      return {
+        alternatives: scored.slice(0, 3).map((s) => s.p),
+        reason: `Inferred a likely component type from designator "${line.designator}" — closest catalog matches shown.`,
+      };
+    }
+  }
+
+  // No designator hint (or nothing scored) — still surface a suggestion
+  // rather than a dead end, spread deterministically across the catalog.
+  const base = pseudoIndex(line.lineNumber * 97 + line.requestedPartNumber.length, catalog.length);
+  const picks = [catalog[base], catalog[(base + 41) % catalog.length], catalog[(base + 83) % catalog.length]].filter(
+    (p, i, arr): p is Product => !!p && arr.indexOf(p) === i,
+  );
+  return {
+    alternatives: picks,
+    reason: 'No catalog or family match, and no component-type hint on this line — showing the closest available parts for engineering review.',
+  };
+}
+
 export async function matchBomItems(lines: BomLineItem[]): Promise<BomMatchResult[]> {
   await delay(900);
   const catalog = await getProducts({});
@@ -189,6 +263,17 @@ export async function matchBomItems(lines: BomLineItem[]): Promise<BomMatchResul
       return { line, matchType: 'alternative', alternatives, confidence: 0.65 };
     }
 
+    // Not in inventory at all, and no same-family part either — likely a
+    // new/custom design. Rather than a dead end, offer an AI-suggested
+    // closest-available alternate alongside the Design Request path (see
+    // BomWorkflowContent's 'ai-suggested' card).
+    if (catalog.length > 0) {
+      const { alternatives: aiAlternatives, reason } = findAiSuggestedAlternatives(line, catalog);
+      if (aiAlternatives.length > 0) {
+        return { line, matchType: 'ai-suggested', alternatives: aiAlternatives, confidence: 0.35, matchReason: reason };
+      }
+    }
+
     return { line, matchType: 'unmatched', alternatives: [], confidence: 0 };
   });
 }
@@ -198,6 +283,7 @@ export function summarizeMatches(results: BomMatchResult[]) {
     total: results.length,
     exact: results.filter((r) => r.matchType === 'exact').length,
     alternative: results.filter((r) => r.matchType === 'alternative').length,
+    aiSuggested: results.filter((r) => r.matchType === 'ai-suggested').length,
     unmatched: results.filter((r) => r.matchType === 'unmatched').length,
   };
 }

@@ -17,7 +17,8 @@ import {
 } from '@/design-system';
 import { aiService } from '@/features/ai';
 import { rfqService } from '@/features/rfq';
-import { useBomWorkflowStore, useCartFeedbackStore, useCartStore, useCompareStore, useCurrencyStore } from '@/state';
+import { orderService } from '@/features/orders';
+import { useAuthStore, useBomWorkflowStore, useCartFeedbackStore, useCartStore, useCompareStore, useCurrencyStore } from '@/state';
 import { ProtoBadge } from '@/components/ProtoBadge';
 import { MDProductImage } from '@/components/MDProductImage';
 import { MDManufacturerLogo } from '@/components/MDManufacturerLogo';
@@ -105,16 +106,36 @@ export default function AiEngineeringSearch() {
   const [query, setQuery] = useState(q ?? '');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<AiSearchResult | null>(null);
+  const [orderLookupError, setOrderLookupError] = useState<string | null>(null);
   const [requestingId, setRequestingId] = useState<number | null>(null);
   const setRfq = useBomWorkflowStore((s) => s.setRfq);
   const setQuote = useBomWorkflowStore((s) => s.setQuote);
   const displayCurrency = useCurrencyStore((s) => s.currency);
+  const session = useAuthStore((s) => s.session);
 
   const runSearch = async (text: string) => {
     if (!text.trim()) return;
     setLoading(true);
     setResult(null);
+    setOrderLookupError(null);
     try {
+      // Order-number lookup takes priority over product search — typing an
+      // order number should jump straight to that order's screen.
+      const orderNumber = aiService.extractOrderNumber(text);
+      if (orderNumber) {
+        if (!session?.user.id) {
+          setOrderLookupError(`Sign in to look up order ${orderNumber}.`);
+          return;
+        }
+        const order = await orderService.getOrderByNumber(orderNumber, session.user.id);
+        if (order) {
+          router.push({ pathname: '/(buyer)/account/orders/[id]', params: { id: order.id } });
+          return;
+        }
+        setOrderLookupError(`Couldn't find an order matching ${orderNumber} on your account.`);
+        return;
+      }
+
       const res = await aiService.runAiSearch(text);
       setResult(res);
     } finally {
@@ -182,6 +203,9 @@ export default function AiEngineeringSearch() {
             ))}
           </View>
           <MDButton label="Ask AI" onPress={() => runSearch(query)} loading={loading} iconLeft={<Ionicons name="sparkles-outline" size={16} color={colors.gray[0]} />} />
+          <MDText variant="caption" tone="tertiary" style={{ marginTop: spacing.sm }}>
+            Tip: paste an order number (e.g. MD-20260813-4821) to jump straight to that order's status.
+          </MDText>
         </MDCard>
 
         {loading ? (
@@ -193,7 +217,17 @@ export default function AiEngineeringSearch() {
           </View>
         ) : null}
 
-        {!loading && result ? (
+        {!loading && orderLookupError ? (
+          <MDEmptyState
+            icon={<Ionicons name="receipt-outline" size={40} color={colors.text.tertiary} />}
+            title="Order not found"
+            description={orderLookupError}
+            actionLabel="View Order History"
+            onAction={() => router.push('/(buyer)/account/orders')}
+          />
+        ) : null}
+
+        {!loading && !orderLookupError && result ? (
           <View>
             <View
               style={{
@@ -251,7 +285,7 @@ export default function AiEngineeringSearch() {
           </View>
         ) : null}
 
-        {!loading && !result ? (
+        {!loading && !result && !orderLookupError ? (
           <MDEmptyState
             icon={<Ionicons name="sparkles-outline" size={40} color={colors.text.tertiary} />}
             title="Describe your engineering requirement"

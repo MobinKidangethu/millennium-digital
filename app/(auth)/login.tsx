@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { AuthScreenShell } from '@/components/AuthScreenShell';
+import { GoogleAuthButton } from '@/components/GoogleAuthButton';
+import { GoogleSignInSheet } from '@/components/GoogleSignInSheet';
 import { colors, spacing, MDButton, MDInput, MDText } from '@/design-system';
 import { useLogin, DEMO_BUYER_CREDENTIALS } from '@/features/auth';
 
@@ -9,6 +11,7 @@ export default function Login() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [googleSheetVisible, setGoogleSheetVisible] = useState(false);
   const login = useLogin();
 
   const handleSubmit = () => {
@@ -70,7 +73,17 @@ export default function Login() {
         <MDText variant="caption" tone="tertiary" align="center">
           Demo account: {DEMO_BUYER_CREDENTIALS.email} / {DEMO_BUYER_CREDENTIALS.password}
         </MDText>
+
+        <View style={{ height: 1, backgroundColor: colors.border, marginVertical: spacing.xs }} />
+
+        <GoogleAuthButton label="Continue with Google" onPress={() => setGoogleSheetVisible(true)} />
       </View>
+
+      <GoogleSignInSheet
+        visible={googleSheetVisible}
+        onClose={() => setGoogleSheetVisible(false)}
+        onSuccess={() => router.replace('/(buyer)')}
+      />
 
       <View
         style={{

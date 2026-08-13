@@ -17,7 +17,7 @@ export interface CategoryVisual {
 }
 
 export const CATEGORY_VISUALS: Record<string, CategoryVisual> = {
-  semiconductors: {
+  'evaluation board': {
     imageUrl: 'https://images.unsplash.com/photo-1562408590-e32931084e23?auto=format&fit=crop&w=800&q=80',
     accent: colors.plum[600],
   },

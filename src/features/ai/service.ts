@@ -19,6 +19,20 @@ import type { AiCriteria, AiSearchResult, Product } from '@/types';
  * nothing in the UI layer would need to change.
  */
 
+/**
+ * Order numbers are generated as "MD-YYYYMMDD-NNNN" (see
+ * generateOrderNumber in src/features/orders/service.ts). Matched
+ * case-insensitively so "look up order md-20260813-4821" and similar
+ * phrasing both work from the AI Assistant widget and AI Search page.
+ */
+const ORDER_NUMBER_PATTERN = /\bMD-\d{8}-\d{3,6}\b/i;
+
+/** Returns the order number found in free text, or null if none is present. */
+export function extractOrderNumber(query: string): string | null {
+  const match = query.match(ORDER_NUMBER_PATTERN);
+  return match ? match[0].toUpperCase() : null;
+}
+
 const PRODUCT_TYPE_KEYWORDS: { pattern: RegExp; value: string }[] = [
   { pattern: /\bmosfets?\b/i, value: 'MOSFETs' },
   { pattern: /\bigbts?\b/i, value: 'IGBTs' },

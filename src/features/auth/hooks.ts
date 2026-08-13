@@ -1,7 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
 import { useAuthStore } from '@/state';
 import * as service from './service';
-import type { RegisterInput } from './service';
+import type { GoogleSignInInput, RegisterInput } from './service';
 
 export function useLogin() {
   const setSession = useAuthStore((s) => s.setSession);
@@ -34,6 +34,14 @@ export function useRegister() {
   const setSession = useAuthStore((s) => s.setSession);
   return useMutation({
     mutationFn: (input: RegisterInput) => service.register(input),
+    onSuccess: setSession,
+  });
+}
+
+export function useGoogleSignIn() {
+  const setSession = useAuthStore((s) => s.setSession);
+  return useMutation({
+    mutationFn: (input: GoogleSignInInput) => service.loginWithGoogle(input),
     onSuccess: setSession,
   });
 }

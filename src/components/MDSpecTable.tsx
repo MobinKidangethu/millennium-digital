@@ -1,5 +1,6 @@
 import { View } from 'react-native';
-import { colors, spacing, MDText } from '@/design-system';
+import { Ionicons } from '@expo/vector-icons';
+import { colors, radius, spacing, MDText } from '@/design-system';
 
 export interface SpecRow {
   label: string;
@@ -9,17 +10,35 @@ export interface SpecRow {
 interface MDSpecTableProps {
   title: string;
   rows: SpecRow[];
+  /** Optional Ionicons name shown in a tinted circle beside the title. */
+  icon?: keyof typeof Ionicons.glyphMap;
+  /** Extra layout style — e.g. `{ flex: 1 }` when placed in a 3-column panel row. */
+  style?: object;
 }
 
-export function MDSpecTable({ title, rows }: MDSpecTableProps) {
+export function MDSpecTable({ title, rows, icon, style }: MDSpecTableProps) {
   const visibleRows = rows.filter((r) => r.value && r.value.trim().length > 0);
   if (visibleRows.length === 0) return null;
 
   return (
-    <View style={{ marginBottom: spacing.xl }}>
-      <MDText variant="h4" style={{ marginBottom: spacing.md }}>
-        {title}
-      </MDText>
+    <View style={[{ marginBottom: spacing.xl }, style]}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, marginBottom: spacing.md }}>
+        {icon ? (
+          <View
+            style={{
+              width: 28,
+              height: 28,
+              borderRadius: radius.md,
+              backgroundColor: colors.brand.primarySoft,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <Ionicons name={icon} size={15} color={colors.brand.primary} />
+          </View>
+        ) : null}
+        <MDText variant="h4">{title}</MDText>
+      </View>
       <View style={{ borderWidth: 1, borderColor: colors.border, borderRadius: 12, overflow: 'hidden' }}>
         {visibleRows.map((row, index) => (
           <View

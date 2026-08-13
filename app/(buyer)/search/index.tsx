@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, layout, radius, spacing, MDBadge, MDButton, MDSearchBar, MDText } from '@/design-system';
+import { colors, layout, radius, spacing, zIndex, MDBadge, MDButton, MDSearchBar, MDText } from '@/design-system';
 import { useProducts, useProductTypes } from '@/features/products';
 import { useSearchStore } from '@/state';
 import { MDManufacturerLogo } from '@/components/MDManufacturerLogo';
@@ -51,7 +51,7 @@ export default function Search() {
   return (
     <ScrollView style={{ flex: 1, backgroundColor: colors.background }}>
       <View style={{ maxWidth: layout.maxContentWidth, width: '100%', alignSelf: 'center', padding: spacing.xl }}>
-        <View style={{ position: 'relative', marginBottom: spacing.xl, zIndex: 10 }}>
+        <View style={{ position: 'relative', marginBottom: spacing.xl, zIndex: zIndex.dropdown }}>
           <MDSearchBar
             value={query}
             onChangeText={setQuery}

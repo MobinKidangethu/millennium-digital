@@ -46,6 +46,15 @@ const DEMO_USERS: RegisteredUser[] = [
   },
 ];
 
+/**
+ * The single "cached" Google account offered on the mock Google Sign-In
+ * chooser — standing in for whatever Google account a real browser/device
+ * would already have signed in. Picking it (or entering a different email
+ * via "Use another account") provisions/logs into a linked buyer account,
+ * mirroring how a real Google OAuth handoff would behave.
+ */
+export const DEMO_GOOGLE_ACCOUNT = { fullName: 'Asha Rao', email: 'asha.rao@gmail.com' };
+
 let usersCache: RegisteredUser[] | null = null;
 
 async function loadUsers(): Promise<RegisteredUser[]> {
@@ -150,6 +159,37 @@ export async function register(input: RegisterInput): Promise<Session> {
     password: input.password,
     company: input.company,
     phone: input.phone,
+    createdAt: new Date().toISOString(),
+  };
+  await saveUsers([...users, user]);
+  return toSession(user);
+}
+
+export interface GoogleSignInInput {
+  fullName: string;
+  email: string;
+}
+
+/**
+ * PROTOTYPE: stands in for a real Google OAuth handoff. Looks up (or
+ * silently provisions) a buyer account for the given Google identity — no
+ * password involved, exactly like "Sign in with Google" behaves for a
+ * returning vs. first-time user.
+ */
+export async function loginWithGoogle(input: GoogleSignInInput): Promise<Session> {
+  await delay(900);
+  const users = await loadUsers();
+  const email = input.email.trim().toLowerCase();
+  const existing = users.find((u) => u.email.toLowerCase() === email);
+  if (existing) {
+    return toSession(existing);
+  }
+  const user: RegisteredUser = {
+    id: `buyer-google-${Date.now()}`,
+    role: 'buyer',
+    fullName: input.fullName.trim() || 'Google User',
+    email: input.email.trim(),
+    password: `google-oauth-${Math.random().toString(36).slice(2, 10)}`,
     createdAt: new Date().toISOString(),
   };
   await saveUsers([...users, user]);

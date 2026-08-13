@@ -4,20 +4,38 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, radius, spacing, useResponsive, MDText } from '@/design-system';
 
+const DEFAULT_DURATION_MS = 3000;
+
 interface SegmentChip {
   label: string;
   slug: string;
 }
 
 interface Segment {
-  eyebrow: string;
+  eyebrow?: string;
   title: string;
-  description: string;
+  description?: string;
   /** Either a remote URL (string) or a bundled local asset (require()'d). */
   image: string | ImageSourcePropType;
-  chips: SegmentChip[];
-  ctaLabel: string;
-  ctaSlug: string;
+  chips?: SegmentChip[];
+  ctaLabel?: string;
+  ctaSlug?: string;
+  /** How long this slide stays on screen before auto-advancing. Defaults to 3000ms. */
+  durationMs?: number;
+  /**
+   * Full-bleed slide with no right-side (bottom, on mobile) info panel or
+   * CTA — for banners that already carry their own branding/copy in the
+   * image itself, so no overlay text is needed.
+   */
+  hidePanel?: boolean;
+  /**
+   * Backdrop shown behind a `hidePanel` slide's image. Full-bleed slides use
+   * `resizeMode="contain"` so nothing is ever cropped (unlike the other
+   * slides, which crop-to-fill with `resizeMode="cover"`); this fills
+   * whatever thin letterbox strip that leaves, so it blends into the image
+   * instead of showing a mismatched color. Defaults to `colors.gray[900]`.
+   */
+  letterboxColor?: string;
 }
 
 /**
@@ -30,18 +48,27 @@ interface Segment {
  */
 const SEGMENTS: Segment[] = [
   {
+    title: 'Connecting Buyer & Seller',
+    image: require('../../assets/images/segments/connecting-buyer-seller.png'),
+    durationMs: 5000,
+    hidePanel: true,
+    // Sampled from the banner's own background so the uncropped image's
+    // letterbox strip (see `resizeMode="contain"` below) is invisible.
+    letterboxColor: '#1A092B',
+  },
+  {
     eyebrow: 'INDUSTRY SEGMENT',
     title: 'Automotive & EV Electronics',
     description:
-      'Semiconductors, sensors, and power connectors sourced for automotive-grade reliability and traceability.',
+      'Evaluation Board, sensors, and power connectors sourced for automotive-grade reliability and traceability.',
     image: require('../../assets/images/segments/automotive-ev-electronics.png'),
     chips: [
-      { label: 'Semiconductors', slug: 'semiconductors' },
+      { label: 'Evaluation Board', slug: 'evaluation-board' },
       { label: 'Sensors', slug: 'sensors' },
       { label: 'Connectors', slug: 'connectors' },
     ],
-    ctaLabel: 'Explore Semiconductors',
-    ctaSlug: 'semiconductors',
+    ctaLabel: 'Explore Evaluation Board',
+    ctaSlug: 'evaluation-board',
   },
   {
     eyebrow: 'INDUSTRY SEGMENT',
@@ -60,13 +87,13 @@ const SEGMENTS: Segment[] = [
   },
   {
     eyebrow: 'INDUSTRY SEGMENT',
-    title: 'Semiconductors, ICs & Embedded Systems',
+    title: 'Evaluation Board, ICs & Embedded Systems',
     description:
       'The foundation layer — discrete semiconductors and embedded modules sourced from verified manufacturers.',
     image:
       'https://images.unsplash.com/photo-1562408590-e32931084e23?auto=format&fit=crop&w=1600&q=80',
     chips: [
-      { label: 'Semiconductors', slug: 'semiconductors' },
+      { label: 'Evaluation Board', slug: 'evaluation-board' },
       { label: 'Embedded Solutions', slug: 'embedded-solutions' },
       { label: 'Sensors', slug: 'sensors' },
     ],
@@ -90,6 +117,25 @@ const SEGMENTS: Segment[] = [
   },
 ];
 
+function SegmentDots({ index, onSelect }: { index: number; onSelect: (i: number) => void }) {
+  return (
+    <View style={{ flexDirection: 'row', gap: 6 }}>
+      {SEGMENTS.map((s, i) => (
+        <Pressable key={s.title} onPress={() => onSelect(i)} hitSlop={8}>
+          <View
+            style={{
+              width: i === index ? 20 : 6,
+              height: 6,
+              borderRadius: radius.pill,
+              backgroundColor: i === index ? colors.gray[0] : 'rgba(255,255,255,0.32)',
+            }}
+          />
+        </Pressable>
+      ))}
+    </View>
+  );
+}
+
 export function SegmentCarousel() {
   const router = useRouter();
   const { isDesktopUp } = useResponsive();
@@ -105,12 +151,14 @@ export function SegmentCarousel() {
   };
 
   useEffect(() => {
-    const timer = setInterval(() => goTo(index + 1), 3000);
+    const duration = SEGMENTS[index].durationMs ?? DEFAULT_DURATION_MS;
+    const timer = setInterval(() => goTo(index + 1), duration);
     return () => clearInterval(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [index]);
 
   const segment = SEGMENTS[index];
+  const showPanel = !segment.hidePanel;
   const height = isDesktopUp ? 460 : 320;
   const panelWidth = 400;
 
@@ -123,59 +171,64 @@ export function SegmentCarousel() {
         flexDirection: isDesktopUp ? 'row' : 'column',
       }}
     >
-      <Animated.View style={{ flex: 1, opacity, flexDirection: isDesktopUp ? 'row' : 'column' }}>
+      <Animated.View style={{ flex: 1, opacity, flexDirection: isDesktopUp ? 'row' : 'column', position: 'relative' }}>
         <Image
           source={typeof segment.image === 'string' ? { uri: segment.image } : segment.image}
-          style={{ flex: 1, width: '100%', height: '100%' }}
-          resizeMode="cover"
+          style={{
+            flex: 1,
+            width: '100%',
+            height: '100%',
+            backgroundColor: showPanel ? undefined : (segment.letterboxColor ?? colors.gray[900]),
+          }}
+          // Cropping-style slides use "cover" to fill the frame; full-bleed
+          // slides (hidePanel) use "contain" so the whole banner — including
+          // copy near the top/bottom edges — is never cut off.
+          resizeMode={showPanel ? 'cover' : 'contain'}
           accessibilityLabel={segment.title}
         />
 
-        {/* Vertical info panel — right side on desktop, bottom bar on mobile */}
-        <View
-          style={{
-            width: isDesktopUp ? panelWidth : '100%',
-            backgroundColor: 'rgba(24,23,26,0.94)',
-            paddingHorizontal: isDesktopUp ? spacing.xl : spacing.lg,
-            paddingVertical: isDesktopUp ? spacing.xl : spacing.lg,
-            justifyContent: 'center',
-            gap: spacing.sm,
-          }}
-        >
-          <MDText variant="overline" style={{ color: colors.plum[300] }}>
-            {segment.eyebrow}
-          </MDText>
-          <MDText variant={isDesktopUp ? 'h2' : 'h3'} style={{ color: colors.gray[0] }} numberOfLines={3}>
-            {segment.title}
-          </MDText>
-
-          <Pressable
-            onPress={() =>
-              router.push({ pathname: '/(buyer)/category/[slug]', params: { slug: segment.ctaSlug } })
-            }
-            style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: spacing.xs }}
+        {showPanel ? (
+          // Vertical info panel — right side on desktop, bottom bar on mobile
+          <View
+            style={{
+              width: isDesktopUp ? panelWidth : '100%',
+              backgroundColor: 'rgba(24,23,26,0.94)',
+              paddingHorizontal: isDesktopUp ? spacing.xl : spacing.lg,
+              paddingVertical: isDesktopUp ? spacing.xl : spacing.lg,
+              justifyContent: 'center',
+              gap: spacing.sm,
+            }}
           >
-            <MDText variant="bodySm" weight="700" style={{ color: colors.gray[0] }}>
-              {segment.ctaLabel}
+            <MDText variant="overline" style={{ color: colors.plum[300] }}>
+              {segment.eyebrow}
             </MDText>
-            <Ionicons name="arrow-forward" size={14} color={colors.gray[0]} />
-          </Pressable>
+            <MDText variant={isDesktopUp ? 'h2' : 'h3'} style={{ color: colors.gray[0] }} numberOfLines={3}>
+              {segment.title}
+            </MDText>
 
-          <View style={{ flexDirection: 'row', gap: 6, marginTop: spacing.md }}>
-            {SEGMENTS.map((s, i) => (
-              <Pressable key={s.title} onPress={() => goTo(i)} hitSlop={8}>
-                <View
-                  style={{
-                    width: i === index ? 20 : 6,
-                    height: 6,
-                    borderRadius: radius.pill,
-                    backgroundColor: i === index ? colors.gray[0] : 'rgba(255,255,255,0.32)',
-                  }}
-                />
-              </Pressable>
-            ))}
+            <Pressable
+              onPress={() =>
+                router.push({ pathname: '/(buyer)/category/[slug]', params: { slug: segment.ctaSlug! } })
+              }
+              style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: spacing.xs }}
+            >
+              <MDText variant="bodySm" weight="700" style={{ color: colors.gray[0] }}>
+                {segment.ctaLabel}
+              </MDText>
+              <Ionicons name="arrow-forward" size={14} color={colors.gray[0]} />
+            </Pressable>
+
+            <View style={{ marginTop: spacing.md }}>
+              <SegmentDots index={index} onSelect={goTo} />
+            </View>
           </View>
-        </View>
+        ) : (
+          // Full-bleed slide — no overlay text, just a floating pagination
+          // indicator so the slide count/position is still visible.
+          <View style={{ position: 'absolute', left: spacing.lg, bottom: spacing.lg }}>
+            <SegmentDots index={index} onSelect={goTo} />
+          </View>
+        )}
       </Animated.View>
 
       <Pressable
@@ -200,7 +253,7 @@ export function SegmentCarousel() {
         accessibilityLabel="Next segment"
         style={{
           position: 'absolute',
-          right: isDesktopUp ? panelWidth + spacing.md : spacing.md,
+          right: isDesktopUp && showPanel ? panelWidth + spacing.md : spacing.md,
           top: '42%',
           width: 34,
           height: 34,

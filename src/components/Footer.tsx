@@ -1,10 +1,64 @@
 import { Image, Linking, Pressable, View } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
-import { colors, layout, spacing, useResponsive, useHoverPress, webTransition, MDText } from '@/design-system';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { colors, layout, radius, spacing, useResponsive, useHoverPress, webTransition, MDText } from '@/design-system';
 
 const CONTACT_PHONE = '+91 8411005847';
 const CONTACT_EMAIL = 'info@millenniumsemi.com';
+
+// General store landing pages (not a specific app listing — there is no
+// published Millennium Digital app to link to, so these point to the
+// real, live Google Play / App Store homepages rather than a fabricated
+// listing URL).
+const GOOGLE_PLAY_URL = 'https://play.google.com/store/apps';
+const APP_STORE_URL = 'https://www.apple.com/app-store/';
+
+function StoreBadge({
+  icon,
+  eyebrow,
+  title,
+  onPress,
+}: {
+  icon: keyof typeof MaterialCommunityIcons.glyphMap;
+  eyebrow: string;
+  title: string;
+  onPress: () => void;
+}) {
+  const { hovered, hoverHandlers } = useHoverPress();
+
+  return (
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="link"
+      accessibilityLabel={`${eyebrow} ${title}`}
+      {...hoverHandlers}
+      style={[
+        webTransition,
+        {
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: spacing.sm,
+          backgroundColor: hovered ? colors.gray[700] : colors.gray[800],
+          borderWidth: 1,
+          borderColor: colors.gray[700],
+          borderRadius: radius.md,
+          paddingVertical: spacing.xs,
+          paddingHorizontal: spacing.md,
+        },
+      ]}
+    >
+      <MaterialCommunityIcons name={icon} size={22} color={colors.gray[0]} />
+      <View>
+        <MDText variant="caption" style={{ color: colors.gray[400] }}>
+          {eyebrow}
+        </MDText>
+        <MDText variant="bodySm" weight="700" style={{ color: colors.gray[0] }}>
+          {title}
+        </MDText>
+      </View>
+    </Pressable>
+  );
+}
 
 interface FooterLink {
   label: string;
@@ -133,6 +187,21 @@ export function Footer() {
                 icon="mail-outline"
                 label={CONTACT_EMAIL}
                 onPress={() => Linking.openURL(`mailto:${CONTACT_EMAIL}`)}
+              />
+            </View>
+
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm, marginTop: spacing.sm }}>
+              <StoreBadge
+                icon="google-play"
+                eyebrow="GET IT ON"
+                title="Google Play"
+                onPress={() => Linking.openURL(GOOGLE_PLAY_URL)}
+              />
+              <StoreBadge
+                icon="apple"
+                eyebrow="Download on the"
+                title="App Store"
+                onPress={() => Linking.openURL(APP_STORE_URL)}
               />
             </View>
           </View>

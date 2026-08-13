@@ -1,5 +1,6 @@
-import { useMemo, useRef, useState } from 'react';
-import { Pressable, ScrollView, TextInput, View } from 'react-native';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { Platform, Pressable, ScrollView, TextInput, View, useWindowDimensions, type ViewStyle } from 'react-native';
+import { createPortal } from 'react-dom';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, radius, shadow, spacing, zIndex, useHoverPress, webTransition, MDText } from '@/design-system';
@@ -25,18 +26,43 @@ const MAX_PRODUCTS = 5;
  * with a live autocomplete dropdown. Also docks an "Upload BOM" shortcut
  * inside the bar itself since BOM upload is one of the platform's primary
  * entry points alongside search.
+ *
+ * The results panel renders through a `document.body` portal on web (see
+ * `DropdownPortal` below) instead of as a plain absolutely-positioned child.
+ * React Native Web gives any ancestor with a `transform`/`overflow` (e.g.
+ * the route Stack's screen container, a carousel, an animated hero banner)
+ * its own CSS stacking context, which silently traps a nested `zIndex` and
+ * lets later page content paint over it. Portaling to `document.body` and
+ * positioning from a measured screen anchor sidesteps that entirely so the
+ * dropdown always renders above the rest of the page, on every screen.
  */
 export function GlobalSearchBar({ style }: { style?: object }) {
   const router = useRouter();
   const [query, setQuery] = useState('');
   const [focused, setFocused] = useState(false);
   const blurTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const containerRef = useRef<View>(null);
+  const [anchor, setAnchor] = useState<{ top: number; left: number; width: number } | null>(null);
+  const { width: windowWidth, height: windowHeight } = useWindowDimensions();
   const clearHover = useHoverPress();
   const bomHover = useHoverPress();
   const seeAllHover = useHoverPress();
 
   const trimmed = query.trim();
   const showDropdown = focused && trimmed.length > 0;
+
+  const measureAnchor = () => {
+    containerRef.current?.measureInWindow((x, y, width, height) => {
+      setAnchor({ top: y + height + 4, left: x, width });
+    });
+  };
+
+  // Re-measure whenever the dropdown opens and whenever the viewport
+  // resizes while it's open, so the portal stays glued under the bar.
+  useEffect(() => {
+    if (showDropdown) measureAnchor();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showDropdown, windowWidth, windowHeight]);
 
   const { data: categories } = useCategories();
   const { data: manufacturers } = useManufacturers();
@@ -80,6 +106,7 @@ export function GlobalSearchBar({ style }: { style?: object }) {
   const handleFocus = () => {
     if (blurTimer.current) clearTimeout(blurTimer.current);
     setFocused(true);
+    measureAnchor();
   };
 
   const submitFullSearch = () => {
@@ -94,7 +121,7 @@ export function GlobalSearchBar({ style }: { style?: object }) {
   };
 
   return (
-    <View style={[{ position: 'relative' }, style]}>
+    <View ref={containerRef} style={[{ position: 'relative' }, style]}>
       <View
         style={{
           flexDirection: 'row',
@@ -165,24 +192,7 @@ export function GlobalSearchBar({ style }: { style?: object }) {
       </View>
 
       {showDropdown ? (
-        <View
-          style={[
-            {
-              position: 'absolute',
-              top: 48,
-              left: 0,
-              right: 0,
-              backgroundColor: colors.surface,
-              borderWidth: 1,
-              borderColor: colors.border,
-              borderRadius: radius.lg,
-              maxHeight: 440,
-              overflow: 'hidden',
-              zIndex: zIndex.dropdown,
-            },
-            shadow.lg,
-          ]}
-        >
+        <DropdownPortal anchor={anchor}>
           <ScrollView keyboardShouldPersistTaps="handled">
             {!hasResults ? (
               <View style={{ padding: spacing.lg, alignItems: 'center' }}>
@@ -275,8 +285,58 @@ export function GlobalSearchBar({ style }: { style?: object }) {
               <Ionicons name="arrow-forward" size={12} color={colors.brand.primary} />
             </Pressable>
           </ScrollView>
-        </View>
+        </DropdownPortal>
       ) : null}
+    </View>
+  );
+}
+
+/**
+ * Renders `children` in the dropdown's panel chrome, positioned from a
+ * measured screen anchor. On web it portals straight to `document.body` so
+ * no ancestor stacking context can bury it; on native it falls back to a
+ * normal absolutely-positioned sibling (native has no CSS stacking-context
+ * equivalent, so the plain approach is fine there).
+ */
+function DropdownPortal({
+  anchor,
+  children,
+}: {
+  anchor: { top: number; left: number; width: number } | null;
+  children: React.ReactNode;
+}) {
+  const panelStyle = [
+    {
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: radius.lg,
+      maxHeight: 440,
+      overflow: 'hidden' as const,
+    },
+    shadow.lg,
+  ];
+
+  if (Platform.OS === 'web' && typeof document !== 'undefined') {
+    if (!anchor) return null;
+    const fixedStyle = {
+      position: 'fixed',
+      top: anchor.top,
+      left: anchor.left,
+      width: anchor.width,
+      zIndex: zIndex.modal,
+    } as unknown as ViewStyle;
+    return createPortal(<View style={[fixedStyle, ...panelStyle]}>{children}</View>, document.body);
+  }
+
+  return (
+    <View
+      style={[
+        { position: 'absolute', top: 48, left: 0, right: 0, zIndex: zIndex.dropdown },
+        ...panelStyle,
+      ]}
+    >
+      {children}
     </View>
   );
 }

@@ -33,7 +33,7 @@ export interface TaxonomyGroup {
 
 /** Top-level industry category name -> its reference subcategory groups. */
 export const MASTER_CATEGORY_TAXONOMY: Record<string, TaxonomyGroup[]> = {
-  Semiconductors: [
+  'Evaluation Board': [
     {
       name: 'Discrete Semiconductors',
       slug: 'discrete-semiconductors',

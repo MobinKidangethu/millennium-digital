@@ -208,29 +208,33 @@ export default function Home() {
       </View>
 
       <View style={{ maxWidth: layout.maxContentWidth, width: '100%', alignSelf: 'center', padding: spacing.xl, paddingTop: spacing['3xl'] }}>
-        {/* Manufacturer trust showcase */}
+        {/* Manufacturer trust showcase — full-width horizontal marquee, no
+            side-by-side text column so the rows get the whole page width. */}
         {manufacturers && manufacturers.length > 0 ? (
-          <View
-            style={{
-              flexDirection: isDesktopUp ? 'row' : 'column',
-              alignItems: isDesktopUp ? 'center' : 'stretch',
-              gap: spacing['2xl'],
-              marginBottom: spacing['3xl'],
-            }}
-          >
-            <View style={{ flex: 1 }}>
-              <MDText variant="overline" tone="tertiary" style={{ marginBottom: spacing.xs }}>
-                VERIFIED SUPPLY BASE
-              </MDText>
-              <MDText variant="h2" style={{ marginBottom: spacing.sm }}>
-                Top Electronics Manufacturers on Millennium Digital
-              </MDText>
-              <MDText variant="body" tone="secondary" style={{ marginBottom: spacing.lg, maxWidth: 440 }}>
-                Bringing genuine components from verified manufacturers and authorized distributors
-                together on a single B2B platform.
-              </MDText>
+          <View style={{ marginBottom: spacing['3xl'] }}>
+            <View
+              style={{
+                flexDirection: isDesktopUp ? 'row' : 'column',
+                alignItems: isDesktopUp ? 'flex-end' : 'stretch',
+                justifyContent: 'space-between',
+                gap: spacing.md,
+                marginBottom: spacing.lg,
+              }}
+            >
+              <View>
+                <MDText variant="overline" tone="tertiary" style={{ marginBottom: spacing.xs }}>
+                  VERIFIED SUPPLY BASE
+                </MDText>
+                <MDText variant="h2" style={{ marginBottom: spacing.sm }}>
+                  Top Electronics Manufacturers on Millennium Digital
+                </MDText>
+                <MDText variant="body" tone="secondary" style={{ maxWidth: 560 }}>
+                  Bringing genuine components from verified manufacturers and authorized distributors
+                  together on a single B2B platform.
+                </MDText>
+              </View>
 
-              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md, marginBottom: spacing.lg }}>
+              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md }}>
                 {[
                   { icon: 'business-outline' as const, value: `${manufacturers.length}+`, label: 'Manufacturers', accent: colors.brand.primary },
                   { icon: 'cube-outline' as const, value: `${allProducts?.length ?? 0}+`, label: 'Parts Sourced', accent: colors.teal[500] },
@@ -272,11 +276,12 @@ export default function Home() {
                   </View>
                 ))}
               </View>
-
-              <MDButton label="View All Manufacturers" variant="outline" onPress={() => router.push('/(buyer)/manufacturers')} />
             </View>
-            <View style={{ flex: 1 }}>
-              <ManufacturerShowcase manufacturers={manufacturers} />
+
+            <ManufacturerShowcase manufacturers={manufacturers} />
+
+            <View style={{ marginTop: spacing.lg, alignItems: isDesktopUp ? 'flex-start' : 'stretch' }}>
+              <MDButton label="View All Manufacturers" variant="outline" onPress={() => router.push('/(buyer)/manufacturers')} />
             </View>
           </View>
         ) : null}

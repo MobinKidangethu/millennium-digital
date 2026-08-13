@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { AuthScreenShell } from '@/components/AuthScreenShell';
+import { GoogleAuthButton } from '@/components/GoogleAuthButton';
+import { GoogleSignInSheet } from '@/components/GoogleSignInSheet';
 import { colors, spacing, MDButton, MDInput, MDText } from '@/design-system';
 import { useRegister } from '@/features/auth';
 
@@ -13,6 +15,7 @@ export default function Register() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [formError, setFormError] = useState<string | null>(null);
+  const [googleSheetVisible, setGoogleSheetVisible] = useState(false);
   const register = useRegister();
 
   const handleSubmit = () => {
@@ -90,7 +93,17 @@ export default function Register() {
           loading={register.isPending}
           onPress={handleSubmit}
         />
+
+        <View style={{ height: 1, backgroundColor: colors.border, marginVertical: spacing.xs }} />
+
+        <GoogleAuthButton label="Sign up with Google" onPress={() => setGoogleSheetVisible(true)} />
       </View>
+
+      <GoogleSignInSheet
+        visible={googleSheetVisible}
+        onClose={() => setGoogleSheetVisible(false)}
+        onSuccess={() => router.replace('/(buyer)')}
+      />
 
       <View
         style={{

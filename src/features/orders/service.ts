@@ -106,6 +106,19 @@ export async function getOrderById(id: string): Promise<Order | undefined> {
   return orders.find((o) => o.id === id);
 }
 
+/**
+ * Looks up an order by its human-facing order number (e.g. "MD-20260813-4821"
+ * — see generateOrderNumber above), scoped to a single buyer's own orders
+ * so a chat/search query can't be used to look up someone else's order.
+ * Used by the AI Assistant / AI Search "look up my order" flow.
+ */
+export async function getOrderByNumber(orderNumber: string, userId: string): Promise<Order | undefined> {
+  await delay(200);
+  const normalized = orderNumber.trim().toUpperCase();
+  const orders = await loadOrders();
+  return orders.find((o) => o.userId === userId && o.orderNumber.toUpperCase() === normalized);
+}
+
 /** Admin-facing: every order across every customer. */
 export async function getAllOrders(): Promise<Order[]> {
   await delay(300);

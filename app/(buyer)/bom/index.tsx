@@ -20,7 +20,8 @@ import { ProtoBadge } from '@/components/ProtoBadge';
 import { MDManufacturerLogo } from '@/components/MDManufacturerLogo';
 import { MDPrice } from '@/components/MDPrice';
 import { MDStockStatus } from '@/components/MDStockStatus';
-import { downloadTextFile, toCsv } from '@/utils';
+import { BackorderNote } from '@/components/BackorderNote';
+import { downloadTextFile, toCsv, computeBackorderSplit } from '@/utils';
 import type { BomMatchResult } from '@/types';
 
 type Step = 'input' | 'processing' | 'results';
@@ -76,6 +77,7 @@ function StepIndicator({ step }: { step: Step }) {
 const MATCH_CONFIG: Record<BomMatchResult['matchType'], { label: string; tone: 'success' | 'warning' | 'error' }> = {
   exact: { label: 'Exact Match', tone: 'success' },
   alternative: { label: 'AI Recommended Alternative', tone: 'warning' },
+  'ai-suggested': { label: 'AI Suggested Alternate · New Design', tone: 'warning' },
   unmatched: { label: 'No Catalog Match', tone: 'error' },
 };
 
@@ -93,6 +95,15 @@ export function BomWorkflowContent() {
 
   const summary = useMemo(() => bomService.summarizeMatches(matches), [matches]);
 
+  /** Exact-match lines where the requested BOM quantity exceeds current stock — the lead-time / back-order journey. */
+  const backorderCount = useMemo(
+    () =>
+      matches.filter(
+        (r) => r.matchType === 'exact' && r.product && computeBackorderSplit(r.line.quantity, r.product.availability ?? 0).hasBackorder,
+      ).length,
+    [matches],
+  );
+
   const processBom = async () => {
     const lines = bomService.parseBomText(text);
     if (lines.length === 0) {
@@ -105,7 +116,7 @@ export function BomWorkflowContent() {
     setSelectedExact(new Set(results.filter((r) => r.matchType === 'exact').map((r) => r.line.id)));
     const defaultAlt: Record<string, number> = {};
     results
-      .filter((r) => r.matchType === 'alternative' && r.alternatives.length > 0)
+      .filter((r) => (r.matchType === 'alternative' || r.matchType === 'ai-suggested') && r.alternatives.length > 0)
       .forEach((r) => {
         defaultAlt[r.line.id] = r.alternatives[0].id;
       });
@@ -176,7 +187,7 @@ export function BomWorkflowContent() {
       const matched =
         result.matchType === 'exact'
           ? result.product
-          : result.matchType === 'alternative'
+          : result.matchType === 'alternative' || result.matchType === 'ai-suggested'
             ? result.alternatives.find((a) => a.id === chosenAlternative[result.line.id])
             : undefined;
       return [
@@ -194,14 +205,17 @@ export function BomWorkflowContent() {
   };
 
   const selectedLineCount =
-    Array.from(selectedExact).length + Object.keys(chosenAlternative).filter((id) => matches.find((m) => m.line.id === id && m.matchType === 'alternative')).length;
+    Array.from(selectedExact).length +
+    Object.keys(chosenAlternative).filter((id) =>
+      matches.find((m) => m.line.id === id && (m.matchType === 'alternative' || m.matchType === 'ai-suggested')),
+    ).length;
 
   const requestQuote = async () => {
     const rfqLines: { product: import('@/types').Product; quantity: number }[] = [];
     for (const result of matches) {
       if (result.matchType === 'exact' && selectedExact.has(result.line.id) && result.product) {
         rfqLines.push({ product: result.product, quantity: result.line.quantity });
-      } else if (result.matchType === 'alternative') {
+      } else if (result.matchType === 'alternative' || result.matchType === 'ai-suggested') {
         const chosenId = chosenAlternative[result.line.id];
         const product = result.alternatives.find((a) => a.id === chosenId);
         if (product) rfqLines.push({ product, quantity: result.line.quantity });
@@ -229,8 +243,9 @@ export function BomWorkflowContent() {
           <ProtoBadge />
         </View>
         <MDText variant="body" tone="secondary" style={{ marginBottom: spacing.xl, maxWidth: 720 }}>
-          Upload a bill of materials to find exact catalog matches, get alternative-part suggestions for close
-          matches, and flag anything our engineering team needs to source — then move straight into an RFQ.
+          Upload a bill of materials to find exact catalog matches, see back-order / lead-time splits when a line
+          exceeds current stock, get AI-suggested alternates for parts that aren't in inventory yet, and flag
+          anything engineering needs to source or design — then move straight into an RFQ.
         </MDText>
 
         <StepIndicator step={step} />
@@ -286,7 +301,9 @@ export function BomWorkflowContent() {
             <View style={{ flexDirection: 'row', gap: spacing.md, marginBottom: spacing.xl, flexWrap: 'wrap' }}>
               <SummaryPill label="Total Lines" value={summary.total} tone="neutral" />
               <SummaryPill label="Exact Matches" value={summary.exact} tone="success" />
+              <SummaryPill label="Backordered · Lead Time" value={backorderCount} tone="warning" />
               <SummaryPill label="AI Recommended Alternatives" value={summary.alternative} tone="warning" />
+              <SummaryPill label="AI Suggested · New Design" value={summary.aiSuggested} tone="error" />
               <SummaryPill label="No Match" value={summary.unmatched} tone="error" />
             </View>
 
@@ -336,6 +353,7 @@ export function BomWorkflowContent() {
                       <View style={{ flex: 1 }}>
                         <MDText variant="bodySm" weight="600">{result.product.title}</MDText>
                         <MDStockStatus stockStatus={result.product.stockStatus} availability={result.product.availability} />
+                        <BackorderNote product={result.product} quantity={result.line.quantity} size="xs" />
                       </View>
                       <MDPrice amount={result.product.price} currency={result.product.currency} size="sm" />
                     </Pressable>
@@ -378,6 +396,62 @@ export function BomWorkflowContent() {
                           </Pressable>
                         );
                       })}
+                    </View>
+                  ) : null}
+
+                  {result.matchType === 'ai-suggested' ? (
+                    <View style={{ gap: spacing.sm }}>
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          alignItems: 'flex-start',
+                          gap: spacing.sm,
+                          padding: spacing.md,
+                          borderRadius: radius.md,
+                          backgroundColor: colors.status.warningSoft,
+                        }}
+                      >
+                        <Ionicons name="sparkles" size={14} color={colors.brand.teal} style={{ marginTop: 2 }} />
+                        <MDText variant="bodySm" style={{ color: colors.status.warningStrong, flex: 1 }}>
+                          Not found in inventory — this looks like a new product design.{' '}
+                          {result.matchReason ?? 'Our AI suggested the closest available components below.'} Choose
+                          one to proceed with for now, or submit a Design Request so engineering can source or
+                          develop the exact part.
+                        </MDText>
+                      </View>
+                      {result.alternatives.map((alt) => {
+                        const selected = chosenAlternative[result.line.id] === alt.id;
+                        return (
+                          <Pressable
+                            key={alt.id}
+                            onPress={() => setChosenAlternative((prev) => ({ ...prev, [result.line.id]: alt.id }))}
+                            style={{
+                              flexDirection: 'row',
+                              alignItems: 'center',
+                              gap: spacing.md,
+                              padding: spacing.md,
+                              borderRadius: radius.md,
+                              borderWidth: 1,
+                              borderColor: selected ? colors.brand.primary : colors.border,
+                              backgroundColor: selected ? colors.brand.primarySoft : colors.surface,
+                            }}
+                          >
+                            <Ionicons name={selected ? 'radio-button-on' : 'radio-button-off'} size={18} color={selected ? colors.brand.primary : colors.text.tertiary} />
+                            <View style={{ flex: 1 }}>
+                              <MDText variant="bodySm" weight="600">{alt.manufacturerPartNumber}</MDText>
+                              <MDText variant="caption" tone="tertiary">{alt.manufacturer} · {alt.productType}</MDText>
+                            </View>
+                            <MDPrice amount={alt.price} currency={alt.currency} size="sm" />
+                          </Pressable>
+                        );
+                      })}
+                      <MDButton
+                        label="Submit Design Request Instead"
+                        size="sm"
+                        variant="outline"
+                        iconLeft={<Ionicons name="construct-outline" size={14} color={colors.brand.primary} />}
+                        onPress={() => router.push('/(buyer)/design-request')}
+                      />
                     </View>
                   ) : null}
 

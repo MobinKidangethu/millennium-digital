@@ -1,6 +1,6 @@
 [
   {
-    "id": 1,
+    "id": 125,
     "mdPartNumber": "726-AIGBG15N120S7ATM",
     "manufacturerPartNumber": "AIGBG15N120S7ATMA1",
     "manufacturer": "Pulse Electronics",
@@ -21,13 +21,13 @@
     "mountingStyle": "SMD/SMT",
     "package": "PG-TO263-7",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/AIGBG15N120S7ATMA1.webp",
     "tags": []
   },
   {
-    "id": 2,
+    "id": 126,
     "mdPartNumber": "78-2KDFN27CA-M3/H",
     "manufacturerPartNumber": "2KDFN27CA-M3/H",
     "manufacturer": "Melexis",
@@ -48,12 +48,12 @@
     "mountingStyle": "SMD/SMT",
     "package": "DFN6546A",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/2KDFN27CA-M3H.webp"
   },
   {
-    "id": 3,
+    "id": 127,
     "mdPartNumber": "78-2KDFN33CA-M3/H",
     "manufacturerPartNumber": "2KDFN33CA-M3/H",
     "manufacturer": "Renesas",
@@ -74,12 +74,12 @@
     "mountingStyle": "SMD/SMT",
     "package": "DFN6546A",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/2KDFN27CA-M3H.webp"
   },
   {
-    "id": 4,
+    "id": 128,
     "mdPartNumber": "78-2KDFN39CA-M3/H",
     "manufacturerPartNumber": "2KDFN39CA-M3/H",
     "manufacturer": "Delta",
@@ -100,12 +100,12 @@
     "mountingStyle": "SMD/SMT",
     "package": "DFN6546A",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/2KDFN27CA-M3H.webp"
   },
   {
-    "id": 5,
+    "id": 129,
     "mdPartNumber": "78-2KDFN62CA-M3/H",
     "manufacturerPartNumber": "2KDFN62CA-M3/H",
     "manufacturer": "Semtech",
@@ -126,12 +126,12 @@
     "mountingStyle": "SMD/SMT",
     "package": "DFN6546A",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/2KDFN27CA-M3H.webp"
   },
   {
-    "id": 6,
+    "id": 130,
     "mdPartNumber": "78-2KDFN91CA-M3/H",
     "manufacturerPartNumber": "2KDFN91CA-M3/H",
     "manufacturer": "Rohm",
@@ -152,12 +152,12 @@
     "mountingStyle": "SMD/SMT",
     "package": "DFN6546A",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/2KDFN27CA-M3H.webp"
   },
   {
-    "id": 7,
+    "id": 131,
     "mdPartNumber": "78-3KDFN15CA-M3/H",
     "manufacturerPartNumber": "3KDFN15CA-M3/H",
     "manufacturer": "Rohm",
@@ -178,12 +178,12 @@
     "mountingStyle": "SMD/SMT",
     "package": "DFN-8",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/3KDFN15CA-M3H.webp"
   },
   {
-    "id": 8,
+    "id": 132,
     "mdPartNumber": "78-3KDFN16A-M3/H",
     "manufacturerPartNumber": "3KDFN16A-M3/H",
     "manufacturer": "Nuvoton",
@@ -204,12 +204,12 @@
     "mountingStyle": "SMD/SMT",
     "package": "DFN-8",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/3KDFN15CA-M3H.webp"
   },
   {
-    "id": 9,
+    "id": 133,
     "mdPartNumber": "78-3KDFN18CA-M3/H",
     "manufacturerPartNumber": "3KDFN18CA-M3/H",
     "manufacturer": "Delta",
@@ -230,13 +230,13 @@
     "mountingStyle": "SMD/SMT",
     "package": "DFN-8",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/3KDFN15CA-M3H.webp",
     "tags": []
   },
   {
-    "id": 10,
+    "id": 134,
     "mdPartNumber": "78-BZG03C62-HM3_A-08",
     "manufacturerPartNumber": "BZG03C62-HM3_A-08",
     "manufacturer": "Melexis",
@@ -257,12 +257,12 @@
     "mountingStyle": "SMD/SMT",
     "package": "SMA-2",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/BZG03C62-HM3_A-08.webp"
   },
   {
-    "id": 11,
+    "id": 135,
     "mdPartNumber": "78-BZG05B4V7-M3_A-08",
     "manufacturerPartNumber": "BZG05B4V7-M3_A-08",
     "manufacturer": "Vango",
@@ -283,12 +283,12 @@
     "mountingStyle": "SMD/SMT",
     "package": "SMA-2",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/BZG03C62-HM3_A-08.webp"
   },
   {
-    "id": 12,
+    "id": 136,
     "mdPartNumber": "78-BZG05C9V1-M3_A-08",
     "manufacturerPartNumber": "BZG05C9V1-M3_A-08",
     "manufacturer": "Delta",
@@ -309,12 +309,12 @@
     "mountingStyle": "SMD/SMT",
     "package": "SMA-2",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/BZG03C62-HM3_A-08.webp"
   },
   {
-    "id": 13,
+    "id": 137,
     "mdPartNumber": "78-S07M-M3/H",
     "manufacturerPartNumber": "S07M-M3/H",
     "manufacturer": "Digi",
@@ -335,12 +335,12 @@
     "mountingStyle": "SMD/SMT",
     "package": "DO-219AB-2",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/2KDFN27CA-M3H.webp"
   },
   {
-    "id": 14,
+    "id": 138,
     "mdPartNumber": "78-SE40CLJ-M3/I",
     "manufacturerPartNumber": "SE40CLJ-M3/I",
     "manufacturer": "Kemet",
@@ -361,12 +361,12 @@
     "mountingStyle": "SMD/SMT",
     "package": "SMPD-2",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/3KDFN15CA-M3H.webp"
   },
   {
-    "id": 15,
+    "id": 139,
     "mdPartNumber": "78-SE45124-M3/I",
     "manufacturerPartNumber": "SE45124-M3/I",
     "manufacturer": "Littelfuse",
@@ -387,12 +387,12 @@
     "mountingStyle": "SMD/SMT",
     "package": "DO-218AB-2",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/SE50124-M3I.webp"
   },
   {
-    "id": 16,
+    "id": 140,
     "mdPartNumber": "78-SM8S54AHM3/I",
     "manufacturerPartNumber": "SM8S54AHM3/I",
     "manufacturer": "Abracon",
@@ -413,12 +413,12 @@
     "mountingStyle": "SMD/SMT",
     "package": "DO-218AC-2",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/AIGBG15N120S7ATMA1.webp"
   },
   {
-    "id": 17,
+    "id": 141,
     "mdPartNumber": "78-SM8S64AHM3/I",
     "manufacturerPartNumber": "SM8S64AHM3/I",
     "manufacturer": "Yageo",
@@ -439,13 +439,13 @@
     "mountingStyle": "SMD/SMT",
     "package": "DO-218AC-2",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/BZG03C62-HM3_A-08.webp",
     "tags": []
   },
   {
-    "id": 18,
+    "id": 142,
     "mdPartNumber": "78-SMB10J11AHE3_B/I",
     "manufacturerPartNumber": "SMB10J11AHE3_B/I",
     "manufacturer": "Infineon",
@@ -466,12 +466,12 @@
     "mountingStyle": "SMD/SMT",
     "package": "DO-214AA-2",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/FS01M5R12A7MA2BHPSA1.webp"
   },
   {
-    "id": 19,
+    "id": 143,
     "mdPartNumber": "78-SMB10J20AHE3_B/I",
     "manufacturerPartNumber": "SMB10J20AHE3_B/I",
     "manufacturer": "Renesas",
@@ -492,12 +492,12 @@
     "mountingStyle": "SMD/SMT",
     "package": "DO-214AA-2",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/IMBG75R016M2HXTMA1.webp"
   },
   {
-    "id": 20,
+    "id": 144,
     "mdPartNumber": "78-SS12PH102HM3/I",
     "manufacturerPartNumber": "SS12PH102HM3/I",
     "manufacturer": "Littelfuse",
@@ -518,12 +518,12 @@
     "mountingStyle": "SMD/SMT",
     "package": "TO-277A-2",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/KBPE0480-M3P.webp"
   },
   {
-    "id": 21,
+    "id": 145,
     "mdPartNumber": "78-SS15PH102-M3/I",
     "manufacturerPartNumber": "SS15PH102-M3/I",
     "manufacturer": "MPS",
@@ -544,12 +544,12 @@
     "mountingStyle": "SMD/SMT",
     "package": "TO-277A-2",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/SE50124-M3I.webp"
   },
   {
-    "id": 22,
+    "id": 146,
     "mdPartNumber": "78-SS5PH102HM3/I",
     "manufacturerPartNumber": "SS5PH102HM3/I",
     "manufacturer": "Rohm",
@@ -570,12 +570,12 @@
     "mountingStyle": "SMD/SMT",
     "package": "TO-277A-2",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/SS8PH102-M3I.webp"
   },
   {
-    "id": 23,
+    "id": 147,
     "mdPartNumber": "78-T4F39CAHM3/I",
     "manufacturerPartNumber": "T4F39CAHM3/I",
     "manufacturer": "TE Connectivity",
@@ -596,12 +596,12 @@
     "mountingStyle": "SMD/SMT",
     "package": "DO-219AB-2",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/VS-4C20ET07S2L-M3.webp"
   },
   {
-    "id": 24,
+    "id": 148,
     "mdPartNumber": "78-VS-E7SX0112-M3V/I",
     "manufacturerPartNumber": "VS-E7SX0112-M3V/I",
     "manufacturer": "Kyocera AVX",
@@ -622,12 +622,12 @@
     "mountingStyle": "SMD/SMT",
     "package": "TO-277A-2",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/2KDFN27CA-M3H.webp"
   },
   {
-    "id": 25,
+    "id": 149,
     "mdPartNumber": "78-2KDFN12A-M3/H",
     "manufacturerPartNumber": "2KDFN12A-M3/H",
     "manufacturer": "Renesas",
@@ -648,12 +648,12 @@
     "mountingStyle": "SMD/SMT",
     "package": "DFN6546A",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/2KDFN27CA-M3H.webp"
   },
   {
-    "id": 26,
+    "id": 150,
     "mdPartNumber": "78-2KDFN75CA-M3/H",
     "manufacturerPartNumber": "2KDFN75CA-M3/H",
     "manufacturer": "Kemet",
@@ -674,13 +674,13 @@
     "mountingStyle": "SMD/SMT",
     "package": "DFN6546A",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/2KDFN27CA-M3H.webp",
     "tags": []
   },
   {
-    "id": 27,
+    "id": 151,
     "mdPartNumber": "78-3KDFN13A-M3/H",
     "manufacturerPartNumber": "3KDFN13A-M3/H",
     "manufacturer": "MPS",
@@ -701,12 +701,12 @@
     "mountingStyle": "SMD/SMT",
     "package": "DFN-8",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/3KDFN15CA-M3H.webp"
   },
   {
-    "id": 28,
+    "id": 152,
     "mdPartNumber": "78-3KDFN20CA-M3/H",
     "manufacturerPartNumber": "3KDFN20CA-M3/H",
     "manufacturer": "Sanken",
@@ -727,12 +727,12 @@
     "mountingStyle": "SMD/SMT",
     "package": "DFN-8",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/3KDFN15CA-M3H.webp"
   },
   {
-    "id": 29,
+    "id": 153,
     "mdPartNumber": "78-3KDFN24A-M3/H",
     "manufacturerPartNumber": "3KDFN24A-M3/H",
     "manufacturer": "Pulse Electronics",
@@ -753,12 +753,12 @@
     "mountingStyle": "SMD/SMT",
     "package": "DFN-8",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/3KDFN15CA-M3H.webp"
   },
   {
-    "id": 30,
+    "id": 154,
     "mdPartNumber": "78-BZG05C5V6-M3_A-08",
     "manufacturerPartNumber": "BZG05C5V6-M3_A-08",
     "manufacturer": "Sanken",
@@ -779,12 +779,12 @@
     "mountingStyle": "SMD/SMT",
     "package": "SMA-2",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/BZG03C62-HM3_A-08.webp"
   },
   {
-    "id": 31,
+    "id": 155,
     "mdPartNumber": "78-SS8PH102HM3/I",
     "manufacturerPartNumber": "SS8PH102HM3/I",
     "manufacturer": "Kemet",
@@ -805,12 +805,12 @@
     "mountingStyle": "SMD/SMT",
     "package": "SMPC (TO-277A-3)",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/SS8PH102-M3I.webp"
   },
   {
-    "id": 32,
+    "id": 156,
     "mdPartNumber": "78-T4F18CAHM3/I",
     "manufacturerPartNumber": "T4F18CAHM3/I",
     "manufacturer": "Yageo",
@@ -831,12 +831,12 @@
     "mountingStyle": "SMD/SMT",
     "package": "DO-219AB-2",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/3KDFN15CA-M3H.webp"
   },
   {
-    "id": 33,
+    "id": 157,
     "mdPartNumber": "78-VS-4C06ET07S2LHM3",
     "manufacturerPartNumber": "VS-4C06ET07S2LHM3",
     "manufacturer": "Rohm",
@@ -857,12 +857,12 @@
     "mountingStyle": "SMD/SMT",
     "package": "TO-263AB-2",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/VS-4C20ET07S2L-M3.webp"
   },
   {
-    "id": 34,
+    "id": 158,
     "mdPartNumber": "78-VS-E7SX0112HM3V/I",
     "manufacturerPartNumber": "VS-E7SX0112HM3V/I",
     "manufacturer": "Chilisin",
@@ -883,13 +883,13 @@
     "mountingStyle": "SMD/SMT",
     "package": "TO-277A-2",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/AIGBG15N120S7ATMA1.webp",
     "tags": []
   },
   {
-    "id": 35,
+    "id": 159,
     "mdPartNumber": "78-VS-E7SX0212HM3V/I",
     "manufacturerPartNumber": "VS-E7SX0212HM3V/I",
     "manufacturer": "Abracon",
@@ -910,12 +910,12 @@
     "mountingStyle": "SMD/SMT",
     "package": "TO-277A-2",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/BZG03C62-HM3_A-08.webp"
   },
   {
-    "id": 36,
+    "id": 160,
     "mdPartNumber": "78-BZX384B33-HE3_A8",
     "manufacturerPartNumber": "BZX384B33-HE3_A08",
     "manufacturer": "Semtech",
@@ -936,12 +936,12 @@
     "mountingStyle": "SMD/SMT",
     "package": "SOD-323",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/FS01M5R12A7MA2BHPSA1.webp"
   },
   {
-    "id": 37,
+    "id": 161,
     "mdPartNumber": "78-2KDFN15CA-M3/H",
     "manufacturerPartNumber": "2KDFN15CA-M3/H",
     "manufacturer": "Hongfa",
@@ -962,12 +962,12 @@
     "mountingStyle": "SMD/SMT",
     "package": "DFN6546A",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/2KDFN27CA-M3H.webp"
   },
   {
-    "id": 38,
+    "id": 162,
     "mdPartNumber": "78-2KDFN20A-M3/H",
     "manufacturerPartNumber": "2KDFN20A-M3/H",
     "manufacturer": "Quectel",
@@ -988,12 +988,12 @@
     "mountingStyle": "SMD/SMT",
     "package": "DFN6546A",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/2KDFN27CA-M3H.webp"
   },
   {
-    "id": 39,
+    "id": 163,
     "mdPartNumber": "78-2KDFN22A-M3/H",
     "manufacturerPartNumber": "2KDFN22A-M3/H",
     "manufacturer": "Renesas",
@@ -1014,7 +1014,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "DFN6546A",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/2KDFN27CA-M3H.webp"
   },
@@ -1040,7 +1040,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "DFN6546A",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/2KDFN27CA-M3H.webp"
   },
@@ -1066,7 +1066,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "DFN6546A",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/2KDFN27CA-M3H.webp"
   },
@@ -1092,7 +1092,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "DFN6546A",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/2KDFN27CA-M3H.webp",
     "tags": []
@@ -1119,7 +1119,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "DFN-8",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/3KDFN15CA-M3H.webp"
   },
@@ -1145,7 +1145,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "DFN-8",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/3KDFN15CA-M3H.webp"
   },
@@ -1171,7 +1171,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "SMPD-2",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/IMBG75R016M2HXTMA1.webp"
   },
@@ -1197,7 +1197,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "DO-214AA-2",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/KBPE0480-M3P.webp"
   },
@@ -1223,7 +1223,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "DO-214AA-2",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/SE50124-M3I.webp"
   },
@@ -1249,7 +1249,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "DO-219AB-2",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/SS8PH102-M3I.webp"
   },
@@ -1275,7 +1275,7 @@
     "mountingStyle": "Through Hole",
     "package": "TO-247AD-3",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/VS-4C20ET07S2L-M3.webp"
   },
@@ -1301,7 +1301,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "TO-277A-2",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/2KDFN27CA-M3H.webp"
   },
@@ -1327,7 +1327,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "SMA-2",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/BZG03C62-HM3_A-08.webp",
     "tags": []
@@ -1354,7 +1354,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "DO-218AC-2",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/3KDFN15CA-M3H.webp"
   },
@@ -1380,7 +1380,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "SMPC (TO-277A-3)",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/SS8PH102-M3I.webp"
   },
@@ -1406,7 +1406,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "DO-219AB-2",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/AIGBG15N120S7ATMA1.webp"
   },
@@ -1432,7 +1432,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "TO-263AB-2",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/VS-4C20ET07S2L-M3.webp"
   },
@@ -1458,7 +1458,7 @@
     "mountingStyle": "Through Hole",
     "package": "TO-247AD-3",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/BZG03C62-HM3_A-08.webp"
   },
@@ -1484,7 +1484,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "DFN6546A",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/2KDFN27CA-M3H.webp"
   },
@@ -1510,7 +1510,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "DFN6546A",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/2KDFN27CA-M3H.webp"
   },
@@ -1536,7 +1536,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "DFN-8",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/3KDFN15CA-M3H.webp",
     "tags": []
@@ -1563,7 +1563,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "DFN-8",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/3KDFN15CA-M3H.webp"
   },
@@ -1589,7 +1589,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "DFN-8",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/3KDFN15CA-M3H.webp"
   },
@@ -1615,7 +1615,7 @@
     "mountingStyle": "Through Hole",
     "package": "KBP-4",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/KBPE0480-M3P.webp"
   },
@@ -1641,7 +1641,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "TO-277A-2",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/FS01M5R12A7MA2BHPSA1.webp"
   },
@@ -1667,7 +1667,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "TO-277A-2",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/IMBG75R016M2HXTMA1.webp"
   },
@@ -1693,7 +1693,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "TO-277A-2",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/KBPE0480-M3P.webp"
   },
@@ -1719,7 +1719,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "TO-277A-2",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/SE50124-M3I.webp"
   },
@@ -1745,7 +1745,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "TO-277A-2",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/SS8PH102-M3I.webp",
     "tags": []
@@ -1772,7 +1772,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "DO-219AB-2",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/VS-4C20ET07S2L-M3.webp"
   },
@@ -1798,7 +1798,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "DO-219AB-2",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/2KDFN27CA-M3H.webp"
   },
@@ -1824,7 +1824,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "TO-263AB-2",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/VS-4C20ET07S2L-M3.webp"
   },
@@ -1850,7 +1850,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "SMB (DO-214AA)",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/3KDFN15CA-M3H.webp"
   },
@@ -1876,7 +1876,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "TO-263-7",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/IMBG75R016M2HXTMA1.webp"
   },
@@ -1902,7 +1902,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "PG-HDSOP-22",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/AIGBG15N120S7ATMA1.webp"
   },
@@ -1928,7 +1928,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "PG-WHSON-8",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/BZG03C62-HM3_A-08.webp"
   },
@@ -1954,7 +1954,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "TSOP-6F",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/FS01M5R12A7MA2BHPSA1.webp"
   },
@@ -1980,7 +1980,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "DFN-8",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/3KDFN15CA-M3H.webp",
     "tags": []
@@ -2007,7 +2007,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "SOP-8",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/IMBG75R016M2HXTMA1.webp"
   },
@@ -2033,7 +2033,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "PowerPAK SO-8L-4",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/KBPE0480-M3P.webp"
   },
@@ -2059,7 +2059,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "PowerPAK SO-8L-4",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/SE50124-M3I.webp"
   },
@@ -2085,7 +2085,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "PG-WHTFN-9",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/SS8PH102-M3I.webp"
   },
@@ -2111,7 +2111,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "WSON-8",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/VS-4C20ET07S2L-M3.webp"
   },
@@ -2137,7 +2137,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "LHDSO-10",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/2KDFN27CA-M3H.webp"
   },
@@ -2163,7 +2163,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "DO-214AB-2",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/3KDFN15CA-M3H.webp"
   },
@@ -2189,7 +2189,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "PG-TDSON-8",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/AIGBG15N120S7ATMA1.webp",
     "tags": []
@@ -2216,7 +2216,7 @@
     "mountingStyle": "Through Hole",
     "package": "TO-247-3",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/BZG03C62-HM3_A-08.webp"
   },
@@ -2242,7 +2242,7 @@
     "mountingStyle": "Press Fit",
     "package": "HybridPACK",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/FS01M5R12A7MA2BHPSA1.webp"
   },
@@ -2268,7 +2268,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "PG-TDSON-8",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/FS01M5R12A7MA2BHPSA1.webp"
   },
@@ -2294,7 +2294,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "PowerPAK SO-8SW",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/IMBG75R016M2HXTMA1.webp"
   },
@@ -2320,7 +2320,7 @@
     "mountingStyle": "Through Hole",
     "package": "PG-TO-247-4",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/KBPE0480-M3P.webp"
   },
@@ -2346,7 +2346,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "PG-TDSON-8",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/SE50124-M3I.webp"
   },
@@ -2372,7 +2372,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "DFN6546A",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/2KDFN27CA-M3H.webp"
   },
@@ -2398,7 +2398,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "DFN6546A",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/2KDFN27CA-M3H.webp",
     "tags": []
@@ -2425,7 +2425,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "DFN6546A",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/2KDFN27CA-M3H.webp"
   },
@@ -2451,7 +2451,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "DFN6546A",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/2KDFN27CA-M3H.webp"
   },
@@ -2477,7 +2477,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "SMPD-2",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/SS8PH102-M3I.webp"
   },
@@ -2503,7 +2503,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "SMPD-2",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/VS-4C20ET07S2L-M3.webp"
   },
@@ -2529,7 +2529,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "DO-214AA-2",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/2KDFN27CA-M3H.webp"
   },
@@ -2555,7 +2555,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "uSO8-FL",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/3KDFN15CA-M3H.webp"
   },
@@ -2581,7 +2581,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "uSO8-FL",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/AIGBG15N120S7ATMA1.webp"
   },
@@ -2607,7 +2607,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "DFN6546A",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/2KDFN27CA-M3H.webp"
   },
@@ -2633,7 +2633,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "DFN6546A",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/2KDFN27CA-M3H.webp",
     "tags": []
@@ -2660,7 +2660,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "DFN6546A",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/2KDFN27CA-M3H.webp"
   },
@@ -2686,7 +2686,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "DFN6546A",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/2KDFN27CA-M3H.webp"
   },
@@ -2712,7 +2712,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "DFN-8",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/3KDFN15CA-M3H.webp"
   },
@@ -2738,7 +2738,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "DFN-8",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/3KDFN15CA-M3H.webp"
   },
@@ -2764,7 +2764,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "DO-219AB-2",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/BZG03C62-HM3_A-08.webp"
   },
@@ -2790,7 +2790,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "DO-219AB-2",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/FS01M5R12A7MA2BHPSA1.webp"
   },
@@ -2816,7 +2816,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "SMA-2",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/BZG03C62-HM3_A-08.webp"
   },
@@ -2842,7 +2842,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "DO-218AB-2",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/SE50124-M3I.webp",
     "tags": []
@@ -2869,7 +2869,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "DO-214AA-2",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/IMBG75R016M2HXTMA1.webp"
   },
@@ -2895,7 +2895,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "PowerPAK-SO-8L",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/KBPE0480-M3P.webp"
   },
@@ -2921,7 +2921,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "TO-263-7L",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/SE50124-M3I.webp"
   },
@@ -2947,7 +2947,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "DO-219AB-2",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/SS8PH102-M3I.webp"
   },
@@ -2973,7 +2973,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "DFN6546A",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/2KDFN27CA-M3H.webp"
   },
@@ -2999,7 +2999,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "DFN6546A",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/2KDFN27CA-M3H.webp"
   },
@@ -3025,7 +3025,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "DFN6546A",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/2KDFN27CA-M3H.webp"
   },
@@ -3051,7 +3051,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "DFN6546A",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/2KDFN27CA-M3H.webp",
     "tags": []
@@ -3078,7 +3078,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "DFN6546A",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/2KDFN27CA-M3H.webp"
   },
@@ -3104,7 +3104,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "DFN6546A",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/2KDFN27CA-M3H.webp"
   },
@@ -3130,7 +3130,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "DFN6546A",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/2KDFN27CA-M3H.webp"
   },
@@ -3156,7 +3156,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "DFN6546A",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/2KDFN27CA-M3H.webp"
   },
@@ -3182,7 +3182,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "DFN-8",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/3KDFN15CA-M3H.webp"
   },
@@ -3208,7 +3208,7 @@
     "mountingStyle": "SMD/SMT",
     "package": "DFN-8",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/3KDFN15CA-M3H.webp"
   },
@@ -3234,12 +3234,12 @@
     "mountingStyle": "SMD/SMT",
     "package": "DFN-8",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/3KDFN15CA-M3H.webp"
   },
   {
-    "id": 125,
+    "id": 1,
     "mdPartNumber": "78-4SMF10CA-M3/I",
     "manufacturerPartNumber": "4SMF10CA-M3/I",
     "manufacturer": "Sunon",
@@ -3260,12 +3260,12 @@
     "mountingStyle": "SMD/SMT",
     "package": "DO-219AB-2",
     "quantity": 1,
-    "category": "Semiconductors",
+    "category": "Evaluation Board",
     "stockType": "Stock",
     "image": "assets/images/products/VS-4C20ET07S2L-M3.webp"
   },
   {
-    "id": 126,
+    "id": 2,
     "mdPartNumber": "",
     "manufacturerPartNumber": "PTC-04-DB-90316",
     "manufacturer": "Rubycon",
@@ -3294,7 +3294,7 @@
     ]
   },
   {
-    "id": 127,
+    "id": 3,
     "mdPartNumber": "",
     "manufacturerPartNumber": "PTC04-DB-922XX",
     "manufacturer": "Rubycon",
@@ -3323,7 +3323,7 @@
     ]
   },
   {
-    "id": 128,
+    "id": 4,
     "mdPartNumber": "",
     "manufacturerPartNumber": "MLX-UNIV-MASTER-CABLE",
     "manufacturer": "Infineon",
@@ -3352,7 +3352,7 @@
     ]
   },
   {
-    "id": 129,
+    "id": 5,
     "mdPartNumber": "",
     "manufacturerPartNumber": "EVB90632",
     "manufacturer": "Rohm",
@@ -3381,7 +3381,7 @@
     ]
   },
   {
-    "id": 130,
+    "id": 6,
     "mdPartNumber": "",
     "manufacturerPartNumber": "EVB90640-41",
     "manufacturer": "Sunon",
@@ -3410,7 +3410,7 @@
     ]
   },
   {
-    "id": 131,
+    "id": 7,
     "mdPartNumber": "",
     "manufacturerPartNumber": "EVB90393",
     "manufacturer": "Infineon",
@@ -3439,7 +3439,7 @@
     ]
   },
   {
-    "id": 132,
+    "id": 8,
     "mdPartNumber": "",
     "manufacturerPartNumber": "EVB90372-GDC-300-REV1.0",
     "manufacturer": "Hongfa",
@@ -3468,7 +3468,7 @@
     ]
   },
   {
-    "id": 133,
+    "id": 9,
     "mdPartNumber": "",
     "manufacturerPartNumber": "EVB90316-GO",
     "manufacturer": "Winbond",
@@ -3497,7 +3497,7 @@
     ]
   },
   {
-    "id": 134,
+    "id": 10,
     "mdPartNumber": "",
     "manufacturerPartNumber": "PTC04-DB-HALL05",
     "manufacturer": "Panasonic",
@@ -3526,7 +3526,7 @@
     ]
   },
   {
-    "id": 135,
+    "id": 11,
     "mdPartNumber": "",
     "manufacturerPartNumber": "LPWI201610H1R0T",
     "manufacturer": "Semtech",
@@ -3555,7 +3555,7 @@
     ]
   },
   {
-    "id": 136,
+    "id": 12,
     "mdPartNumber": "",
     "manufacturerPartNumber": "CAP-10/440R",
     "manufacturer": "Littelfuse",
@@ -3584,7 +3584,7 @@
     ]
   },
   {
-    "id": 137,
+    "id": 13,
     "mdPartNumber": "",
     "manufacturerPartNumber": "1-1744036-1",
     "manufacturer": "MPS",
@@ -3613,7 +3613,7 @@
     ]
   },
   {
-    "id": 138,
+    "id": 14,
     "mdPartNumber": "",
     "manufacturerPartNumber": "MAXESSENTIAL02EP#",
     "manufacturer": "Laird Technologies",
@@ -3642,7 +3642,7 @@
     ]
   },
   {
-    "id": 139,
+    "id": 15,
     "mdPartNumber": "778-PS67K-3S-24L-250",
     "manufacturerPartNumber": "PS67K-3S-24L-250",
     "manufacturer": "Abracon",
@@ -3671,7 +3671,7 @@
     ]
   },
   {
-    "id": 140,
+    "id": 16,
     "mdPartNumber": "490-DQD6N-24-D15-T",
     "manufacturerPartNumber": "DQD6N-24-D15-T",
     "manufacturer": "Digi",
@@ -3700,7 +3700,7 @@
     ]
   },
   {
-    "id": 141,
+    "id": 17,
     "mdPartNumber": "653-8NRS36024A0L2IL3",
     "manufacturerPartNumber": "S8NR-S36024-A0L2-IL3",
     "manufacturer": "Sanken",
@@ -3729,7 +3729,7 @@
     ]
   },
   {
-    "id": 142,
+    "id": 18,
     "mdPartNumber": "653-8NRS60024A2L2IL3",
     "manufacturerPartNumber": "S8NR-S60024-A2L2-IL3",
     "manufacturer": "Winbond",
@@ -3752,10 +3752,10 @@
     "quantity": 1,
     "category": "Power",
     "stockType": "Stock",
-    "image": ""
+    "image": "assets/images/products/S8NR-S60024-A2L2-IL3.png"
   },
   {
-    "id": 143,
+    "id": 19,
     "mdPartNumber": "651-1119230",
     "manufacturerPartNumber": "1119230",
     "manufacturer": "MPS",
@@ -3781,7 +3781,7 @@
     "image": "assets/images/products/1119230.png"
   },
   {
-    "id": 144,
+    "id": 20,
     "mdPartNumber": "923-EKI-2711MPSI-A",
     "manufacturerPartNumber": "EKI-2711MPSI-A",
     "manufacturer": "Pulse Electronics",
@@ -3807,7 +3807,7 @@
     "image": "assets/images/products/EKI-2711MPSI-A.png"
   },
   {
-    "id": 145,
+    "id": 21,
     "mdPartNumber": "653-8NRS36024A2L1IL3",
     "manufacturerPartNumber": "S8NR-S36024-A2L1-IL3",
     "manufacturer": "TDK",
@@ -3830,10 +3830,10 @@
     "quantity": 1,
     "category": "Power",
     "stockType": "Stock",
-    "image": ""
+    "image": "assets/images/products/S8NR-S36024-A2L1-IL3.png"
   },
   {
-    "id": 146,
+    "id": 22,
     "mdPartNumber": "490-DQD6N-24-S5-T",
     "manufacturerPartNumber": "DQD6N-24-S5-T",
     "manufacturer": "Panasonic",
@@ -3856,10 +3856,10 @@
     "quantity": 1,
     "category": "Power",
     "stockType": "Stock",
-    "image": ""
+    "image": "assets/images/products/DQD6N-24-S5-T.png"
   },
   {
-    "id": 147,
+    "id": 23,
     "mdPartNumber": "653-8NRS60024A0L3IL3",
     "manufacturerPartNumber": "S8NR-S60024-A0L3-IL3",
     "manufacturer": "Digi",
@@ -3882,10 +3882,10 @@
     "quantity": 1,
     "category": "Power",
     "stockType": "Stock",
-    "image": ""
+    "image": "assets/images/products/S8NR-S60024-A0L3-IL3.png"
   },
   {
-    "id": 148,
+    "id": 24,
     "mdPartNumber": "967-CUS1200M-24",
     "manufacturerPartNumber": "CUS1200M-24",
     "manufacturer": "Laird Technologies",
@@ -3908,10 +3908,10 @@
     "quantity": 1,
     "category": "Power",
     "stockType": "Stock",
-    "image": ""
+    "image": "assets/images/products/CUS1200M-24.png"
   },
   {
-    "id": 149,
+    "id": 25,
     "mdPartNumber": "584-LT8647RCPZ-RL",
     "manufacturerPartNumber": "LT8647RCPZ-RL",
     "manufacturer": "Pulse Electronics",
@@ -3934,10 +3934,10 @@
     "quantity": 1,
     "category": "Power",
     "stockType": "Stock",
-    "image": ""
+    "image": "assets/images/products/LT8647RCPZ-RL.png"
   },
   {
-    "id": 150,
+    "id": 26,
     "mdPartNumber": "700-ADPL86610ATB+T",
     "manufacturerPartNumber": "ADPL86610ATB+T",
     "manufacturer": "Chilisin",
@@ -3960,10 +3960,10 @@
     "quantity": 1,
     "category": "Power",
     "stockType": "Stock",
-    "image": ""
+    "image": "assets/images/products/ADPL86610ATBT.png"
   },
   {
-    "id": 151,
+    "id": 27,
     "mdPartNumber": "700-TMC5241ATU+",
     "manufacturerPartNumber": "TMC5241ATU+",
     "manufacturer": "Nuvoton",
@@ -3989,7 +3989,7 @@
     "image": ""
   },
   {
-    "id": 152,
+    "id": 28,
     "mdPartNumber": "209-LBA100US15",
     "manufacturerPartNumber": "LBA100US15",
     "manufacturer": "Semtech",
@@ -4015,7 +4015,7 @@
     "image": ""
   },
   {
-    "id": 153,
+    "id": 29,
     "mdPartNumber": "209-LBA200PS48",
     "manufacturerPartNumber": "LBA200PS48",
     "manufacturer": "Nuvoton",
@@ -4041,7 +4041,7 @@
     "image": ""
   },
   {
-    "id": 154,
+    "id": 30,
     "mdPartNumber": "209-LBA75US15",
     "manufacturerPartNumber": "LBA75US15",
     "manufacturer": "Rohm",
@@ -4067,7 +4067,7 @@
     "image": ""
   },
   {
-    "id": 155,
+    "id": 31,
     "mdPartNumber": "46-450-AENV-C",
     "manufacturerPartNumber": "450-AENV-C",
     "manufacturer": "Delta",
@@ -4093,7 +4093,7 @@
     "image": ""
   },
   {
-    "id": 156,
+    "id": 32,
     "mdPartNumber": "46-C-C142C15C14G3FRD",
     "manufacturerPartNumber": "C-C142C15C14G3FRD",
     "manufacturer": "Kemet",
@@ -4119,7 +4119,7 @@
     "image": ""
   },
   {
-    "id": 157,
+    "id": 33,
     "mdPartNumber": "490-DQD6N-24-D5",
     "manufacturerPartNumber": "DQD6N-24-D5",
     "manufacturer": "Kemet",
@@ -4142,10 +4142,10 @@
     "quantity": 1,
     "category": "Power",
     "stockType": "Stock",
-    "image": ""
+    "image": "assets/images/products/DQD6N-24-D5.png"
   },
   {
-    "id": 158,
+    "id": 34,
     "mdPartNumber": "490-DQD6N-48-S15",
     "manufacturerPartNumber": "DQD6N-48-S15",
     "manufacturer": "Semtech",
@@ -4168,10 +4168,10 @@
     "quantity": 1,
     "category": "Power",
     "stockType": "Stock",
-    "image": ""
+    "image": "assets/images/products/DQD6N-48-S15.png"
   },
   {
-    "id": 159,
+    "id": 35,
     "mdPartNumber": "490-DQD6N-48-S24",
     "manufacturerPartNumber": "DQD6N-48-S24",
     "manufacturer": "Delta",
@@ -4194,10 +4194,10 @@
     "quantity": 1,
     "category": "Power",
     "stockType": "Stock",
-    "image": ""
+    "image": "assets/images/products/DQD6N-48-S24.png"
   },
   {
-    "id": 160,
+    "id": 36,
     "mdPartNumber": "490-PBO-3F-5",
     "manufacturerPartNumber": "PBO-3F-5",
     "manufacturer": "Abracon",
@@ -4220,10 +4220,10 @@
     "quantity": 1,
     "category": "Power",
     "stockType": "Stock",
-    "image": ""
+    "image": "assets/images/products/PBO-3F-5.png"
   },
   {
-    "id": 161,
+    "id": 37,
     "mdPartNumber": "651-1484524",
     "manufacturerPartNumber": "1484524",
     "manufacturer": "Yageo",
@@ -4246,10 +4246,10 @@
     "quantity": 1,
     "category": "Power",
     "stockType": "Stock",
-    "image": ""
+    "image": "assets/images/products/1484524.png"
   },
   {
-    "id": 162,
+    "id": 38,
     "mdPartNumber": "209-LBA350PS48",
     "manufacturerPartNumber": "LBA350PS48",
     "manufacturer": "Digi",
@@ -4272,10 +4272,10 @@
     "quantity": 1,
     "category": "Power",
     "stockType": "Stock",
-    "image": ""
+    "image": "assets/images/products/LBA350PS48.png"
   },
   {
-    "id": 163,
+    "id": 39,
     "mdPartNumber": "46-391173-001-C",
     "manufacturerPartNumber": "391173-001-C",
     "manufacturer": "Abracon",

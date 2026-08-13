@@ -5,49 +5,52 @@ import { colors, radius, shadow, spacing } from '@/design-system';
 import type { Manufacturer } from '@/types';
 import { MDManufacturerLogo } from './MDManufacturerLogo';
 
-const CARD_HEIGHT = 124;
+const CARD_WIDTH = 188;
+const CARD_HEIGHT = 96;
 const CARD_GAP = spacing.lg;
-const VISIBLE_HEIGHT = CARD_HEIGHT * 3.4;
+const ROW_GAP = spacing.lg;
 
 /**
- * One vertically auto-scrolling column of manufacturer logo cards. The item
- * list is rendered twice back-to-back and looped so the seam is invisible —
- * a standard continuous-marquee technique, implemented with Animated so it
- * works on web, iOS, and Android without extra dependencies.
+ * One horizontally auto-scrolling row of manufacturer logo cards, full
+ * width of its container. The item list is rendered twice back-to-back and
+ * looped so the seam is invisible — a standard continuous-marquee
+ * technique, implemented with Animated so it works on web, iOS, and
+ * Android without extra dependencies. Same looping technique as the
+ * showcase previously used (vertical columns) — just translating on X
+ * instead of Y, three rows alternating direction (ltr / rtl / ltr).
  */
-function AutoScrollColumn({
+function AutoScrollRow({
   manufacturers,
   direction,
   duration,
-  topOffset = 0,
 }: {
   manufacturers: Manufacturer[];
-  direction: 'up' | 'down';
+  /** Visual direction the logos travel across the screen. */
+  direction: 'ltr' | 'rtl';
   duration: number;
-  topOffset?: number;
 }) {
   const router = useRouter();
-  const translateY = useRef(new Animated.Value(0)).current;
+  const translateX = useRef(new Animated.Value(0)).current;
   const doubled = useMemo(() => [...manufacturers, ...manufacturers], [manufacturers]);
-  const trackHeight = manufacturers.length * (CARD_HEIGHT + CARD_GAP);
+  const trackWidth = manufacturers.length * (CARD_WIDTH + CARD_GAP);
 
   useEffect(() => {
     if (manufacturers.length === 0) return;
-    const from = direction === 'up' ? 0 : -trackHeight;
-    const to = direction === 'up' ? -trackHeight : 0;
-    translateY.setValue(from);
+    const from = direction === 'ltr' ? -trackWidth : 0;
+    const to = direction === 'ltr' ? 0 : -trackWidth;
+    translateX.setValue(from);
 
     let cancelled = false;
     const runCycle = () => {
       if (cancelled) return;
-      Animated.timing(translateY, {
+      Animated.timing(translateX, {
         toValue: to,
         duration,
         easing: Easing.linear,
         useNativeDriver: true,
       }).start(({ finished }) => {
         if (finished && !cancelled) {
-          translateY.setValue(from);
+          translateX.setValue(from);
           runCycle();
         }
       });
@@ -58,23 +61,28 @@ function AutoScrollColumn({
       cancelled = true;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [manufacturers.length, direction, duration, trackHeight]);
+  }, [manufacturers.length, direction, duration, trackWidth]);
 
   if (manufacturers.length === 0) return null;
 
   return (
-    <View style={{ height: VISIBLE_HEIGHT, overflow: 'hidden', marginTop: topOffset, flex: 1 }}>
-      <Animated.View style={{ transform: [{ translateY }] }}>
+    <View style={{ height: CARD_HEIGHT, overflow: 'hidden', width: '100%' }}>
+      <Animated.View style={{ flexDirection: 'row', transform: [{ translateX }] }}>
         {doubled.map((manufacturer, index) => (
           <Pressable
             key={`${manufacturer.slug}-${index}`}
             onPress={() => router.push({ pathname: '/(buyer)/manufacturers/[slug]', params: { slug: manufacturer.slug } })}
             style={[
               {
+                width: CARD_WIDTH,
                 height: CARD_HEIGHT,
-                marginBottom: CARD_GAP,
+                marginRight: CARD_GAP,
                 borderRadius: radius.lg,
-                backgroundColor: colors.surfaceRaised,
+                // Adaptive neutral surface (the app's off-white "surface"
+                // token, same one section backgrounds use) instead of a
+                // hardcoded pure-white card, so tiles read as part of the
+                // page rather than floating white boxes.
+                backgroundColor: colors.surface,
                 borderWidth: 1,
                 borderColor: colors.border,
                 alignItems: 'center',
@@ -84,7 +92,7 @@ function AutoScrollColumn({
               shadow.sm,
             ]}
           >
-            <MDManufacturerLogo manufacturer={manufacturer.name} width={172} height={60} />
+            <MDManufacturerLogo manufacturer={manufacturer.name} width={150} height={48} />
           </Pressable>
         ))}
       </Animated.View>
@@ -93,23 +101,25 @@ function AutoScrollColumn({
 }
 
 export function ManufacturerShowcase({ manufacturers }: { manufacturers: Manufacturer[] }) {
-  const columns = useMemo(() => {
-    const cols: Manufacturer[][] = [[], [], []];
-    manufacturers.forEach((m, i) => cols[i % 3].push(m));
-    return cols.filter((c) => c.length > 0);
+  const rows = useMemo(() => {
+    const r: Manufacturer[][] = [[], [], []];
+    manufacturers.forEach((m, i) => r[i % 3].push(m));
+    return r.filter((c) => c.length > 0);
   }, [manufacturers]);
 
-  if (columns.length === 0) return null;
+  if (rows.length === 0) return null;
 
   return (
-    <View style={{ flexDirection: 'row', gap: spacing.lg, height: VISIBLE_HEIGHT }}>
-      {columns.map((col, index) => (
-        <AutoScrollColumn
+    <View style={{ width: '100%', gap: ROW_GAP }}>
+      {rows.map((row, index) => (
+        <AutoScrollRow
           key={index}
-          manufacturers={col}
-          direction={index % 2 === 0 ? 'up' : 'down'}
-          duration={16000 + index * 3000}
-          topOffset={index === 1 ? -CARD_HEIGHT * 0.4 : 0}
+          manufacturers={row}
+          // Row 1: left-to-right, row 2: right-to-left, row 3: left-to-right
+          // again — alternating per row like the previous vertical version
+          // alternated up/down per column.
+          direction={index % 2 === 0 ? 'ltr' : 'rtl'}
+          duration={20000 + index * 3000}
         />
       ))}
     </View>

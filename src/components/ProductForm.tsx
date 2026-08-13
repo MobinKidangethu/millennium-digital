@@ -38,7 +38,7 @@ export const EMPTY_PRODUCT_FORM: ProductFormValues = {
   mdPartNumber: '',
   title: '',
   description: '',
-  category: 'Semiconductors',
+  category: 'Evaluation Board',
   productType: '',
   technology: 'Si',
   mountingStyle: 'SMD/SMT',

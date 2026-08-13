@@ -53,7 +53,7 @@ export interface BomLineItem {
   rawText: string;
 }
 
-export type BomMatchType = 'exact' | 'alternative' | 'unmatched';
+export type BomMatchType = 'exact' | 'alternative' | 'ai-suggested' | 'unmatched';
 
 export interface BomMatchResult {
   line: BomLineItem;
@@ -61,6 +61,8 @@ export interface BomMatchResult {
   product?: Product;
   alternatives: Product[];
   confidence: number;
+  /** Short human-readable explanation shown for 'ai-suggested' results — how the alternates were inferred. */
+  matchReason?: string;
 }
 
 export interface Bom {

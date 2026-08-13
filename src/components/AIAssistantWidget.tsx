@@ -4,6 +4,8 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, radius, shadow, spacing, zIndex, useResponsive, useHoverPress, webTransition, MDText } from '@/design-system';
 import { aiService } from '@/features/ai';
+import { orderService } from '@/features/orders';
+import { useAuthStore } from '@/state';
 import { ProtoBadge } from '@/components/ProtoBadge';
 import type { Product } from '@/types';
 
@@ -103,6 +105,7 @@ function MatchCard({ product, onPress }: { product: Product; onPress: () => void
  */
 export function AIAssistantWidget() {
   const router = useRouter();
+  const session = useAuthStore((s) => s.session);
   const { isDesktopUp } = useResponsive();
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState('');
@@ -126,6 +129,39 @@ export function AIAssistantWidget() {
     setMessages((prev) => [...prev, { id: `u-${Date.now()}`, role: 'user', text: query }]);
     setLoading(true);
     try {
+      // Order-number lookup takes priority over product search — a query
+      // like "where is order MD-20260813-4821" should jump straight to
+      // that order, not get run through the product-search NLU.
+      const orderNumber = aiService.extractOrderNumber(query);
+      if (orderNumber) {
+        if (!session?.user.id) {
+          setMessages((prev) => [
+            ...prev,
+            { id: `a-${Date.now()}`, role: 'assistant', text: `Sign in to look up order ${orderNumber}.` },
+          ]);
+          return;
+        }
+        const order = await orderService.getOrderByNumber(orderNumber, session.user.id);
+        if (order) {
+          setMessages((prev) => [
+            ...prev,
+            { id: `a-${Date.now()}`, role: 'assistant', text: `Found it — opening order ${orderNumber}.` },
+          ]);
+          setOpen(false);
+          router.push({ pathname: '/(buyer)/account/orders/[id]', params: { id: order.id } });
+          return;
+        }
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: `a-${Date.now()}`,
+            role: 'assistant',
+            text: `I couldn't find an order matching ${orderNumber} on your account.`,
+          },
+        ]);
+        return;
+      }
+
       const result = await aiService.runAiSearch(query);
       setMessages((prev) => [
         ...prev,

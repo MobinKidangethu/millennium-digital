@@ -3,6 +3,51 @@ import { useCatalogMetaStore } from '@/state/catalogMetaStore';
 import type { Manufacturer, Category, Product, ProductFilters } from '@/types';
 import * as repository from './repository';
 
+/**
+ * Curated real catalog items (verified against assets/data/products.json —
+ * see manufacturerPartNumber below) that should surface first on the main
+ * Products grid, in this exact order. Only applied to the plain "browse the
+ * catalog" view: default Relevance sort, no active search text, and not a
+ * tagged homepage rail (Featured/Best Sellers/New Arrivals) — so it pins the
+ * Products page without disturbing search results or curated home sections.
+ */
+const PINNED_PART_NUMBERS = [
+  '4SMF10CA-M3/I',
+  'PTC-04-DB-90316',
+  'PTC04-DB-922XX',
+  'MLX-UNIV-MASTER-CABLE',
+  'EVB90632',
+  'EVB90640-41',
+  'EVB90393',
+  'EVB90372-GDC-300-REV1.0',
+  'EVB90316-GO',
+  'PTC04-DB-HALL05',
+  'LPWI201610H1R0T',
+  'CAP-10/440R',
+  '1-1744036-1',
+  'MAXESSENTIAL02EP#',
+  'PS67K-3S-24L-250',
+  'DQD6N-24-D15-T',
+  'S8NR-S36024-A0L2-IL3',
+  '1119230',
+  'EKI-2711MPSI-A',
+];
+const PINNED_RANK = new Map(PINNED_PART_NUMBERS.map((mpn, i) => [mpn, i]));
+
+function applyPinnedOrder(list: Product[]): Product[] {
+  const pinned: Product[] = [];
+  const rest: Product[] = [];
+  for (const p of list) {
+    if (PINNED_RANK.has(p.manufacturerPartNumber)) {
+      pinned.push(p);
+    } else {
+      rest.push(p);
+    }
+  }
+  pinned.sort((a, b) => PINNED_RANK.get(a.manufacturerPartNumber)! - PINNED_RANK.get(b.manufacturerPartNumber)!);
+  return [...pinned, ...rest];
+}
+
 function matchesSearch(product: Product, query: string): boolean {
   const q = query.trim().toLowerCase();
   if (!q) return true;
