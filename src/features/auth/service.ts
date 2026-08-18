@@ -15,10 +15,10 @@ const DEMO_USERS: RegisteredUser[] = [
   {
     id: 'demo-buyer-1',
     role: 'buyer',
-    fullName: 'Asha Rao',
+    fullName: 'Shashank Awasthi',
     email: 'buyer@millenniumdigital.demo',
     password: 'buyer123',
-    company: 'Rao Electronics Pvt. Ltd.',
+    company: 'Awasthi Electronics Pvt. Ltd.',
     phone: '+91 98765 43210',
     createdAt: new Date('2025-01-15').toISOString(),
   },
@@ -53,7 +53,7 @@ const DEMO_USERS: RegisteredUser[] = [
  * via "Use another account") provisions/logs into a linked buyer account,
  * mirroring how a real Google OAuth handoff would behave.
  */
-export const DEMO_GOOGLE_ACCOUNT = { fullName: 'Asha Rao', email: 'asha.rao@gmail.com' };
+export const DEMO_GOOGLE_ACCOUNT = { fullName: 'Shashank Awasthi', email: 'shashank.awasthi@gmail.com' };
 
 let usersCache: RegisteredUser[] | null = null;
 
@@ -68,7 +68,7 @@ let usersCache: RegisteredUser[] | null = null;
  * DEMO_USERS while preserving any real (non-demo) accounts someone
  * registered on that browser.
  */
-const DEMO_USERS_SEED_VERSION = 2;
+const DEMO_USERS_SEED_VERSION = 3;
 const DEMO_USER_IDS = new Set(DEMO_USERS.map((u) => u.id));
 
 async function loadUsers(): Promise<RegisteredUser[]> {
