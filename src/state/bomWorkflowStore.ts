@@ -26,21 +26,15 @@ interface BomWorkflowState {
   chosenAlternative: Record<string, number>;
   /**
    * BOM line id -> where a resolved line's approved quantity should go:
-   * a normal catalog order (cart/checkout) or the RFQ pipeline. Defaulted
-   * in startBomResults (exact -> order, alternative/ai-suggested -> rfq)
-   * and always overridable per line by the buyer.
+   * a normal catalog order (cart/checkout) or the RFQ pipeline. Defaults to
+   * Normal Order for every match type (set in startBomResults) and is
+   * always overridable per line by the buyer. RFQ-routed alternative/
+   * ai-suggested lines don't reserve a specific catalog SKU — sales
+   * identifies and prices the exact component during review; a buyer who
+   * wants to specify their own target price/requirements up front submits
+   * a Design Request instead (see DesignRequestInput.targetCost).
    */
   lineRouting: Record<string, BomLineRouting>;
-  /**
-   * BOM line id -> the buyer's entered approximate unit price, for
-   * alternative/ai-suggested lines routed to RFQ. Once RFQ routing is
-   * chosen for these match types, the specific catalog alternative picker
-   * is hidden — the buyer isn't confirming an exact SKU, they're giving
-   * sales a target price to quote against (see RfqLineItem.targetUnitPrice).
-   * Kept as a raw string so the input can hold partial/invalid entries
-   * while typing; parsed to a number only on RFQ submission.
-   */
-  customerTargetPrices: Record<string, string>;
   /** BOM line id -> the Design Request submitted for it. Cleared whenever a new BOM is processed. */
   designRequestLinks: Record<string, BomDesignRequestLink>;
   /** BOM line id -> the RFQ it was submitted in. Cleared whenever a new BOM is processed. */
@@ -54,7 +48,6 @@ interface BomWorkflowState {
   toggleSelectedExact: (lineId: string) => void;
   chooseAlternativeFor: (lineId: string, productId: number) => void;
   setLineRouting: (lineId: string, routing: BomLineRouting) => void;
-  setCustomerTargetPrice: (lineId: string, value: string) => void;
   /** Marks a BOM line as having a Design Request submitted for it — excludes it from cart/RFQ processing. */
   linkDesignRequest: (link: BomDesignRequestLink) => void;
   /** Marks every given BOM line as submitted in the given RFQ — excludes them from re-submission and shows their fulfillment link instead of the routing controls. */
@@ -81,7 +74,6 @@ export const useBomWorkflowStore = create<BomWorkflowState>()((set, get) => ({
   selectedExactIds: [],
   chosenAlternative: {},
   lineRouting: {},
-  customerTargetPrices: {},
   designRequestLinks: {},
   rfqSubmissionLinks: {},
   rfq: null,
@@ -91,10 +83,11 @@ export const useBomWorkflowStore = create<BomWorkflowState>()((set, get) => ({
   startBomResults: (matches, selectedExactIds, chosenAlternative) => {
     const lineRouting: Record<string, BomLineRouting> = {};
     matches.forEach((result) => {
-      if (result.matchType === 'exact') lineRouting[result.line.id] = 'order';
-      else if (result.matchType === 'alternative' || result.matchType === 'ai-suggested') lineRouting[result.line.id] = 'rfq';
+      if (result.matchType === 'exact' || result.matchType === 'alternative' || result.matchType === 'ai-suggested') {
+        lineRouting[result.line.id] = 'order';
+      }
     });
-    set({ matches, selectedExactIds, chosenAlternative, lineRouting, customerTargetPrices: {}, designRequestLinks: {}, rfqSubmissionLinks: {}, step: 'results' });
+    set({ matches, selectedExactIds, chosenAlternative, lineRouting, designRequestLinks: {}, rfqSubmissionLinks: {}, step: 'results' });
   },
   toggleSelectedExact: (lineId) =>
     set({
@@ -104,7 +97,6 @@ export const useBomWorkflowStore = create<BomWorkflowState>()((set, get) => ({
     }),
   chooseAlternativeFor: (lineId, productId) => set({ chosenAlternative: { ...get().chosenAlternative, [lineId]: productId } }),
   setLineRouting: (lineId, routing) => set({ lineRouting: { ...get().lineRouting, [lineId]: routing } }),
-  setCustomerTargetPrice: (lineId, value) => set({ customerTargetPrices: { ...get().customerTargetPrices, [lineId]: value } }),
   linkDesignRequest: (link) => set({ designRequestLinks: { ...get().designRequestLinks, [link.lineId]: link } }),
   linkRfqSubmissions: (links) =>
     set({
@@ -123,7 +115,6 @@ export const useBomWorkflowStore = create<BomWorkflowState>()((set, get) => ({
       selectedExactIds: [],
       chosenAlternative: {},
       lineRouting: {},
-      customerTargetPrices: {},
       designRequestLinks: {},
       rfqSubmissionLinks: {},
       rfq: null,
@@ -137,7 +128,6 @@ export const useBomWorkflowStore = create<BomWorkflowState>()((set, get) => ({
       selectedExactIds: [],
       chosenAlternative: {},
       lineRouting: {},
-      customerTargetPrices: {},
       designRequestLinks: {},
       rfqSubmissionLinks: {},
     }),

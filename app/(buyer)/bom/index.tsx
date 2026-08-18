@@ -96,8 +96,6 @@ export function BomWorkflowContent() {
   const chooseAlternativeFor = useBomWorkflowStore((s) => s.chooseAlternativeFor);
   const lineRouting = useBomWorkflowStore((s) => s.lineRouting);
   const setLineRouting = useBomWorkflowStore((s) => s.setLineRouting);
-  const customerTargetPrices = useBomWorkflowStore((s) => s.customerTargetPrices);
-  const setCustomerTargetPrice = useBomWorkflowStore((s) => s.setCustomerTargetPrice);
   const designRequestLinks = useBomWorkflowStore((s) => s.designRequestLinks);
   const rfqSubmissionLinks = useBomWorkflowStore((s) => s.rfqSubmissionLinks);
   const resetBomWorkflow = useBomWorkflowStore((s) => s.resetBomWorkflow);
@@ -114,23 +112,24 @@ export function BomWorkflowContent() {
    * Every BOM line that currently resolves to a real product — an included
    * exact match, an alternative/ai-suggested line routed to Normal Order
    * with a chosen catalog SKU, or an alternative/ai-suggested line routed
-   * to RFQ with a buyer-entered target price (no specific SKU is reserved
-   * for those — sales identifies the exact part during RFQ review; see
-   * targetUnitPrice). Design-request-linked and already-RFQ-submitted
-   * lines are excluded: they follow those processes instead, unchanged.
+   * to RFQ (no specific SKU is reserved for those — sales identifies and
+   * prices the exact part during review; a buyer who wants to specify a
+   * target price up front submits a Design Request instead, which already
+   * has its own target-cost field). Design-request-linked and
+   * already-RFQ-submitted lines are excluded: they follow those processes
+   * instead, unchanged.
    */
   const resolvedLines = useMemo(() => {
-    const resolved: { line: BomLineItem; product: Product; targetUnitPrice?: number }[] = [];
+    const resolved: { line: BomLineItem; product: Product }[] = [];
     for (const result of matches) {
       if (designRequestLinks[result.line.id] || rfqSubmissionLinks[result.line.id]) continue;
       if (result.matchType === 'exact' && result.product && selectedExactIds.includes(result.line.id)) {
         resolved.push({ line: result.line, product: result.product });
       } else if (result.matchType === 'alternative' || result.matchType === 'ai-suggested') {
-        const routing = lineRouting[result.line.id] ?? 'rfq';
+        const routing = lineRouting[result.line.id] ?? 'order';
         if (routing === 'rfq') {
-          const targetUnitPrice = Number(customerTargetPrices[result.line.id]);
-          if (result.alternatives.length > 0 && Number.isFinite(targetUnitPrice) && targetUnitPrice > 0) {
-            resolved.push({ line: result.line, product: result.alternatives[0], targetUnitPrice });
+          if (result.alternatives.length > 0) {
+            resolved.push({ line: result.line, product: result.alternatives[0] });
           }
         } else {
           const product = result.alternatives.find((a) => a.id === chosenAlternative[result.line.id]);
@@ -139,7 +138,7 @@ export function BomWorkflowContent() {
       }
     }
     return resolved;
-  }, [matches, selectedExactIds, chosenAlternative, lineRouting, customerTargetPrices, designRequestLinks, rfqSubmissionLinks]);
+  }, [matches, selectedExactIds, chosenAlternative, lineRouting, designRequestLinks, rfqSubmissionLinks]);
 
   const orderLines = useMemo(
     () => resolvedLines.filter((r) => (lineRouting[r.line.id] ?? 'order') === 'order'),
@@ -303,7 +302,7 @@ export function BomWorkflowContent() {
       return;
     }
     createRfq.mutate(
-      { lines: rfqLines.map((r) => ({ product: r.product, quantity: r.line.quantity, targetUnitPrice: r.targetUnitPrice })), source: 'bom' },
+      { lines: rfqLines.map((r) => ({ product: r.product, quantity: r.line.quantity })), source: 'bom' },
       {
         onSuccess: (rfq) => {
           setRfq(rfq);
@@ -471,8 +470,8 @@ export function BomWorkflowContent() {
                           Our AI Recommended Alternatives
                         </MDText>
                       </View>
-                      <RoutingToggle value={lineRouting[result.line.id] ?? 'rfq'} onChange={(r) => setLineRouting(result.line.id, r)} />
-                      {(lineRouting[result.line.id] ?? 'rfq') === 'order' ? (
+                      <RoutingToggle value={lineRouting[result.line.id] ?? 'order'} onChange={(r) => setLineRouting(result.line.id, r)} />
+                      {(lineRouting[result.line.id] ?? 'order') === 'order' ? (
                         <>
                           <MDText variant="caption" tone="secondary">
                             Not found exactly — same part family, choose one:
@@ -505,11 +504,7 @@ export function BomWorkflowContent() {
                           })}
                         </>
                       ) : (
-                        <TargetPriceInput
-                          value={customerTargetPrices[result.line.id] ?? ''}
-                          onChangeText={(v) => setCustomerTargetPrice(result.line.id, v)}
-                          referenceProduct={result.alternatives[0]}
-                        />
+                        <RfqNoSkuNote />
                       )}
                     </View>
                     )
@@ -540,8 +535,8 @@ export function BomWorkflowContent() {
                           develop the exact part.
                         </MDText>
                       </View>
-                      <RoutingToggle value={lineRouting[result.line.id] ?? 'rfq'} onChange={(r) => setLineRouting(result.line.id, r)} />
-                      {(lineRouting[result.line.id] ?? 'rfq') === 'order' ? (
+                      <RoutingToggle value={lineRouting[result.line.id] ?? 'order'} onChange={(r) => setLineRouting(result.line.id, r)} />
+                      {(lineRouting[result.line.id] ?? 'order') === 'order' ? (
                         <>
                           {result.alternatives.map((alt) => {
                             const selected = chosenAlternative[result.line.id] === alt.id;
@@ -571,11 +566,7 @@ export function BomWorkflowContent() {
                           })}
                         </>
                       ) : (
-                        <TargetPriceInput
-                          value={customerTargetPrices[result.line.id] ?? ''}
-                          onChangeText={(v) => setCustomerTargetPrice(result.line.id, v)}
-                          referenceProduct={result.alternatives[0]}
-                        />
+                        <RfqNoSkuNote mentionDesignRequest />
                       )}
                       <MDButton
                         label="Submit Design Request Instead"
@@ -699,42 +690,19 @@ function RoutingToggle({ value, onChange }: { value: BomLineRouting; onChange: (
 
 /**
  * Replaces the catalog-alternative picker for an alternative/ai-suggested
- * line once it's routed to RFQ — no specific SKU is reserved for RFQ lines,
- * so instead of asking the buyer to pick one, we ask for their approximate
- * target price and let sales identify/confirm the exact part during review
- * (see RfqLineItem.targetUnitPrice and computeCustomerTargetPricing).
+ * line once it's routed to RFQ — no specific SKU is reserved for RFQ lines
+ * and no price entry is required here; sales identifies and prices the
+ * exact component during review. A buyer who wants to specify a target
+ * price or requirements up front submits a Design Request instead (see
+ * DesignRequestInput.targetCost), not this quick RFQ routing.
  */
-function TargetPriceInput({
-  value,
-  onChangeText,
-  referenceProduct,
-}: {
-  value: string;
-  onChangeText: (value: string) => void;
-  referenceProduct?: Product;
-}) {
+function RfqNoSkuNote({ mentionDesignRequest }: { mentionDesignRequest?: boolean }) {
   return (
-    <View style={{ gap: spacing.sm }}>
-      <MDText variant="caption" tone="secondary">
-        No specific catalog part is reserved for RFQ — enter your approximate target price and our sales team will
-        identify and confirm the exact component during review.
-      </MDText>
-      {referenceProduct ? (
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs }}>
-          <MDText variant="caption" tone="tertiary">
-            Closest catalog reference: {referenceProduct.manufacturerPartNumber} ·
-          </MDText>
-          <MDPrice amount={referenceProduct.price} currency={referenceProduct.currency} size="sm" />
-        </View>
-      ) : null}
-      <MDInput
-        label="Your Target Unit Price"
-        value={value}
-        onChangeText={(t) => onChangeText(t.replace(/[^0-9.]/g, ''))}
-        placeholder="e.g. 100"
-        keyboardType="numeric"
-      />
-    </View>
+    <MDText variant="caption" tone="secondary">
+      No specific catalog part is reserved for RFQ — this line goes to our sales team, who will identify and
+      price the exact component during review.
+      {mentionDesignRequest ? ' Need to specify a target price or requirements now? Submit a Design Request instead.' : ''}
+    </MDText>
   );
 }
 
