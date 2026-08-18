@@ -15,11 +15,14 @@ import {
   MDText,
 } from '@/design-system';
 import { rfqService } from '@/features/rfq';
-import { useBomWorkflowStore, useCartStore, useCurrencyStore } from '@/state';
+import { useBomWorkflowStore, useCurrencyStore } from '@/state';
 import { ProtoBadge } from '@/components/ProtoBadge';
 import { PricingBreakdownTable } from '@/components/PricingBreakdownTable';
 import { MDManufacturerLogo } from '@/components/MDManufacturerLogo';
+import { ProductPreviewVideo } from '@/components/ProductPreviewVideo';
+import { RFQ_STAGES, RFQ_STAGE_LABEL, RFQ_STATUS_TONE } from '@/constants/rfqLifecycle';
 import { formatDisplayPrice } from '@/utils';
+import type { RfqStatus } from '@/types';
 
 const SOURCE_LABEL: Record<string, string> = {
   bom: 'BOM Component Matching',
@@ -28,7 +31,15 @@ const SOURCE_LABEL: Record<string, string> = {
   cart: 'Cart',
 };
 
-const STEPS = ['Submitted', 'Quote Generated', 'Pricing Governed', 'Approved'] as const;
+/**
+ * This screen's job is quote generation + the buyer's first approval gate,
+ * so it only renders the first two RFQ_STAGES (see
+ * src/constants/rfqLifecycle.ts). Everything after — sales identification
+ * through delivery, plus the second "approve for shipment" gate that
+ * unlocks the dedicated RFQ Cart/Checkout — is tracked on the dedicated
+ * Account -> RFQ Order Status screen.
+ */
+const APPROVAL_STAGES = RFQ_STAGES.slice(0, 2);
 
 export default function RfqDetail() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -37,7 +48,7 @@ export default function RfqDetail() {
   const rfq = useBomWorkflowStore((s) => s.rfq);
   const quote = useBomWorkflowStore((s) => s.quote);
   const setQuote = useBomWorkflowStore((s) => s.setQuote);
-  const addToCart = useCartStore((s) => s.addItem);
+  const setRfq = useBomWorkflowStore((s) => s.setRfq);
   const displayCurrency = useCurrencyStore((s) => s.currency);
   const [generating, setGenerating] = useState(false);
   const [approved, setApproved] = useState(false);
@@ -47,10 +58,7 @@ export default function RfqDetail() {
   useEffect(() => {
     if (matches && rfq && !quote) {
       setGenerating(true);
-      rfqService
-        .generateQuote(rfq)
-        .then(setQuote)
-        .finally(() => setGenerating(false));
+      rfqService.generateQuote(rfq).then(setQuote).finally(() => setGenerating(false));
     }
   }, [matches, rfq, quote, setQuote]);
 
@@ -68,13 +76,14 @@ export default function RfqDetail() {
     );
   }
 
-  const currentStepIndex = approved ? 3 : quote ? 2 : 1;
+  const currentStepIndex = approved ? 1 : 0;
+  const currentStatus: RfqStatus = approved ? 'customer_approval' : 'submitted';
 
   const handleApprove = () => {
-    if (!quote) return;
-    quote.lines.forEach((line) => addToCart(line.productId, line.quantity));
+    if (!quote || !rfq) return;
     setApproved(true);
-    toast.show('Approved items added to cart at governed pricing.', 'success');
+    rfqService.advanceRfqStatus(rfq.id, 'customer_approval').then(() => setRfq({ ...rfq, status: 'customer_approval' }));
+    toast.show('Quote approved — our sales team will now identify and procure the components.', 'success');
   };
 
   return (
@@ -87,16 +96,16 @@ export default function RfqDetail() {
               Source: {SOURCE_LABEL[rfq.source]} · {rfq.lines.length} line item{rfq.lines.length === 1 ? '' : 's'}
             </MDText>
           </View>
-          <MDBadge label={approved ? 'Approved' : quote ? 'Quoted' : 'Submitted'} tone={approved ? 'success' : 'brand'} size="md" />
+          <MDBadge label={RFQ_STAGE_LABEL[currentStatus]} tone={RFQ_STATUS_TONE[currentStatus]} size="md" />
         </View>
         <ProtoBadge label="RFQ + quote generation — prototype simulation of supplier/commercial pricing systems" />
 
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, marginTop: spacing.xl, marginBottom: spacing.xl, flexWrap: 'wrap' }}>
-          {STEPS.map((step, index) => {
+          {APPROVAL_STAGES.map((stage, index) => {
             const done = index < currentStepIndex;
             const active = index === currentStepIndex;
             return (
-              <View key={step} style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <View key={stage.key} style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <View
                   style={{
                     paddingHorizontal: spacing.md,
@@ -106,10 +115,10 @@ export default function RfqDetail() {
                   }}
                 >
                   <MDText variant="caption" weight="700" style={{ color: done || active ? colors.gray[0] : colors.text.tertiary }}>
-                    {index + 1}. {step}
+                    {index + 1}. {stage.label}
                   </MDText>
                 </View>
-                {index < STEPS.length - 1 ? (
+                {index < APPROVAL_STAGES.length - 1 ? (
                   <View style={{ width: 16, height: 2, backgroundColor: done ? colors.brand.primary : colors.gray[100], marginHorizontal: 4 }} />
                 ) : null}
               </View>
@@ -158,11 +167,17 @@ export default function RfqDetail() {
               </View>
             </MDCard>
 
+            {!approved ? <ProductPreviewVideo /> : null}
+
             <View style={{ flexDirection: 'row', gap: spacing.md, flexWrap: 'wrap' }}>
               {!approved ? (
-                <MDButton label="Approve & Add to Cart" onPress={handleApprove} iconLeft={<Ionicons name="checkmark-circle-outline" size={16} color={colors.gray[0]} />} />
+                <MDButton label="Approve Quote" onPress={handleApprove} iconLeft={<Ionicons name="checkmark-circle-outline" size={16} color={colors.gray[0]} />} />
               ) : (
-                <MDButton label="Proceed to Cart" onPress={() => router.push('/(buyer)/cart')} iconLeft={<Ionicons name="cart-outline" size={16} color={colors.gray[0]} />} />
+                <MDButton
+                  label="Track Fulfillment Status"
+                  iconLeft={<Ionicons name="git-network-outline" size={16} color={colors.gray[0]} />}
+                  onPress={() => router.push({ pathname: '/(buyer)/account/rfq-status/[id]', params: { id: rfq.id } })}
+                />
               )}
               <MDButton label="Back to AI Search" variant="outline" onPress={() => router.push('/(buyer)/ai-search')} />
             </View>

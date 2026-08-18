@@ -1,25 +1,12 @@
 import { useEffect, useState } from 'react';
-import { View } from 'react-native';
+import { Pressable, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, radius, spacing, MDBadge, MDButton, MDEmptyState, MDSkeleton, MDText } from '@/design-system';
 import { designRequestService } from '@/features/designRequests';
+import { DESIGN_REQUEST_STAGE_LABEL, DESIGN_REQUEST_STATUS_TONE } from '@/constants/designRequestLifecycle';
 import { ProtoBadge } from '@/components/ProtoBadge';
-import type { DesignRequest, DesignRequestStatus } from '@/types';
-
-const STATUS_LABEL: Record<DesignRequestStatus, string> = {
-  submitted: 'Submitted',
-  engineering_review: 'Engineering Review',
-  scoped: 'Scoped',
-  quoted: 'Quoted',
-};
-
-const STATUS_TONE: Record<DesignRequestStatus, 'brand' | 'success' | 'warning' | 'neutral'> = {
-  submitted: 'brand',
-  engineering_review: 'warning',
-  scoped: 'warning',
-  quoted: 'success',
-};
+import type { DesignRequest } from '@/types';
 
 export default function MyDesignRequests() {
   const router = useRouter();
@@ -55,8 +42,9 @@ export default function MyDesignRequests() {
       ) : (
         <View style={{ gap: spacing.sm }}>
           {requests.map((request) => (
-            <View
+            <Pressable
               key={request.id}
+              onPress={() => router.push({ pathname: '/(buyer)/account/design-requests/[id]', params: { id: request.id } })}
               style={{
                 borderWidth: 1,
                 borderColor: colors.border,
@@ -73,7 +61,7 @@ export default function MyDesignRequests() {
                     {new Date(request.submittedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
                   </MDText>
                 </View>
-                <MDBadge label={STATUS_LABEL[request.status]} tone={STATUS_TONE[request.status]} />
+                <MDBadge label={DESIGN_REQUEST_STAGE_LABEL[request.status]} tone={DESIGN_REQUEST_STATUS_TONE[request.status]} />
               </View>
               <MDText variant="caption" tone="secondary" numberOfLines={2}>
                 {request.technicalRequirement}
@@ -87,7 +75,7 @@ export default function MyDesignRequests() {
                   </MDText>
                 </View>
               ) : null}
-            </View>
+            </Pressable>
           ))}
         </View>
       )}

@@ -37,6 +37,7 @@ export const ACCOUNT_NAV_GROUPS: AccountNavGroup[] = [
     items: [
       { label: 'Order History', href: '/(buyer)/account/orders', icon: 'receipt-outline', match: (p) => p.includes('/account/orders') },
       { label: 'My RFQs', href: '/(buyer)/account/rfqs', icon: 'document-text-outline', match: (p) => p.includes('/account/rfqs') },
+      { label: 'RFQ Order Status', href: '/(buyer)/account/rfq-status', icon: 'git-network-outline', match: (p) => p.includes('/account/rfq-status') },
     ],
   },
   {

@@ -49,3 +49,9 @@ export async function getDesignRequests(): Promise<DesignRequest[]> {
   await delay(300);
   return load();
 }
+
+export async function getDesignRequestById(id: string): Promise<DesignRequest | undefined> {
+  await delay(200);
+  const list = await load();
+  return list.find((r) => r.id === id);
+}

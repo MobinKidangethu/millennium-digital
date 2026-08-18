@@ -14,15 +14,15 @@ import {
   MDText,
 } from '@/design-system';
 import { bomService } from '@/features/bom';
-import { rfqService } from '@/features/rfq';
-import { useBomWorkflowStore } from '@/state';
+import { useCreateRfq } from '@/features/rfq';
+import { useBomWorkflowStore, useCartStore } from '@/state';
 import { ProtoBadge } from '@/components/ProtoBadge';
 import { MDManufacturerLogo } from '@/components/MDManufacturerLogo';
 import { MDPrice } from '@/components/MDPrice';
 import { MDStockStatus } from '@/components/MDStockStatus';
 import { BackorderNote } from '@/components/BackorderNote';
 import { downloadTextFile, toCsv, computeBackorderSplit } from '@/utils';
-import type { BomDesignRequestLink, BomMatchResult } from '@/types';
+import type { BomDesignRequestLink, BomLineItem, BomLineRouting, BomMatchResult, BomRfqSubmissionLink, Product } from '@/types';
 
 type Step = 'input' | 'processing' | 'results';
 
@@ -94,13 +94,49 @@ export function BomWorkflowContent() {
   const toggleSelectedExact = useBomWorkflowStore((s) => s.toggleSelectedExact);
   const chosenAlternative = useBomWorkflowStore((s) => s.chosenAlternative);
   const chooseAlternativeFor = useBomWorkflowStore((s) => s.chooseAlternativeFor);
+  const lineRouting = useBomWorkflowStore((s) => s.lineRouting);
+  const setLineRouting = useBomWorkflowStore((s) => s.setLineRouting);
   const designRequestLinks = useBomWorkflowStore((s) => s.designRequestLinks);
+  const rfqSubmissionLinks = useBomWorkflowStore((s) => s.rfqSubmissionLinks);
+  const linkRfqSubmissions = useBomWorkflowStore((s) => s.linkRfqSubmissions);
   const resetBomWorkflow = useBomWorkflowStore((s) => s.resetBomWorkflow);
-  const [creatingRfq, setCreatingRfq] = useState(false);
+  const [addingToCart, setAddingToCart] = useState(false);
   const setRfq = useBomWorkflowStore((s) => s.setRfq);
   const setQuote = useBomWorkflowStore((s) => s.setQuote);
+  const addToCart = useCartStore((s) => s.addItem);
+  const createRfq = useCreateRfq();
 
   const summary = useMemo(() => bomService.summarizeMatches(matches), [matches]);
+
+  /**
+   * Every BOM line that currently resolves to a real product — an included
+   * exact match, or an alternative/ai-suggested line with a chosen
+   * alternative — split by the buyer's Normal Order / RFQ routing choice.
+   * Design-request-linked and already-RFQ-submitted lines are excluded:
+   * they follow those processes instead, unchanged.
+   */
+  const resolvedLines = useMemo(() => {
+    const resolved: { line: BomLineItem; product: Product }[] = [];
+    for (const result of matches) {
+      if (designRequestLinks[result.line.id] || rfqSubmissionLinks[result.line.id]) continue;
+      if (result.matchType === 'exact' && result.product && selectedExactIds.includes(result.line.id)) {
+        resolved.push({ line: result.line, product: result.product });
+      } else if (result.matchType === 'alternative' || result.matchType === 'ai-suggested') {
+        const product = result.alternatives.find((a) => a.id === chosenAlternative[result.line.id]);
+        if (product) resolved.push({ line: result.line, product });
+      }
+    }
+    return resolved;
+  }, [matches, selectedExactIds, chosenAlternative, designRequestLinks, rfqSubmissionLinks]);
+
+  const orderLines = useMemo(
+    () => resolvedLines.filter((r) => (lineRouting[r.line.id] ?? 'order') === 'order'),
+    [resolvedLines, lineRouting],
+  );
+  const rfqLines = useMemo(
+    () => resolvedLines.filter((r) => lineRouting[r.line.id] === 'rfq'),
+    [resolvedLines, lineRouting],
+  );
 
   /** Exact-match lines where the requested BOM quantity exceeds current stock — the lead-time / back-order journey. */
   const backorderCount = useMemo(
@@ -236,40 +272,39 @@ export function BomWorkflowContent() {
     if (!ok) toast.show('Downloads are available on the web app for this prototype.', 'neutral');
   };
 
-  const selectedLineCount =
-    selectedExactIds.length +
-    Object.keys(chosenAlternative).filter((id) =>
-      matches.find((m) => m.line.id === id && (m.matchType === 'alternative' || m.matchType === 'ai-suggested')) &&
-      !designRequestLinks[id],
-    ).length;
-
-  const requestQuote = async () => {
-    const rfqLines: { product: import('@/types').Product; quantity: number }[] = [];
-    for (const result of matches) {
-      if (result.matchType === 'exact' && selectedExactIds.includes(result.line.id) && result.product) {
-        rfqLines.push({ product: result.product, quantity: result.line.quantity });
-      } else if (
-        (result.matchType === 'alternative' || result.matchType === 'ai-suggested') &&
-        !designRequestLinks[result.line.id]
-      ) {
-        const chosenId = chosenAlternative[result.line.id];
-        const product = result.alternatives.find((a) => a.id === chosenId);
-        if (product) rfqLines.push({ product, quantity: result.line.quantity });
-      }
-    }
-    if (rfqLines.length === 0) {
-      toast.show('Select at least one component to request a quote.', 'warning');
+  const addOrderLinesToCart = () => {
+    if (orderLines.length === 0) {
+      toast.show('No components are routed to Normal Order yet.', 'warning');
       return;
     }
-    setCreatingRfq(true);
-    try {
-      const rfq = await rfqService.createRfq(rfqLines, 'bom');
-      setRfq(rfq);
-      setQuote(null);
-      router.push({ pathname: '/(buyer)/rfq/[id]', params: { id: rfq.id } });
-    } finally {
-      setCreatingRfq(false);
+    setAddingToCart(true);
+    orderLines.forEach((r) => addToCart(r.product.id, r.line.quantity));
+    setAddingToCart(false);
+    toast.show(`${orderLines.length} component${orderLines.length === 1 ? '' : 's'} added to cart.`, 'success');
+  };
+
+  const submitRfq = () => {
+    if (rfqLines.length === 0) {
+      toast.show('No components are routed to RFQ yet.', 'warning');
+      return;
     }
+    createRfq.mutate(
+      { lines: rfqLines.map((r) => ({ product: r.product, quantity: r.line.quantity })), source: 'bom' },
+      {
+        onSuccess: (rfq) => {
+          const links: BomRfqSubmissionLink[] = rfqLines.map((r) => ({
+            lineId: r.line.id,
+            rfqId: rfq.id,
+            rfqNumber: rfq.rfqNumber,
+            submittedAt: rfq.createdAt,
+          }));
+          linkRfqSubmissions(links);
+          setRfq(rfq);
+          setQuote(null);
+          router.push({ pathname: '/(buyer)/rfq/[id]', params: { id: rfq.id } });
+        },
+      },
+    );
   };
 
   return (
@@ -349,20 +384,26 @@ export function BomWorkflowContent() {
 
             <View style={{ flexDirection: 'row', gap: spacing.md, marginBottom: spacing.xl, flexWrap: 'wrap' }}>
               <SummaryPill label="Total Lines" value={summary.total} tone="neutral" />
+              <SummaryPill label="→ Normal Order" value={orderLines.length} tone="success" />
+              <SummaryPill label="→ RFQ / Design Approval" value={rfqLines.length} tone="warning" />
               <SummaryPill label="Exact Matches" value={summary.exact} tone="success" />
               <SummaryPill label="Backordered · Lead Time" value={backorderCount} tone="warning" />
               <SummaryPill label="AI Recommended Alternatives" value={summary.alternative} tone="warning" />
               <SummaryPill label="AI Suggested · New Design" value={summary.aiSuggested} tone="error" />
               <SummaryPill label="No Match" value={summary.unmatched} tone="error" />
               <SummaryPill label="Design Requests Uploaded" value={Object.keys(designRequestLinks).length} tone="success" />
+              <SummaryPill label="RFQ Submitted" value={Object.keys(rfqSubmissionLinks).length} tone="success" />
             </View>
 
             <View style={{ gap: spacing.md, marginBottom: spacing.xl }}>
               {matches.map((result) => {
                 const designLink = designRequestLinks[result.line.id];
+                const rfqLink = rfqSubmissionLinks[result.line.id];
                 const badge = designLink
                   ? { label: `Design Request Uploaded · ${designLink.referenceNumber}`, tone: 'success' as const }
-                  : MATCH_CONFIG[result.matchType];
+                  : rfqLink
+                    ? { label: `RFQ Submitted · ${rfqLink.rfqNumber}`, tone: 'success' as const }
+                    : MATCH_CONFIG[result.matchType];
                 return (
                 <MDCard key={result.line.id} padding="lg">
                   <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: spacing.sm }}>
@@ -379,6 +420,10 @@ export function BomWorkflowContent() {
                   </View>
 
                   {result.matchType === 'exact' && result.product ? (
+                    rfqLink ? (
+                      <RfqSubmittedNote link={rfqLink} onTrackStatus={() => router.push({ pathname: '/(buyer)/account/rfq-status/[id]', params: { id: rfqLink.rfqId } })} />
+                    ) : (
+                    <>
                     <Pressable
                       onPress={() => toggleSelectedExact(result.line.id)}
                       style={{
@@ -405,9 +450,19 @@ export function BomWorkflowContent() {
                       </View>
                       <MDPrice amount={result.product.price} currency={result.product.currency} size="sm" />
                     </Pressable>
+                    {selectedExactIds.includes(result.line.id) ? (
+                      <View style={{ marginTop: spacing.sm }}>
+                        <RoutingToggle value={lineRouting[result.line.id] ?? 'order'} onChange={(r) => setLineRouting(result.line.id, r)} />
+                      </View>
+                    ) : null}
+                    </>
+                    )
                   ) : null}
 
                   {result.matchType === 'alternative' ? (
+                    rfqLink ? (
+                      <RfqSubmittedNote link={rfqLink} onTrackStatus={() => router.push({ pathname: '/(buyer)/account/rfq-status/[id]', params: { id: rfqLink.rfqId } })} />
+                    ) : (
                     <View style={{ gap: spacing.sm }}>
                       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
                         <Ionicons name="sparkles" size={12} color={colors.brand.teal} />
@@ -444,12 +499,18 @@ export function BomWorkflowContent() {
                           </Pressable>
                         );
                       })}
+                      {chosenAlternative[result.line.id] ? (
+                        <RoutingToggle value={lineRouting[result.line.id] ?? 'rfq'} onChange={(r) => setLineRouting(result.line.id, r)} />
+                      ) : null}
                     </View>
+                    )
                   ) : null}
 
                   {result.matchType === 'ai-suggested' ? (
                     designLink ? (
                       <DesignRequestLinkedNote link={designLink} onViewRequests={() => router.push('/(buyer)/account/design-requests')} />
+                    ) : rfqLink ? (
+                      <RfqSubmittedNote link={rfqLink} onTrackStatus={() => router.push({ pathname: '/(buyer)/account/rfq-status/[id]', params: { id: rfqLink.rfqId } })} />
                     ) : (
                     <View style={{ gap: spacing.sm }}>
                       <View
@@ -496,6 +557,9 @@ export function BomWorkflowContent() {
                           </Pressable>
                         );
                       })}
+                      {chosenAlternative[result.line.id] ? (
+                        <RoutingToggle value={lineRouting[result.line.id] ?? 'rfq'} onChange={(r) => setLineRouting(result.line.id, r)} />
+                      ) : null}
                       <MDButton
                         label="Submit Design Request Instead"
                         size="sm"
@@ -541,8 +605,12 @@ export function BomWorkflowContent() {
 
             <MDCard padding="lg" style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: spacing.md }}>
               <View>
-                <MDText variant="bodyMedium">{selectedLineCount} component{selectedLineCount === 1 ? '' : 's'} selected</MDText>
-                <MDText variant="caption" tone="tertiary">Governed pricing is applied once the RFQ is submitted.</MDText>
+                <MDText variant="bodyMedium">
+                  {orderLines.length} → Normal Order · {rfqLines.length} → RFQ
+                </MDText>
+                <MDText variant="caption" tone="tertiary">
+                  Normal Order lines go straight to your cart. RFQ lines get governed pricing and full fulfillment tracking in Account → RFQ Order Status.
+                </MDText>
               </View>
               <View style={{ flexDirection: 'row', gap: spacing.sm, flexWrap: 'wrap' }}>
                 <MDButton
@@ -551,7 +619,15 @@ export function BomWorkflowContent() {
                   iconLeft={<Ionicons name="download-outline" size={16} color={colors.brand.primary} />}
                   onPress={exportResults}
                 />
-                <MDButton label="Request Quote for Selected Items" onPress={requestQuote} loading={creatingRfq} />
+                <MDButton
+                  label={`Add to Cart (${orderLines.length})`}
+                  variant="outline"
+                  iconLeft={<Ionicons name="cart-outline" size={16} color={colors.brand.primary} />}
+                  onPress={addOrderLinesToCart}
+                  loading={addingToCart}
+                  disabled={orderLines.length === 0}
+                />
+                <MDButton label={`Submit RFQ (${rfqLines.length})`} onPress={submitRfq} loading={createRfq.isPending} disabled={rfqLines.length === 0} />
               </View>
             </MDCard>
           </View>
@@ -567,6 +643,39 @@ export default function BomWorkflow() {
         <BomWorkflowContent />
       </View>
     </ScrollView>
+  );
+}
+
+/**
+ * Buyer-controlled destination for one resolved BOM line — defaults come
+ * from bomWorkflowStore.startBomResults (exact -> order, alternative/
+ * ai-suggested -> rfq) but the buyer can flip any line either way before
+ * submitting. "Normal Order" lines skip RFQ entirely and go straight to
+ * cart/checkout; "RFQ" lines get governed pricing and the full
+ * sales/procurement/fulfillment stepper tracked in Account -> RFQ Order Status.
+ */
+function RoutingToggle({ value, onChange }: { value: BomLineRouting; onChange: (routing: BomLineRouting) => void }) {
+  return (
+    <View style={{ flexDirection: 'row', borderRadius: radius.pill, borderWidth: 1, borderColor: colors.border, overflow: 'hidden', alignSelf: 'flex-start' }}>
+      {(['order', 'rfq'] as BomLineRouting[]).map((option) => {
+        const active = value === option;
+        return (
+          <Pressable
+            key={option}
+            onPress={() => onChange(option)}
+            style={{
+              paddingHorizontal: spacing.md,
+              paddingVertical: 6,
+              backgroundColor: active ? colors.brand.primary : 'transparent',
+            }}
+          >
+            <MDText variant="caption" weight="700" style={{ color: active ? colors.gray[0] : colors.text.secondary }}>
+              {option === 'order' ? 'Normal Order' : 'RFQ'}
+            </MDText>
+          </Pressable>
+        );
+      })}
+    </View>
   );
 }
 
@@ -611,6 +720,39 @@ function DesignRequestLinkedNote({ link, onViewRequests }: { link: BomDesignRequ
         </MDText>
       </View>
       <MDButton label="Track Status" size="sm" variant="ghost" onPress={onViewRequests} />
+    </View>
+  );
+}
+
+/**
+ * Replaces the routing controls on a BOM line once it has actually been
+ * submitted in an RFQ — makes it explicit this part number is now tracked
+ * through the RFQ fulfillment pipeline (Account -> RFQ Order Status) and
+ * won't be re-submitted from this BOM run.
+ */
+function RfqSubmittedNote({ link, onTrackStatus }: { link: BomRfqSubmissionLink; onTrackStatus: () => void }) {
+  return (
+    <View
+      style={{
+        flexDirection: 'row',
+        alignItems: 'flex-start',
+        gap: spacing.sm,
+        padding: spacing.md,
+        borderRadius: radius.md,
+        backgroundColor: colors.status.successSoft,
+      }}
+    >
+      <Ionicons name="checkmark-circle-outline" size={16} color={colors.status.successStrong} style={{ marginTop: 2 }} />
+      <View style={{ flex: 1 }}>
+        <MDText variant="bodySm" weight="600" style={{ color: colors.status.successStrong }}>
+          Submitted in RFQ {link.rfqNumber}
+        </MDText>
+        <MDText variant="caption" tone="secondary" style={{ marginTop: 2 }}>
+          This component now follows the RFQ fulfillment pipeline — track sales/procurement/shipment progress in
+          Account → RFQ Order Status.
+        </MDText>
+      </View>
+      <MDButton label="Track Status" size="sm" variant="ghost" onPress={onTrackStatus} />
     </View>
   );
 }

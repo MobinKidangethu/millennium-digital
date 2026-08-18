@@ -2,7 +2,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { delay } from '@/utils';
 import { STORAGE_KEYS } from '@/constants/storageKeys';
 import { computeGovernedPricing } from '@/features/pricing/service';
-import type { Product, Quote, QuoteLine, Rfq, RfqLineItem, RfqSource } from '@/types';
+import { RFQ_STAGE_LABEL } from '@/constants/rfqLifecycle';
+import type { Address, PaymentMethodSelection, Product, Quote, QuoteLine, Rfq, RfqLineItem, RfqSource, RfqStatus, ShippingMethodOption } from '@/types';
 
 /**
  * PROTOTYPE / DEMO RFQ + Quote generation.
@@ -59,12 +60,14 @@ export interface RfqLineInput {
 export async function createRfq(lines: RfqLineInput[], source: RfqSource): Promise<Rfq> {
   await delay(500);
   const rfqLines: RfqLineItem[] = lines.map((l) => ({ productId: l.product.id, product: l.product, quantity: l.quantity }));
+  const createdAt = new Date().toISOString();
   const rfq: Rfq = {
     id: `rfq-${Date.now()}`,
     rfqNumber: generateRfqNumber(),
     source,
     status: 'submitted',
-    createdAt: new Date().toISOString(),
+    timeline: [{ status: 'submitted', label: RFQ_STAGE_LABEL.submitted, timestamp: createdAt }],
+    createdAt,
     lines: rfqLines,
   };
 
@@ -72,6 +75,69 @@ export async function createRfq(lines: RfqLineInput[], source: RfqSource): Promi
   await saveHistory([rfq, ...history]);
 
   return rfq;
+}
+
+export async function getRfqById(id: string): Promise<Rfq | undefined> {
+  await delay(200);
+  const history = await loadHistory();
+  return history.find((r) => r.id === id);
+}
+
+/**
+ * Advances an RFQ to the next fulfillment stage and appends a timeline
+ * entry — same shape as updateOrderStatus in features/orders/service.ts.
+ * Driven by the buyer-facing quote/approval screen for the early stages and
+ * by the Admin RFQ console (sales/procurement/logistics) for the rest.
+ */
+export async function advanceRfqStatus(id: string, status: RfqStatus): Promise<void> {
+  await delay(400);
+  const history = await loadHistory();
+  const idx = history.findIndex((r) => r.id === id);
+  if (idx < 0) return;
+  const rfq = history[idx];
+  const updated: Rfq = {
+    ...rfq,
+    status,
+    timeline: [...rfq.timeline, { status, label: RFQ_STAGE_LABEL[status], timestamp: new Date().toISOString() }],
+  };
+  const next = [...history];
+  next[idx] = updated;
+  await saveHistory(next);
+}
+
+export interface PlaceRfqOrderInput {
+  shippingAddress: Address;
+  billingAddress: Address;
+  shippingMethod: ShippingMethodOption;
+  paymentMethod: PaymentMethodSelection;
+}
+
+/**
+ * Completes the dedicated RFQ Cart/Checkout journey (app/(buyer)/rfq-cart,
+ * app/(buyer)/rfq-checkout) — captures the buyer's fulfillment details onto
+ * the RFQ record itself and advances it to 'processing', in one write.
+ * Deliberately separate from features/orders/service.ts#createOrder: an
+ * RFQ order is never added to useCartStore and never creates a normal
+ * Order row — it stays tracked purely on this RFQ's own timeline through
+ * shipped/delivered (see RFQ_STAGES in src/constants/rfqLifecycle.ts).
+ */
+export async function placeRfqOrder(id: string, input: PlaceRfqOrderInput): Promise<Rfq> {
+  await delay(600);
+  const history = await loadHistory();
+  const idx = history.findIndex((r) => r.id === id);
+  if (idx < 0) throw new Error('RFQ not found.');
+  const rfq = history[idx];
+  const status: RfqStatus = 'processing';
+  const updated: Rfq = {
+    ...rfq,
+    ...input,
+    status,
+    timeline: [...rfq.timeline, { status, label: RFQ_STAGE_LABEL[status], timestamp: new Date().toISOString() }],
+  };
+  const next = [...history];
+  next[idx] = updated;
+  await saveHistory(next);
+  return updated;
 }
 
 export async function generateQuote(rfq: Rfq): Promise<Quote> {

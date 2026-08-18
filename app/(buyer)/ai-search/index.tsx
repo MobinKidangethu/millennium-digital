@@ -16,7 +16,7 @@ import {
   MDText,
 } from '@/design-system';
 import { aiService } from '@/features/ai';
-import { rfqService } from '@/features/rfq';
+import { useCreateRfq } from '@/features/rfq';
 import { orderService } from '@/features/orders';
 import { useAuthStore, useBomWorkflowStore, useCartFeedbackStore, useCartStore, useCompareStore, useCurrencyStore } from '@/state';
 import { ProtoBadge } from '@/components/ProtoBadge';
@@ -110,6 +110,7 @@ export default function AiEngineeringSearch() {
   const [requestingId, setRequestingId] = useState<number | null>(null);
   const setRfq = useBomWorkflowStore((s) => s.setRfq);
   const setQuote = useBomWorkflowStore((s) => s.setQuote);
+  const createRfq = useCreateRfq();
   const displayCurrency = useCurrencyStore((s) => s.currency);
   const session = useAuthStore((s) => s.session);
 
@@ -151,7 +152,7 @@ export default function AiEngineeringSearch() {
   const handleRequestQuote = async (product: Product) => {
     setRequestingId(product.id);
     try {
-      const rfq = await rfqService.createRfq([{ product, quantity: 1 }], 'ai-search');
+      const rfq = await createRfq.mutateAsync({ lines: [{ product, quantity: 1 }], source: 'ai-search' });
       setRfq(rfq);
       setQuote(null);
       router.push({ pathname: '/(buyer)/rfq/[id]', params: { id: rfq.id } });

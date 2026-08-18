@@ -2,14 +2,8 @@ import { ScrollView, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, radius, spacing, MDBadge, MDEmptyState, MDSkeleton, MDTable, MDText, type MDTableColumn } from '@/design-system';
 import { useSellerRfqs, type SellerRfqView } from '@/features/sellers';
+import { RFQ_STAGE_LABEL, RFQ_STATUS_TONE } from '@/constants/rfqLifecycle';
 import { useAuthStore } from '@/state';
-
-const STATUS_TONE: Record<string, 'success' | 'brand' | 'neutral' | 'warning' | 'error'> = {
-  draft: 'neutral',
-  submitted: 'brand',
-  quoted: 'warning',
-  approved: 'success',
-};
 
 export default function SellerRfqs() {
   const session = useAuthStore((s) => s.session);
@@ -51,7 +45,7 @@ export default function SellerRfqs() {
       key: 'status',
       label: 'Status',
       width: 120,
-      render: (v) => <MDBadge label={v.rfq.status} tone={STATUS_TONE[v.rfq.status] ?? 'neutral'} />,
+      render: (v) => <MDBadge label={RFQ_STAGE_LABEL[v.rfq.status]} tone={RFQ_STATUS_TONE[v.rfq.status]} />,
     },
   ];
 

@@ -55,6 +55,15 @@ export interface BomLineItem {
 
 export type BomMatchType = 'exact' | 'alternative' | 'ai-suggested' | 'unmatched';
 
+/**
+ * Buyer-controlled destination for a resolved BOM line: a straight catalog
+ * buy that skips RFQ entirely and goes to cart/checkout as a normal order,
+ * or a line that needs sales/procurement handling via the RFQ pipeline
+ * (see src/constants/rfqLifecycle.ts). Defaulted by match type in
+ * bomWorkflowStore.startBomResults, but always overridable per line.
+ */
+export type BomLineRouting = 'order' | 'rfq';
+
 export interface BomMatchResult {
   line: BomLineItem;
   matchType: BomMatchType;
@@ -77,7 +86,33 @@ export interface Bom {
 // ---------------------------------------------------------------------------
 
 export type RfqSource = 'bom' | 'ai-search' | 'manual' | 'cart';
-export type RfqStatus = 'draft' | 'submitted' | 'quoted' | 'approved';
+
+/**
+ * Full RFQ fulfillment lifecycle — from buyer submission through two buyer
+ * approval gates (quote approval, then shipment approval) with internal
+ * sales/procurement handling in between, ending in its own shipment/delivery
+ * tracking. See src/constants/rfqLifecycle.ts for the single ordered source
+ * of truth used by every stepper/badge/admin control that renders this
+ * status, including which stages are buyer-driven vs. admin-driven.
+ */
+export type RfqStatus =
+  | 'submitted'
+  | 'customer_approval'
+  | 'product_identification'
+  | 'procurement'
+  | 'ready_to_ship'
+  | 'shipment_approved'
+  | 'processing'
+  | 'shipped'
+  | 'out_for_delivery'
+  | 'delivered'
+  | 'cancelled';
+
+export interface RfqTimelineEntry {
+  status: RfqStatus;
+  label: string;
+  timestamp: string;
+}
 
 export interface RfqLineItem {
   productId: number;
@@ -90,8 +125,20 @@ export interface Rfq {
   rfqNumber: string;
   source: RfqSource;
   status: RfqStatus;
+  timeline: RfqTimelineEntry[];
   createdAt: string;
   lines: RfqLineItem[];
+  /**
+   * Fulfillment details captured on the dedicated RFQ Cart/Checkout journey
+   * (app/(buyer)/rfq-cart, app/(buyer)/rfq-checkout) once the buyer approves
+   * shipment — deliberately separate from the normal buyer cart/checkout,
+   * so an RFQ never touches useCartStore/useCheckoutStore. Present once
+   * status reaches 'processing' or later.
+   */
+  shippingAddress?: import('./user').Address;
+  billingAddress?: import('./user').Address;
+  shippingMethod?: import('./order').ShippingMethodOption;
+  paymentMethod?: import('./order').PaymentMethodSelection;
 }
 
 export interface PricingRuleStep {
@@ -205,6 +252,20 @@ export interface BomDesignRequestLink {
   requestId: string;
   referenceNumber: string;
   status: DesignRequestStatus;
+  submittedAt: string;
+}
+
+/**
+ * Links a BOM line that was routed to RFQ back to the RFQ it was submitted
+ * in — same purpose as BomDesignRequestLink above, but for the RFQ path.
+ * Kept in bomWorkflowStore so the BOM results screen can mark that line
+ * "RFQ Submitted" (with a link to its fulfillment tracker) instead of
+ * re-showing the routing controls, even after navigating away and back.
+ */
+export interface BomRfqSubmissionLink {
+  lineId: string;
+  rfqId: string;
+  rfqNumber: string;
   submittedAt: string;
 }
 

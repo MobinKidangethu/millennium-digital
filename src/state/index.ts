@@ -9,6 +9,7 @@ export * from './welcomeStore';
 export * from './searchStore';
 export * from './addressStore';
 export * from './checkoutStore';
+export * from './rfqCheckoutStore';
 export * from './notificationPrefsStore';
 export * from './catalogMetaStore';
 export * from './governanceStore';

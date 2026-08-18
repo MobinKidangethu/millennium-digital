@@ -20,6 +20,7 @@ export const ADMIN_NAV_ITEMS: NavItem[] = [
   { label: 'Seller Applications', href: '/(admin)/seller-applications', icon: 'person-add-outline' },
   { label: 'Customers', href: '/(admin)/customers', icon: 'people-outline' },
   { label: 'Orders', href: '/(admin)/orders', icon: 'receipt-outline' },
+  { label: 'RFQs', href: '/(admin)/rfqs', icon: 'git-network-outline' },
   { label: 'Analytics', href: '/(admin)/analytics', icon: 'stats-chart-outline' },
   { label: 'Settings', href: '/(admin)/settings', icon: 'settings-outline' },
 ];
