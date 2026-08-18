@@ -118,6 +118,17 @@ export interface RfqLineItem {
   productId: number;
   product: Product;
   quantity: number;
+  /**
+   * Buyer-entered approximate unit price for a BOM line where an AI
+   * alternative/new-design match was routed to RFQ instead of Normal Order
+   * (see app/(buyer)/bom/index.tsx) — since no specific catalog SKU was
+   * confirmed, the quote is built from this target price (see
+   * computeCustomerTargetPricing in src/features/pricing/service.ts)
+   * instead of governed catalog pricing, pending sales identifying the
+   * exact part. `product` still carries a representative catalog item
+   * (the closest AI match) for display purposes only.
+   */
+  targetUnitPrice?: number;
 }
 
 export interface Rfq {
@@ -142,7 +153,7 @@ export interface Rfq {
 }
 
 export interface PricingRuleStep {
-  key: 'base' | 'volume' | 'supplier' | 'contract';
+  key: 'base' | 'volume' | 'supplier' | 'contract' | 'customer_target';
   label: string;
   description: string;
   /** Resulting unit price after this step is applied. */

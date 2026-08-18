@@ -96,10 +96,12 @@ export function BomWorkflowContent() {
   const chooseAlternativeFor = useBomWorkflowStore((s) => s.chooseAlternativeFor);
   const lineRouting = useBomWorkflowStore((s) => s.lineRouting);
   const setLineRouting = useBomWorkflowStore((s) => s.setLineRouting);
+  const customerTargetPrices = useBomWorkflowStore((s) => s.customerTargetPrices);
+  const setCustomerTargetPrice = useBomWorkflowStore((s) => s.setCustomerTargetPrice);
   const designRequestLinks = useBomWorkflowStore((s) => s.designRequestLinks);
   const rfqSubmissionLinks = useBomWorkflowStore((s) => s.rfqSubmissionLinks);
-  const linkRfqSubmissions = useBomWorkflowStore((s) => s.linkRfqSubmissions);
   const resetBomWorkflow = useBomWorkflowStore((s) => s.resetBomWorkflow);
+  const startFreshBom = useBomWorkflowStore((s) => s.startFreshBom);
   const [addingToCart, setAddingToCart] = useState(false);
   const setRfq = useBomWorkflowStore((s) => s.setRfq);
   const setQuote = useBomWorkflowStore((s) => s.setQuote);
@@ -110,24 +112,34 @@ export function BomWorkflowContent() {
 
   /**
    * Every BOM line that currently resolves to a real product — an included
-   * exact match, or an alternative/ai-suggested line with a chosen
-   * alternative — split by the buyer's Normal Order / RFQ routing choice.
-   * Design-request-linked and already-RFQ-submitted lines are excluded:
-   * they follow those processes instead, unchanged.
+   * exact match, an alternative/ai-suggested line routed to Normal Order
+   * with a chosen catalog SKU, or an alternative/ai-suggested line routed
+   * to RFQ with a buyer-entered target price (no specific SKU is reserved
+   * for those — sales identifies the exact part during RFQ review; see
+   * targetUnitPrice). Design-request-linked and already-RFQ-submitted
+   * lines are excluded: they follow those processes instead, unchanged.
    */
   const resolvedLines = useMemo(() => {
-    const resolved: { line: BomLineItem; product: Product }[] = [];
+    const resolved: { line: BomLineItem; product: Product; targetUnitPrice?: number }[] = [];
     for (const result of matches) {
       if (designRequestLinks[result.line.id] || rfqSubmissionLinks[result.line.id]) continue;
       if (result.matchType === 'exact' && result.product && selectedExactIds.includes(result.line.id)) {
         resolved.push({ line: result.line, product: result.product });
       } else if (result.matchType === 'alternative' || result.matchType === 'ai-suggested') {
-        const product = result.alternatives.find((a) => a.id === chosenAlternative[result.line.id]);
-        if (product) resolved.push({ line: result.line, product });
+        const routing = lineRouting[result.line.id] ?? 'rfq';
+        if (routing === 'rfq') {
+          const targetUnitPrice = Number(customerTargetPrices[result.line.id]);
+          if (result.alternatives.length > 0 && Number.isFinite(targetUnitPrice) && targetUnitPrice > 0) {
+            resolved.push({ line: result.line, product: result.alternatives[0], targetUnitPrice });
+          }
+        } else {
+          const product = result.alternatives.find((a) => a.id === chosenAlternative[result.line.id]);
+          if (product) resolved.push({ line: result.line, product });
+        }
       }
     }
     return resolved;
-  }, [matches, selectedExactIds, chosenAlternative, designRequestLinks, rfqSubmissionLinks]);
+  }, [matches, selectedExactIds, chosenAlternative, lineRouting, customerTargetPrices, designRequestLinks, rfqSubmissionLinks]);
 
   const orderLines = useMemo(
     () => resolvedLines.filter((r) => (lineRouting[r.line.id] ?? 'order') === 'order'),
@@ -278,9 +290,11 @@ export function BomWorkflowContent() {
       return;
     }
     setAddingToCart(true);
+    const count = orderLines.length;
     orderLines.forEach((r) => addToCart(r.product.id, r.line.quantity));
     setAddingToCart(false);
-    toast.show(`${orderLines.length} component${orderLines.length === 1 ? '' : 's'} added to cart.`, 'success');
+    startFreshBom();
+    toast.show(`${count} component${count === 1 ? '' : 's'} added to cart. Ready for a new BOM.`, 'success');
   };
 
   const submitRfq = () => {
@@ -289,18 +303,12 @@ export function BomWorkflowContent() {
       return;
     }
     createRfq.mutate(
-      { lines: rfqLines.map((r) => ({ product: r.product, quantity: r.line.quantity })), source: 'bom' },
+      { lines: rfqLines.map((r) => ({ product: r.product, quantity: r.line.quantity, targetUnitPrice: r.targetUnitPrice })), source: 'bom' },
       {
         onSuccess: (rfq) => {
-          const links: BomRfqSubmissionLink[] = rfqLines.map((r) => ({
-            lineId: r.line.id,
-            rfqId: rfq.id,
-            rfqNumber: rfq.rfqNumber,
-            submittedAt: rfq.createdAt,
-          }));
-          linkRfqSubmissions(links);
           setRfq(rfq);
           setQuote(null);
+          startFreshBom();
           router.push({ pathname: '/(buyer)/rfq/[id]', params: { id: rfq.id } });
         },
       },
@@ -423,7 +431,6 @@ export function BomWorkflowContent() {
                     rfqLink ? (
                       <RfqSubmittedNote link={rfqLink} onTrackStatus={() => router.push({ pathname: '/(buyer)/account/rfq-status/[id]', params: { id: rfqLink.rfqId } })} />
                     ) : (
-                    <>
                     <Pressable
                       onPress={() => toggleSelectedExact(result.line.id)}
                       style={{
@@ -450,12 +457,6 @@ export function BomWorkflowContent() {
                       </View>
                       <MDPrice amount={result.product.price} currency={result.product.currency} size="sm" />
                     </Pressable>
-                    {selectedExactIds.includes(result.line.id) ? (
-                      <View style={{ marginTop: spacing.sm }}>
-                        <RoutingToggle value={lineRouting[result.line.id] ?? 'order'} onChange={(r) => setLineRouting(result.line.id, r)} />
-                      </View>
-                    ) : null}
-                    </>
                     )
                   ) : null}
 
@@ -470,38 +471,46 @@ export function BomWorkflowContent() {
                           Our AI Recommended Alternatives
                         </MDText>
                       </View>
-                      <MDText variant="caption" tone="secondary">
-                        Not found exactly — same part family, choose one:
-                      </MDText>
-                      {result.alternatives.map((alt) => {
-                        const selected = chosenAlternative[result.line.id] === alt.id;
-                        return (
-                          <Pressable
-                            key={alt.id}
-                            onPress={() => chooseAlternativeFor(result.line.id, alt.id)}
-                            style={{
-                              flexDirection: 'row',
-                              alignItems: 'center',
-                              gap: spacing.md,
-                              padding: spacing.md,
-                              borderRadius: radius.md,
-                              borderWidth: 1,
-                              borderColor: selected ? colors.brand.primary : colors.border,
-                              backgroundColor: selected ? colors.brand.primarySoft : colors.surface,
-                            }}
-                          >
-                            <Ionicons name={selected ? 'radio-button-on' : 'radio-button-off'} size={18} color={selected ? colors.brand.primary : colors.text.tertiary} />
-                            <View style={{ flex: 1 }}>
-                              <MDText variant="bodySm" weight="600">{alt.manufacturerPartNumber}</MDText>
-                              <MDText variant="caption" tone="tertiary">{alt.manufacturer} · {alt.productType}</MDText>
-                            </View>
-                            <MDPrice amount={alt.price} currency={alt.currency} size="sm" />
-                          </Pressable>
-                        );
-                      })}
-                      {chosenAlternative[result.line.id] ? (
-                        <RoutingToggle value={lineRouting[result.line.id] ?? 'rfq'} onChange={(r) => setLineRouting(result.line.id, r)} />
-                      ) : null}
+                      <RoutingToggle value={lineRouting[result.line.id] ?? 'rfq'} onChange={(r) => setLineRouting(result.line.id, r)} />
+                      {(lineRouting[result.line.id] ?? 'rfq') === 'order' ? (
+                        <>
+                          <MDText variant="caption" tone="secondary">
+                            Not found exactly — same part family, choose one:
+                          </MDText>
+                          {result.alternatives.map((alt) => {
+                            const selected = chosenAlternative[result.line.id] === alt.id;
+                            return (
+                              <Pressable
+                                key={alt.id}
+                                onPress={() => chooseAlternativeFor(result.line.id, alt.id)}
+                                style={{
+                                  flexDirection: 'row',
+                                  alignItems: 'center',
+                                  gap: spacing.md,
+                                  padding: spacing.md,
+                                  borderRadius: radius.md,
+                                  borderWidth: 1,
+                                  borderColor: selected ? colors.brand.primary : colors.border,
+                                  backgroundColor: selected ? colors.brand.primarySoft : colors.surface,
+                                }}
+                              >
+                                <Ionicons name={selected ? 'radio-button-on' : 'radio-button-off'} size={18} color={selected ? colors.brand.primary : colors.text.tertiary} />
+                                <View style={{ flex: 1 }}>
+                                  <MDText variant="bodySm" weight="600">{alt.manufacturerPartNumber}</MDText>
+                                  <MDText variant="caption" tone="tertiary">{alt.manufacturer} · {alt.productType}</MDText>
+                                </View>
+                                <MDPrice amount={alt.price} currency={alt.currency} size="sm" />
+                              </Pressable>
+                            );
+                          })}
+                        </>
+                      ) : (
+                        <TargetPriceInput
+                          value={customerTargetPrices[result.line.id] ?? ''}
+                          onChangeText={(v) => setCustomerTargetPrice(result.line.id, v)}
+                          referenceProduct={result.alternatives[0]}
+                        />
+                      )}
                     </View>
                     )
                   ) : null}
@@ -531,35 +540,43 @@ export function BomWorkflowContent() {
                           develop the exact part.
                         </MDText>
                       </View>
-                      {result.alternatives.map((alt) => {
-                        const selected = chosenAlternative[result.line.id] === alt.id;
-                        return (
-                          <Pressable
-                            key={alt.id}
-                            onPress={() => chooseAlternativeFor(result.line.id, alt.id)}
-                            style={{
-                              flexDirection: 'row',
-                              alignItems: 'center',
-                              gap: spacing.md,
-                              padding: spacing.md,
-                              borderRadius: radius.md,
-                              borderWidth: 1,
-                              borderColor: selected ? colors.brand.primary : colors.border,
-                              backgroundColor: selected ? colors.brand.primarySoft : colors.surface,
-                            }}
-                          >
-                            <Ionicons name={selected ? 'radio-button-on' : 'radio-button-off'} size={18} color={selected ? colors.brand.primary : colors.text.tertiary} />
-                            <View style={{ flex: 1 }}>
-                              <MDText variant="bodySm" weight="600">{alt.manufacturerPartNumber}</MDText>
-                              <MDText variant="caption" tone="tertiary">{alt.manufacturer} · {alt.productType}</MDText>
-                            </View>
-                            <MDPrice amount={alt.price} currency={alt.currency} size="sm" />
-                          </Pressable>
-                        );
-                      })}
-                      {chosenAlternative[result.line.id] ? (
-                        <RoutingToggle value={lineRouting[result.line.id] ?? 'rfq'} onChange={(r) => setLineRouting(result.line.id, r)} />
-                      ) : null}
+                      <RoutingToggle value={lineRouting[result.line.id] ?? 'rfq'} onChange={(r) => setLineRouting(result.line.id, r)} />
+                      {(lineRouting[result.line.id] ?? 'rfq') === 'order' ? (
+                        <>
+                          {result.alternatives.map((alt) => {
+                            const selected = chosenAlternative[result.line.id] === alt.id;
+                            return (
+                              <Pressable
+                                key={alt.id}
+                                onPress={() => chooseAlternativeFor(result.line.id, alt.id)}
+                                style={{
+                                  flexDirection: 'row',
+                                  alignItems: 'center',
+                                  gap: spacing.md,
+                                  padding: spacing.md,
+                                  borderRadius: radius.md,
+                                  borderWidth: 1,
+                                  borderColor: selected ? colors.brand.primary : colors.border,
+                                  backgroundColor: selected ? colors.brand.primarySoft : colors.surface,
+                                }}
+                              >
+                                <Ionicons name={selected ? 'radio-button-on' : 'radio-button-off'} size={18} color={selected ? colors.brand.primary : colors.text.tertiary} />
+                                <View style={{ flex: 1 }}>
+                                  <MDText variant="bodySm" weight="600">{alt.manufacturerPartNumber}</MDText>
+                                  <MDText variant="caption" tone="tertiary">{alt.manufacturer} · {alt.productType}</MDText>
+                                </View>
+                                <MDPrice amount={alt.price} currency={alt.currency} size="sm" />
+                              </Pressable>
+                            );
+                          })}
+                        </>
+                      ) : (
+                        <TargetPriceInput
+                          value={customerTargetPrices[result.line.id] ?? ''}
+                          onChangeText={(v) => setCustomerTargetPrice(result.line.id, v)}
+                          referenceProduct={result.alternatives[0]}
+                        />
+                      )}
                       <MDButton
                         label="Submit Design Request Instead"
                         size="sm"
@@ -609,7 +626,8 @@ export function BomWorkflowContent() {
                   {orderLines.length} → Normal Order · {rfqLines.length} → RFQ
                 </MDText>
                 <MDText variant="caption" tone="tertiary">
-                  Normal Order lines go straight to your cart. RFQ lines get governed pricing and full fulfillment tracking in Account → RFQ Order Status.
+                  Normal Order lines go straight to your cart. RFQ lines are quoted at your target price (or
+                  governed pricing for exact matches) with full fulfillment tracking in Account → RFQ Order Status.
                 </MDText>
               </View>
               <View style={{ flexDirection: 'row', gap: spacing.sm, flexWrap: 'wrap' }}>
@@ -675,6 +693,47 @@ function RoutingToggle({ value, onChange }: { value: BomLineRouting; onChange: (
           </Pressable>
         );
       })}
+    </View>
+  );
+}
+
+/**
+ * Replaces the catalog-alternative picker for an alternative/ai-suggested
+ * line once it's routed to RFQ — no specific SKU is reserved for RFQ lines,
+ * so instead of asking the buyer to pick one, we ask for their approximate
+ * target price and let sales identify/confirm the exact part during review
+ * (see RfqLineItem.targetUnitPrice and computeCustomerTargetPricing).
+ */
+function TargetPriceInput({
+  value,
+  onChangeText,
+  referenceProduct,
+}: {
+  value: string;
+  onChangeText: (value: string) => void;
+  referenceProduct?: Product;
+}) {
+  return (
+    <View style={{ gap: spacing.sm }}>
+      <MDText variant="caption" tone="secondary">
+        No specific catalog part is reserved for RFQ — enter your approximate target price and our sales team will
+        identify and confirm the exact component during review.
+      </MDText>
+      {referenceProduct ? (
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs }}>
+          <MDText variant="caption" tone="tertiary">
+            Closest catalog reference: {referenceProduct.manufacturerPartNumber} ·
+          </MDText>
+          <MDPrice amount={referenceProduct.price} currency={referenceProduct.currency} size="sm" />
+        </View>
+      ) : null}
+      <MDInput
+        label="Your Target Unit Price"
+        value={value}
+        onChangeText={(t) => onChangeText(t.replace(/[^0-9.]/g, ''))}
+        placeholder="e.g. 100"
+        keyboardType="numeric"
+      />
     </View>
   );
 }

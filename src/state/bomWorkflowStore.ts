@@ -31,6 +31,16 @@ interface BomWorkflowState {
    * and always overridable per line by the buyer.
    */
   lineRouting: Record<string, BomLineRouting>;
+  /**
+   * BOM line id -> the buyer's entered approximate unit price, for
+   * alternative/ai-suggested lines routed to RFQ. Once RFQ routing is
+   * chosen for these match types, the specific catalog alternative picker
+   * is hidden — the buyer isn't confirming an exact SKU, they're giving
+   * sales a target price to quote against (see RfqLineItem.targetUnitPrice).
+   * Kept as a raw string so the input can hold partial/invalid entries
+   * while typing; parsed to a number only on RFQ submission.
+   */
+  customerTargetPrices: Record<string, string>;
   /** BOM line id -> the Design Request submitted for it. Cleared whenever a new BOM is processed. */
   designRequestLinks: Record<string, BomDesignRequestLink>;
   /** BOM line id -> the RFQ it was submitted in. Cleared whenever a new BOM is processed. */
@@ -44,6 +54,7 @@ interface BomWorkflowState {
   toggleSelectedExact: (lineId: string) => void;
   chooseAlternativeFor: (lineId: string, productId: number) => void;
   setLineRouting: (lineId: string, routing: BomLineRouting) => void;
+  setCustomerTargetPrice: (lineId: string, value: string) => void;
   /** Marks a BOM line as having a Design Request submitted for it — excludes it from cart/RFQ processing. */
   linkDesignRequest: (link: BomDesignRequestLink) => void;
   /** Marks every given BOM line as submitted in the given RFQ — excludes them from re-submission and shows their fulfillment link instead of the routing controls. */
@@ -52,6 +63,15 @@ interface BomWorkflowState {
   setQuote: (quote: Quote | null) => void;
   /** Clears the whole BOM workflow back to a blank upload form (e.g. "Start New BOM"). */
   resetBomWorkflow: () => void;
+  /**
+   * Clears the BOM input/results back to a blank upload form once a run is
+   * fully handed off — either all Normal Order lines were added to cart, or
+   * an RFQ was submitted for the RFQ-routed lines — so returning to this
+   * screen never shows a stale, already-actioned BOM. Deliberately leaves
+   * `rfq`/`quote` untouched (unlike resetBomWorkflow) since a just-submitted
+   * RFQ still needs that session slot for the RFQ detail screen right after.
+   */
+  startFreshBom: () => void;
 }
 
 export const useBomWorkflowStore = create<BomWorkflowState>()((set, get) => ({
@@ -61,6 +81,7 @@ export const useBomWorkflowStore = create<BomWorkflowState>()((set, get) => ({
   selectedExactIds: [],
   chosenAlternative: {},
   lineRouting: {},
+  customerTargetPrices: {},
   designRequestLinks: {},
   rfqSubmissionLinks: {},
   rfq: null,
@@ -73,7 +94,7 @@ export const useBomWorkflowStore = create<BomWorkflowState>()((set, get) => ({
       if (result.matchType === 'exact') lineRouting[result.line.id] = 'order';
       else if (result.matchType === 'alternative' || result.matchType === 'ai-suggested') lineRouting[result.line.id] = 'rfq';
     });
-    set({ matches, selectedExactIds, chosenAlternative, lineRouting, designRequestLinks: {}, rfqSubmissionLinks: {}, step: 'results' });
+    set({ matches, selectedExactIds, chosenAlternative, lineRouting, customerTargetPrices: {}, designRequestLinks: {}, rfqSubmissionLinks: {}, step: 'results' });
   },
   toggleSelectedExact: (lineId) =>
     set({
@@ -83,6 +104,7 @@ export const useBomWorkflowStore = create<BomWorkflowState>()((set, get) => ({
     }),
   chooseAlternativeFor: (lineId, productId) => set({ chosenAlternative: { ...get().chosenAlternative, [lineId]: productId } }),
   setLineRouting: (lineId, routing) => set({ lineRouting: { ...get().lineRouting, [lineId]: routing } }),
+  setCustomerTargetPrice: (lineId, value) => set({ customerTargetPrices: { ...get().customerTargetPrices, [lineId]: value } }),
   linkDesignRequest: (link) => set({ designRequestLinks: { ...get().designRequestLinks, [link.lineId]: link } }),
   linkRfqSubmissions: (links) =>
     set({
@@ -101,9 +123,22 @@ export const useBomWorkflowStore = create<BomWorkflowState>()((set, get) => ({
       selectedExactIds: [],
       chosenAlternative: {},
       lineRouting: {},
+      customerTargetPrices: {},
       designRequestLinks: {},
       rfqSubmissionLinks: {},
       rfq: null,
       quote: null,
+    }),
+  startFreshBom: () =>
+    set({
+      step: 'input',
+      text: '',
+      matches: [],
+      selectedExactIds: [],
+      chosenAlternative: {},
+      lineRouting: {},
+      customerTargetPrices: {},
+      designRequestLinks: {},
+      rfqSubmissionLinks: {},
     }),
 }));

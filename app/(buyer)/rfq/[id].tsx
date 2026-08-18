@@ -135,6 +135,8 @@ export default function RfqDetail() {
           </View>
         ) : (
           <View style={{ gap: spacing.lg }}>
+            {!approved ? <ProductPreviewVideo /> : null}
+
             {quote.lines.map((line) => (
               <MDCard key={line.productId} padding="lg">
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing.md }}>
@@ -166,8 +168,6 @@ export default function RfqDetail() {
                 </MDText>
               </View>
             </MDCard>
-
-            {!approved ? <ProductPreviewVideo /> : null}
 
             <View style={{ flexDirection: 'row', gap: spacing.md, flexWrap: 'wrap' }}>
               {!approved ? (

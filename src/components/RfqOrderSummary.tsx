@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { View } from 'react-native';
 import { colors, radius, spacing, MDCard, MDText } from '@/design-system';
-import { computeGovernedPricing } from '@/features/pricing/service';
+import { computeCustomerTargetPricing, computeGovernedPricing } from '@/features/pricing/service';
 import { MDManufacturerLogo } from '@/components/MDManufacturerLogo';
 import { formatDisplayPrice } from '@/utils';
 import { useCurrencyStore } from '@/state';
@@ -19,15 +19,19 @@ import type { Rfq } from '@/types';
 export function RfqOrderSummary({ rfq }: { rfq: Rfq }) {
   const displayCurrency = useCurrencyStore((s) => s.currency);
 
-  const { lines, currency, subtotal } = useMemo(() => {
+  const { lines, currency, subtotal, hasTargetPricing } = useMemo(() => {
     const priced = rfq.lines.map((line) => ({
       ...line,
-      pricing: computeGovernedPricing(line.product, line.quantity),
+      pricing:
+        line.targetUnitPrice != null
+          ? computeCustomerTargetPricing(line.product, line.quantity, line.targetUnitPrice)
+          : computeGovernedPricing(line.product, line.quantity),
     }));
     return {
       lines: priced,
       currency: priced[0]?.pricing.currency ?? 'INR',
       subtotal: priced.reduce((sum, l) => sum + l.pricing.approvedLineTotal, 0),
+      hasTargetPricing: priced.some((l) => l.targetUnitPrice != null),
     };
   }, [rfq.lines]);
 
@@ -46,6 +50,7 @@ export function RfqOrderSummary({ rfq }: { rfq: Rfq }) {
               </MDText>
               <MDText variant="caption" tone="tertiary">
                 Qty {line.quantity} · {line.product.productType}
+                {line.targetUnitPrice != null ? ' · Your target price (pending confirmation)' : ''}
               </MDText>
             </View>
             <MDText variant="bodySm" weight="700">
@@ -65,7 +70,7 @@ export function RfqOrderSummary({ rfq }: { rfq: Rfq }) {
         }}
       >
         <MDText variant="bodyMedium" weight="700">
-          Governed Subtotal
+          {hasTargetPricing ? 'Subtotal (includes target pricing pending confirmation)' : 'Governed Subtotal'}
         </MDText>
         <MDText variant="h4">{formatDisplayPrice(subtotal, currency, displayCurrency)}</MDText>
       </View>

@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { delay } from '@/utils';
 import { STORAGE_KEYS } from '@/constants/storageKeys';
-import { computeGovernedPricing } from '@/features/pricing/service';
+import { computeCustomerTargetPricing, computeGovernedPricing } from '@/features/pricing/service';
 import { RFQ_STAGE_LABEL } from '@/constants/rfqLifecycle';
 import type { Address, PaymentMethodSelection, Product, Quote, QuoteLine, Rfq, RfqLineItem, RfqSource, RfqStatus, ShippingMethodOption } from '@/types';
 
@@ -55,11 +55,18 @@ function generateQuoteNumber(): string {
 export interface RfqLineInput {
   product: Product;
   quantity: number;
+  /** See RfqLineItem.targetUnitPrice in src/types/workflow.ts. */
+  targetUnitPrice?: number;
 }
 
 export async function createRfq(lines: RfqLineInput[], source: RfqSource): Promise<Rfq> {
   await delay(500);
-  const rfqLines: RfqLineItem[] = lines.map((l) => ({ productId: l.product.id, product: l.product, quantity: l.quantity }));
+  const rfqLines: RfqLineItem[] = lines.map((l) => ({
+    productId: l.product.id,
+    product: l.product,
+    quantity: l.quantity,
+    ...(l.targetUnitPrice != null ? { targetUnitPrice: l.targetUnitPrice } : {}),
+  }));
   const createdAt = new Date().toISOString();
   const rfq: Rfq = {
     id: `rfq-${Date.now()}`,
@@ -147,7 +154,10 @@ export async function generateQuote(rfq: Rfq): Promise<Quote> {
     productId: l.productId,
     product: l.product,
     quantity: l.quantity,
-    pricing: computeGovernedPricing(l.product, l.quantity),
+    pricing:
+      l.targetUnitPrice != null
+        ? computeCustomerTargetPricing(l.product, l.quantity, l.targetUnitPrice)
+        : computeGovernedPricing(l.product, l.quantity),
   }));
   const validUntil = new Date();
   validUntil.setDate(validUntil.getDate() + 14);

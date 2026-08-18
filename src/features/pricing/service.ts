@@ -104,6 +104,35 @@ export function computeGovernedPricing(
   };
 }
 
+/**
+ * Pricing path for BOM lines where the buyer routed an AI-suggested
+ * alternative/new-design match to RFQ without confirming a specific
+ * catalog SKU (see app/(buyer)/bom/index.tsx) — instead of running the
+ * governed-pricing rule chain against a catalog product, the quote is
+ * built directly from the buyer's own approximate target price, clearly
+ * labeled as pending sales confirmation rather than an approved rate.
+ */
+export function computeCustomerTargetPricing(product: Product, quantity: number, targetUnitPrice: number): PricingBreakdown {
+  const approvedUnitPrice = round2(targetUnitPrice);
+  return {
+    productId: product.id,
+    currency: product.currency,
+    quantity,
+    baseUnitPrice: product.price,
+    steps: [
+      {
+        key: 'customer_target',
+        label: 'Customer Target Price',
+        description: 'Your approximate price — pending sales team confirmation during RFQ review.',
+        unitPriceAfter: approvedUnitPrice,
+        deltaPct: null,
+      },
+    ],
+    approvedUnitPrice,
+    approvedLineTotal: round2(approvedUnitPrice * quantity),
+  };
+}
+
 export async function getGovernedPricing(
   product: Product,
   quantity: number,
